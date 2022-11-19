@@ -1,0 +1,37 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Workspace",
+			"type": "java (build)",
+			"paths": [
+				"${workspace}"
+			],
+			"isFullBuild": true,
+			"group": "build",
+			"problemMatcher": [],
+			"detail": "$(tools) Build all the Java projects in workspace.",
+		},
+		{
+			"label": "make jar file",
+			"type": "shell",
+			"command": "jar",
+			"args": [
+				"-cvf",
+				"../package/RPExtensionUtilities/${workspaceFolderBasename}.jar",
+				"com"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/bin"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": [
+				"Build Workspace"
+			],
+			"problemMatcher": []
+		},
+	]
+}

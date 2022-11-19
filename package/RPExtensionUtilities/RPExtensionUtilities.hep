@@ -1,0 +1,37 @@
+[Helpers]
+numberOfElements=4
+
+#REM: Definition of the plug-in
+name1=RPExtensionUtilities
+JavaMainClass1=com.ibm.rhapsody.rputilities.RPExtensionUtilities
+JavaClassPath1=$OMROOT\Profiles\RPExtensionUtilities\RPExtensionUtilities.jar
+#REM: JavaClassPath1=E:\Rhapsody\RPExtensionUtilities\package\RPExtensionUtilities\RPExtensionUtilities.jar
+isPlugin1=1
+isVisible1=0
+DLLServerCompatible1=1
+
+#REM: Add triggers & pop-up menu to Object Model Diagrams, make it available only for RhapsodyUtilities
+name2=Invoke RhapsodyUtilities For OMD
+isPluginCommand2=1
+command2=RPExtensionUtilities
+applicableTo2=ObjectModelDiagram
+helperTriggers2=Before Code Generation,Before Project Save,After Project Save,Before Check Model, After Roundtrip, After Change To, After Add Element
+isVisible2=1
+applicableToProfile1=RPExtensionUtilities
+DLLServerCompatible2=1
+
+#REM: Count Activity for packages
+name3=RPActivityCount/XXXCore
+isPluginCommand3=1
+command3=RPExtensionUtilities
+applicableTo3=Package
+isVisible3=1
+DLLServerCompatible3=1
+
+#REM: Count Activity for packages
+name4=RPActivityCount/XXX
+isPluginCommand4=1
+command4=RPExtensionUtilities
+applicableTo4=Package
+isVisible4=1
+DLLServerCompatible4=1
