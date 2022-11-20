@@ -1,18 +1,51 @@
-## Getting Started
+# RPExtensionUtilities
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+RPExtensionUtilities is a Java plugin framework for IBM Rhapsody.
 
-## Folder Structure
+## Installation
 
-The workspace contains two folders by default, where:
+Copy the RPExtensionUtilities directory of Package under the profile directory of IBM Rhapsody.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+The RPExtensionUtilities directory of the package contains the following files.
+- RPExtensionUtilities.jar
+- RPExtensionUtilities.sbsx
+- RPExtensionUtilities.hep
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+For example, in Windows 10, the profile directory of IBM Rhapsody is located under `C:\Program Files\IBM\Rhapsody\9.0.1\Share\Profiles`
 
-## Dependency Management
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Count Action of Actiby
+Count the actions in the activity diagram included in the package.
+
+### Configure RPExtensionUtilities.hep
+
+Set `RPActivityCount/[SwimlaneName]` to the name of the swimlane whose actions you want to count in the activity diagram.
+The following is an example of counting the swimlane name "XXX".
+
+```
+#REM: Count Activity for packages
+name3=RPActivityCount/XXX
+isPluginCommand3=1
+command3=RPExtensionUtilities
+applicableTo3=Package
+isVisible3=1
+DLLServerCompatible3=1
+```
+
+### Rhapsody operations
+
+1. Select the package of IBM Rhapsody explorer.
+2. Right-click to display menu.
+3. Select `RPActivityCount/[SwimlaneName]` specified in the hep file.
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
