@@ -21,7 +21,7 @@ applicableToProfile1=RPExtensionUtilities
 DLLServerCompatible2=1
 
 #REM: Count Activity for packages
-name3=RPActivityCount/XXXCore
+name3=RPActivityCount\XXXCore
 isPluginCommand3=1
 command3=RPExtensionUtilities
 applicableTo3=Package
@@ -29,7 +29,7 @@ isVisible3=1
 DLLServerCompatible3=1
 
 #REM: Count Activity for packages
-name4=RPActivityCount/XXX
+name4=RPActivityCount\XXX
 isPluginCommand4=1
 command4=RPExtensionUtilities
 applicableTo4=Package
