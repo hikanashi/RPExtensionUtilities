@@ -65,7 +65,7 @@ abstract class IRPUtilityCommmand {
      */
     public static void RunCommand(String utilCommand, IRPModelElement element)
     {
-        String[] commandargs = utilCommand.split("/");
+        String[] commandargs = utilCommand.split("\\\\");
 
         setLogLevel(commandargs);
         
