@@ -1,4 +1,4 @@
-package com.ibm.rhapsody.rputilities;
+package com.ibm.rhapsody.rputilities.rpcore;
 
 import com.telelogic.rhapsody.core.IRPApplication;
 

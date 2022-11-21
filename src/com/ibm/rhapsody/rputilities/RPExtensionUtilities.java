@@ -4,6 +4,8 @@
  */
 package com.ibm.rhapsody.rputilities;
 
+import com.ibm.rhapsody.rputilities.rpcommand.RPCommandRunner;
+import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.telelogic.rhapsody.core.*;
 
 //@SuppressWarnings("unchecked")
@@ -40,7 +42,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 		RPLog.Debug("OnMenuItemSelect " + menuItem + " Selected element name is: " + selElemName);
 
         try {
-			IRPUtilityCommmand.RunCommand(menuItem, element);
+			RPCommandRunner.RunCommand(menuItem, element);
         } catch(Exception e) {
             RPLog.logException("CommandError Menu:" + menuItem + " element:" + selElemName, e);       
         }
