@@ -1,62 +1,11 @@
-package com.ibm.rhapsody.rputilities;
+package com.ibm.rhapsody.rputilities.rpcommand;
 
-import com.telelogic.rhapsody.core.*;
-import java.lang.reflect.*;
+import com.ibm.rhapsody.rputilities.rpcore.RPLog;
+import com.telelogic.rhapsody.core.IRPModelElement;
+import java.lang.reflect.Constructor;
 
-@SuppressWarnings("unchecked")
-abstract class IRPUtilityCommmand {
+public class RPCommandRunner {
     
-    protected IRPModelElement   m_element = null;
-
-
-    /**
-     * Rhapsodyユーティリティコマンドクラスのコンストラクタ
-     * @param element 右クリック時に選択された要素
-     */
-    public IRPUtilityCommmand(IRPModelElement element) {
-        m_element = element;
-    }
-
-
-    
-    /**
-     * 右クリック時に実行されるコマンド
-     * @param argment 右クリック時に選択されたメニュー(hepファイルに記載されたnameをデリミタで分割した配列)
-     * @return コマンド実行結果(true:成功 false:失敗)
-     */
-    abstract boolean command(String[] argment);
- 
-    /**
-     * 右クリック時に選択された要素を取得する
-     * @param <T> キャストしたい型
-     * @return 右クリック時に選択された要素(要素を複数選択時はnull)
-     */
-    public <T> T getElement() {
-        try {
-            return (T)m_element;
-        } catch(Exception e) {
-            RPLog.logException("getElement Cast Error", e);
-            return null;            
-        }
-    }
-
-    /**
-     * Objectを指定の型に変換する
-     * @param <T> 指定のデータ型
-     * @param obj 変換対象オブジェクト
-     * @return 指定の型に変換されたオブジェクト(変換失敗時はnull)
-     */
-    public <T> T getObject(Object obj) {
-        try {
-            return (T)obj;
-        } catch(Exception e) {
-            RPLog.logException("getObject Cast Error", e);
-            return null;            
-        }
-    }
-
-
-
     /**
      * 選択されたメニューからコマンドを実行する。
      * 選択メニュー名を/で分割したものをコマンドとする。
@@ -76,7 +25,6 @@ abstract class IRPUtilityCommmand {
         }
 
     }
-
 
     /**
      * コマンド実行時のログ出力レベルを設定する。<br>
@@ -102,7 +50,6 @@ abstract class IRPUtilityCommmand {
         }
     }
 
-
     /**
      * コマンドを実行する。
      * コマンドの先頭を実行クラス名としてインスタンスを生成し、生成したインスタンスのcommandメソッドを実行する。
@@ -120,7 +67,7 @@ abstract class IRPUtilityCommmand {
             return false;
         }
 
-        String className =  "com.ibm.rhapsody.rputilities." + commandargs[0];
+        String className =  IRPUtilityCommmand.class.getPackage().getName() + "." + commandargs[0];
         RPLog.Debug("className:"+ className + " commandargs:"+ commandargs.length);
         
         try {
@@ -143,5 +90,4 @@ abstract class IRPUtilityCommmand {
             return false;       
         }
     }
-
 }

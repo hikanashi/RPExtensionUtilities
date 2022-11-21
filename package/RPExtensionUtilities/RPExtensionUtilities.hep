@@ -1,5 +1,5 @@
 [Helpers]
-numberOfElements=4
+numberOfElements=5
 
 #REM: Definition of the plug-in
 name1=RPExtensionUtilities
@@ -20,18 +20,26 @@ isVisible2=1
 applicableToProfile1=RPExtensionUtilities
 DLLServerCompatible2=1
 
-#REM: Count Activity for packages
+#REM: Count Activity for XXXCore
 name3=RPActivityCount\XXXCore
 isPluginCommand3=1
 command3=RPExtensionUtilities
-applicableTo3=Package
+applicableTo3=Package,ActivityDiagram
 isVisible3=1
 DLLServerCompatible3=1
 
-#REM: Count Activity for packages
+#REM: Count Activity for XXX
 name4=RPActivityCount\XXX
 isPluginCommand4=1
 command4=RPExtensionUtilities
-applicableTo4=Package
+applicableTo4=Package,ActivityDiagram
 isVisible4=1
 DLLServerCompatible4=1
+
+#REM: Image Out Activity
+name5=RPActivityImageOut
+isPluginCommand5=1
+command5=RPExtensionUtilities
+applicableTo5=Package,ActivityDiagram
+isVisible5=1
+DLLServerCompatible5=1
