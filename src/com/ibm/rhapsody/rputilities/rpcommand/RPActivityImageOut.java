@@ -9,8 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.rpcore.RPActivitiyFacade;
-import com.ibm.rhapsody.rputilities.rpcore.RPLog;
-import com.telelogic.rhapsody.core.IRPActivityDiagram;
+import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
 import com.telelogic.rhapsody.core.IRPCollection;
 import com.telelogic.rhapsody.core.IRPFlowchart;
 import com.telelogic.rhapsody.core.IRPModelElement;
@@ -23,7 +22,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
     protected String   m_ImageDirectory = null;
     protected final String IMAGEOUTDIRECTRY_PREFIX = "ActivityImage"; 
     protected final String IMAGEOUTFILE_PREFIX = "act"; 
-    protected final String IMAGEOUT_FORMAT = "JPG"; 
+    protected final String IMAGEOUT_DEFAULT_FORMAT = "JPG"; 
     protected final int NEED_IMAGEMAP = 0; 
 
     /**
@@ -32,7 +31,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
      */
     public RPActivityImageOut(IRPModelElement element) 
     {
-        super(element);
+        super(RPActivityImageOut.class,element);
     }
 
 
@@ -44,33 +43,43 @@ class RPActivityImageOut extends IRPUtilityCommmand {
     {
         boolean result = false;
         IRPModelElement element = getElement();
+        String imageFormat = IMAGEOUT_DEFAULT_FORMAT;
         if(element == null)
         {
-            RPLog.Info("name[" + argment[0] + "] is need select element.\n"
+            error("name[" + argment[0] + "] is need select element.\n"
                 + "Please select one Element.");
             return false;
         }
 
-        RPLog.Info("Activitiy Image Out Start:" + element.getDisplayName());
+        if(argment.length > 1)
+        {
+            imageFormat = argment[1];
+        }
+
+        info("Activitiy Image Out Start:" + element.getDisplayName() + "ImageFormat:" + imageFormat);
 
         if(element instanceof IRPPackage)
         {
             IRPPackage rppackage = getElement();
-            result = ImageOutActivity(rppackage);
+            result = ImageOutActivity(rppackage, imageFormat);
         }
         else if(element instanceof IRPFlowchart)
         {
             IRPFlowchart rpActivity = getElement();
-            result = ImageOutStateChart(rpActivity);
+            result = ImageOutStateChart(rpActivity, imageFormat);
         }
         else
         {
-            RPLog.Info("select element["+ element.getDisplayName() 
+            info("select element["+ element.getDisplayName() 
                 + "]("+ element.getClass().toString() + ") is not target element. ");
         }
 
-        RPLog.Info("Activitiy Image Out End:" 
+        info("Activitiy Image Out End:" 
             + (m_ImageDirectory != null ? m_ImageDirectory : "--None--"));
+
+        if(result != true) {
+            DeleteImageDirectory();
+        }
 
         return result;
     }
@@ -79,9 +88,9 @@ class RPActivityImageOut extends IRPUtilityCommmand {
      * @param rppackage 選択されたパッケージ
      * @return 画像出力結果
      */
-    protected boolean ImageOutActivity(IRPPackage rppackage) 
+    protected boolean ImageOutActivity(IRPPackage rppackage, String imageFormat) 
     {
-        RPLog.Debug("Package:" + rppackage.getDisplayName()
+        debug("Package:" + rppackage.getDisplayName()
                 + " ImageOut Activity");
         
         boolean result = false;
@@ -90,7 +99,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         List<IRPFlowchart> activityCollection = RPActivitiyFacade.CollectActivity(rppackage,1);
         for(IRPFlowchart rpflowchart : activityCollection)
         {
-            result = ImageOutStateChart(rpflowchart);
+            result = ImageOutStateChart(rpflowchart, imageFormat);
             if( result != true )
             {
                 return false;
@@ -101,7 +110,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
     }
 
 
-    protected boolean ImageOutStateChart(IRPStatechart chart) 
+    protected boolean ImageOutStateChart(IRPStatechart chart, String imageFormat) 
     {
         if(chart == null )
         {
@@ -117,10 +126,19 @@ class RPActivityImageOut extends IRPUtilityCommmand {
             }
         }
 
-
-        String imagepath = GetImageFilePath(chart,IMAGEOUT_FORMAT);
+        String imagepath = GetImageFilePath(chart,imageFormat);
         IRPCollection diagrammap = null;
-        chart.getPictureAs(imagepath,IMAGEOUT_FORMAT,NEED_IMAGEMAP,diagrammap);
+
+        info("Imageout:" + chart.getDisplayName()
+                + " Path:" + imagepath);
+
+        int image_number = chart.getPictureAs(imagepath,imageFormat,NEED_IMAGEMAP,diagrammap).getCount();
+        if(image_number < 1)
+        {
+            error("Create Image Fail. file:" + imagepath );
+            error("Check Image format in RPExtensionUtilities.hep and check directory permission,");
+            return false;
+        }
 
         return true;
     }
@@ -142,21 +160,27 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         String directryPath = rpProject.getCurrentDirectory()
             + "/" + IMAGEOUTDIRECTRY_PREFIX + "_" + formatNowDate;
 
-        try 
-        {
-            Path p = Paths.get(directryPath);
-            Files.createDirectory(p);
+        RPFileSystem filesystem = new RPFileSystem();
+        if( filesystem.CreateDirectory(directryPath) ) {
+            m_ImageDirectory = directryPath;
+            return true;
         } 
-        catch(IOException e) 
-        {
-            RPLog.logException("Create Directory Error" + directryPath , e);
+        else {
+            error("Create Directory Error" + directryPath);
             return false;
         }
-
-        m_ImageDirectory = directryPath;
-        return true;
     }
 
+    protected void DeleteImageDirectory() 
+    {
+        if( m_ImageDirectory == null )
+        {
+            return;
+        }
+
+        RPFileSystem filesystem = new RPFileSystem();
+        filesystem.Delete(m_ImageDirectory);
+    }
 
     protected String GetImageFilePath(IRPStatechart chart, String imageFormat) 
     {
@@ -165,36 +189,9 @@ class RPActivityImageOut extends IRPUtilityCommmand {
             return "";
         }
 
-        String filePath = m_ImageDirectory + "/"
-             + IMAGEOUTFILE_PREFIX + "_" + getFileName(chart,imageFormat);
+        String filePath = m_ImageDirectory + "/" + IMAGEOUTFILE_PREFIX + "_" 
+                            + getPathToProject(chart,"_") + "." + imageFormat.toLowerCase();
 
         return filePath;
     }
-
-    protected static String getFileName(IRPModelElement element, String imageFormat)
-    {
-        String fileName = imageFormat.toLowerCase();
-        IRPModelElement checkelement = element;
-
-        while(checkelement != null)
-        {
-            if( checkelement.getIsOfMetaClass("Project") == 1 )
-            {
-                break;
-            }
-
-            if(checkelement != element)
-            {
-                fileName = checkelement.getDisplayName() + "_" + fileName;
-            }
-            else
-            {
-                fileName = checkelement.getDisplayName() + "." + fileName;
-            }
-
-            checkelement = checkelement.getOwner();
-        }
-
-        return fileName;
-    } 
 }

@@ -11,7 +11,8 @@ abstract class IRPUtilityCommmand extends ARPObject {
      * Rhapsodyユーティリティコマンドクラスのコンストラクタ
      * @param element 右クリック時に選択された要素
      */
-    public IRPUtilityCommmand(IRPModelElement element) {
+    protected IRPUtilityCommmand(Class<?> clazz,IRPModelElement element) {
+        super(clazz);
         m_element = element;
     }
 

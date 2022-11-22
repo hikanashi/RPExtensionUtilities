@@ -1,11 +1,18 @@
 package com.ibm.rhapsody.rputilities.rpcommand;
 
+import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.rpcore.RPLog;
+import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import java.lang.reflect.Constructor;
 
-public class RPCommandRunner {
-    
+public class RPCommandRunner extends ARPObject {
+
+    public RPCommandRunner() 
+    {
+        super(RPCommandRunner.class);
+    }
+
     /**
      * 選択されたメニューからコマンドを実行する。
      * 選択メニュー名を/で分割したものをコマンドとする。
@@ -14,14 +21,29 @@ public class RPCommandRunner {
      */
     public static void RunCommand(String utilCommand, IRPModelElement element)
     {
-        String[] commandargs = utilCommand.split("\\\\");
 
-        setLogLevel(commandargs);
+		String selElemName = new String();
+		if(element != null){
+			selElemName = element.getName();			
+		} else {
+			selElemName = "No selected element";
+		}
+
+		sdebug("OnMenuItemSelect " + utilCommand + " Selected element name is: " + selElemName);
+
+        try {
+            String[] commandargs = utilCommand.split("\\\\");
+            
+            setLogLevel(commandargs);
         
-        boolean result = invokeCommand(commandargs, element);
-        if(result != true) 
-        {
-            RPLog.Info("CommandError Menu:" + utilCommand);     
+            boolean result = invokeCommand(commandargs, element);
+            if(result != true) 
+            {
+                serror("CommandError Menu:" + utilCommand + " Select Item:" + selElemName);     
+            }
+    
+        } catch(Exception e) {
+            serror("CommandError Menu:" + utilCommand + " Select Item:" + selElemName, e);       
         }
 
     }
@@ -30,7 +52,7 @@ public class RPCommandRunner {
      * コマンド実行時のログ出力レベルを設定する。<br>
      * コマンドの中に、下記が含まれる場合、ログ出力のレベルを変更する。<br>
      *   - LogDebug：デバッグレベルのログを出力する<br>
-     *   - LogDetail：デバッグ、詳細レベルのログを出力する<br>
+     *   - LogTrace：トレースレベルのログを出力する<br>
      * @param commandargs
      */
     public static void setLogLevel(String[] commandargs)
@@ -39,13 +61,11 @@ public class RPCommandRunner {
         {
             if(commandargs[index].equals("LogDebug"))
             {
-                RPLog.Info("Set RPLog Debug mode");
-                RPLog.setDebug(true);
+                RPLog.setLevel(RPLogLevel.DEBUG);
             }
-            else if(commandargs[index].equals("LogDetail"))
+            else if(commandargs[index].equals("LogTrace"))
             {
-                RPLog.Info("Set RPLog Detail mode");
-                RPLog.setDetail(true);                
+                RPLog.setLevel(RPLogLevel.TRACE);           
             }
         }
     }
@@ -63,22 +83,22 @@ public class RPCommandRunner {
     {
         if( commandargs.length < 1 )
         {
-            RPLog.Info("name is invaild. Please check .hep file");
+            sinfo("name is invaild. Please check .hep file");
             return false;
         }
 
         String className =  IRPUtilityCommmand.class.getPackage().getName() + "." + commandargs[0];
-        RPLog.Debug("className:"+ className + " commandargs:"+ commandargs.length);
+        sdebug("className:"+ className + " commandargs:"+ commandargs.length);
         
         try {
             Class<?> commandClass = Class.forName(className);
             Constructor<?> constructor = commandClass.getDeclaredConstructor(IRPModelElement.class);
             IRPUtilityCommmand rpcommnad = (IRPUtilityCommmand) constructor.newInstance(element);
-            RPLog.Debug("Create Command:"+ className);
+            sdebug("Create Command:"+ className);
 
             if(rpcommnad == null)
             {
-                RPLog.Info("className:"+ className + " is newInstance fail");
+                sinfo("className:"+ className + " is newInstance fail");
                 return false;
             }
 
@@ -86,7 +106,7 @@ public class RPCommandRunner {
         } 
         catch(Exception e) 
         {
-            RPLog.logException("CommandError:"+ className, e);
+            serror("CommandError:"+ className, e);
             return false;       
         }
     }

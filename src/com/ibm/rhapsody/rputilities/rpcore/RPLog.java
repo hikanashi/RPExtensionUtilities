@@ -6,8 +6,7 @@ public class RPLog {
 
 	protected IRPApplication m_rhpApplication = null;
     protected String m_Title = "unknown";
-    protected boolean m_isDebug = false;
-	protected boolean m_isDetail = false;
+	protected RPLogLevel m_Level = RPLogLevel.INFO;
 
 	protected static RPLog m_Object = null;
 
@@ -21,105 +20,132 @@ public class RPLog {
     {
 		m_Object = null; 
 	}
-
-	/**
-	 * log an exception
-	 */
-	public static void logException(String message, Throwable exception)
-	{
-		if(m_Object == null)
-		{
-			return;
-		}
-
-		m_Object.log(message, exception);
-	}
 	
 	/**
-	 * Log an unexpected exception 
+	 * Log an error message 
+	 * @param message, readable info message
 	 */
-	public static void logException(Throwable exception)
+	public static void error(Class<?> clazz,String message)
 	{
-		logException("Unexpected Exception", exception);
+		sloginternal(clazz,RPLogLevel.ERROR, message);
 	}
-	
+
+	/**
+	 * Log an error message 
+	 * @param message, readable info message
+	 */
+	public static void error(Class<?> clazz,String message, Throwable exception)
+	{
+		sloginternal(clazz, RPLogLevel.ERROR, message, exception);
+	}
+
+	/**
+	 * Log an warning message 
+	 * @param message, readable info message
+	 */
+	public static void warn(Class<?> clazz,String message)
+	{
+		sloginternal(clazz, RPLogLevel.WARN, message);
+	}
+
+	/**
+	 * Log an warning message 
+	 * @param message, readable info message
+	 */
+	public static void warn(Class<?> clazz,String message, Throwable exception)
+	{
+		sloginternal(clazz, RPLogLevel.WARN, message, exception);
+	}
+
     /**
 	 * Log an information message 
 	 * @param message, readable info message
 	 */
-	public static void Info(String message)
+	public static void info(Class<?> clazz,String message)
 	{
-		if(m_Object == null)
-		{
-			return;
-		}
+		sloginternal(clazz, RPLogLevel.INFO, message);
+	}
 
-		m_Object.log(message);
+    /**
+	 * Log an information message 
+	 * @param message, readable info message
+	 */
+	public static void info(Class<?> clazz, String message, Throwable exception)
+	{
+		sloginternal(clazz, RPLogLevel.INFO, message, exception);
 	}
 
     /**
 	 * Log an Debug message 
 	 * @param message, readable debug message
 	 */
-	public static void Debug(String message)
+	public static void debug(Class<?> clazz,String message)
 	{
-		if(m_Object == null)
-		{
-			return;
-		}
+		sloginternal(clazz, RPLogLevel.DEBUG, message);
+	}
 
-        if(m_Object.m_isDebug)
-		{
-            m_Object.log("<DEBUG>"+ message);
-        }
+    /**
+	 * Log an Debug message 
+	 * @param message, readable debug message
+	 */
+	public static void debug(Class<?> clazz,String message, Throwable exception)
+	{
+		sloginternal(clazz, RPLogLevel.DEBUG, message, exception);
 	}
 
 	/**
 	 * Log an Debug message 
 	 * @param message, readable debug message
 	 */
-	public static void Detail(String message)
+	public static void trace(Class<?> clazz,String message)
 	{
-		if(m_Object == null)
-		{
-			return;
-		}
+        sloginternal(clazz, RPLogLevel.TRACE, message);
+	}
 
-        if(m_Object.m_isDetail)
-		{
-            m_Object.log("<DETAIL>"+ message);
-        }
+	/**
+	 * Log an Debug message 
+	 * @param message, readable debug message
+	 */
+	public static void trace(Class<?> clazz,String message, Throwable exception)
+	{
+		sloginternal(clazz, RPLogLevel.TRACE, message, exception);
 	}
 
 	/**
 	 * set Log Debug mode 
 	 */
-	public static void setDebug(boolean mode)
+	public static void setLevel(RPLogLevel level)
 	{
 		if(m_Object == null)
 		{
 			return;
 		}
 
-		m_Object.m_isDebug = mode;
+		m_Object.loginternal(RPLog.class, RPLogLevel.INFO, 
+			"SET LOGLEVEL:" + level.toString());
+
+		m_Object.m_Level = level;
 
 	}
 
-	/**
-	 * set Log Detail mode 
-	 */
-	public static void setDetail(boolean mode)
+	protected static void sloginternal(Class<?> clazz,RPLogLevel level,String message)
 	{
 		if(m_Object == null)
 		{
 			return;
 		}
 
-		m_Object.m_isDetail = mode;
-		if(m_Object.m_isDetail)
+		m_Object.loginternal(clazz,level,message);
+	}
+
+	protected static void sloginternal(Class<?> clazz,RPLogLevel level,String message, Throwable exception)
+	{
+		if(m_Object == null)
 		{
-			m_Object.m_isDebug = true;
+			return;
 		}
+
+		m_Object.loginternal(clazz,level,message,exception);
 	}
 
 	protected RPLog(String title, IRPApplication rpyApplication)
@@ -129,28 +155,43 @@ public class RPLog {
         this.m_rhpApplication = rpyApplication;
 	}
 
-	private void log(String message, Throwable exception) 
+	private void loginternal(Class<?> clazz, RPLogLevel level,String message, Throwable exception) 
 	{
-		log(message);
+		loginternal(clazz, level, message);
         if( exception == null )
         {
             return;        
         }
 
-		log(exception.toString());
+		loginternal(clazz, level, exception.toString());
 
 		StackTraceElement[] stacktrace = exception.getStackTrace();
 		for(int idx = 0; idx < stacktrace.length; idx++ )
 		{
 			StackTraceElement stack = stacktrace[idx];
-			log("\t at " + stack.toString());
+			loginternal(clazz, level, "\t at " + stack.toString());
 		}
 	}
 
-    private void log(String message) 
+    private void loginternal(Class<?> clazz, RPLogLevel level, String message) 
 	{
+		if(m_Level.toInt() > level.toInt() )
+		{
+			return;
+		}
+
+		String className = "";
+		if(clazz != null) {
+			className = clazz.getSimpleName() + "\t";
+		}
+		else {
+			className = "<static>\t";
+		}
+
         this.m_rhpApplication.writeToOutputWindow(
 			this.m_Title,
-			message + "\n");
+			level.toString() + ","
+			+ className + ","
+			+ message + "\n");
 	}
 }

@@ -1,7 +1,6 @@
 package com.ibm.rhapsody.rputilities.rpcommand;
 
 import com.ibm.rhapsody.rputilities.rpcore.RPActivitiyFacade;
-import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.telelogic.rhapsody.core.*;
 import java.util.List;
 
@@ -29,7 +28,7 @@ class RPActivityCount extends IRPUtilityCommmand {
      */
     public RPActivityCount(IRPModelElement element) 
     {
-        super(element);
+        super(RPActivityCount.class,element);
     }
 
     /* 
@@ -40,7 +39,7 @@ class RPActivityCount extends IRPUtilityCommmand {
     {
         if( argment.length < 2 )
         {
-            RPLog.Info("name[" + argment[0] + "] is invaild.\n"
+            error("name[" + argment[0] + "] is invaild.\n"
                 + "Please RPActivityCount/[SwimlaneName].");
             return false;
         }
@@ -49,7 +48,7 @@ class RPActivityCount extends IRPUtilityCommmand {
         IRPModelElement element = getElement();
         if(element == null)
         {
-            RPLog.Info("name[" + argment[0] + "] is need select element.\n"
+            error("name[" + argment[0] + "] is need select element.\n"
                 + "Please select one Element.");
             return false;
         }
@@ -57,33 +56,23 @@ class RPActivityCount extends IRPUtilityCommmand {
         if(element instanceof IRPPackage)
         {
             IRPPackage rppackage = getElement();
-            RPLog.Info("---------------------- Element["+ element.getDisplayName() 
+            info("---------------------- Element["+ element.getDisplayName() 
                 + "] Count Activity[" + targetSwimlane + "]");
 
             int[] count_action = CountActivity(rppackage, targetSwimlane);
-            RPLog.Info("Package,[ALL]"
-                    + ",Activity,[All]" 
-                    + ",Swimlane," + targetSwimlane 
-                    + ",action," + count_action[COUNT_INDEX.ACTION.getInt()]
-                    + ",flowfinal," + count_action[COUNT_INDEX.FLOWFINAL.getInt()]
-                    + ",activityfinal," + count_action[COUNT_INDEX.ACTIVITYFINAL.getInt()]);
+            outputActivityCount(null,targetSwimlane,count_action);
         }
         else if(element instanceof IRPFlowchart)
         {
             IRPFlowchart rpActivity = getElement();
 
-            int[] count_action = CountStateChart(rpActivity, targetSwimlane);
-            RPLog.Info("Package,[ALL]"
-                    + ",Activity,[All]" 
-                    + ",Swimlane," + targetSwimlane 
-                    + ",action," + count_action[COUNT_INDEX.ACTION.getInt()]
-                    + ",flowfinal," + count_action[COUNT_INDEX.FLOWFINAL.getInt()]
-                    + ",activityfinal," + count_action[COUNT_INDEX.ACTIVITYFINAL.getInt()]);
+            CountStateChart(rpActivity, targetSwimlane);
         }
         else
         {
-            RPLog.Info("select element["+ element.getDisplayName() 
-            + "]("+ element.getClass().toString() + ") is not target element. ");
+            error("select element["+ element.getDisplayName() 
+                + "]("+ element.getClass().toString() + ") is not target element. ");
+            return false;
         }
 
         return true;
@@ -98,7 +87,7 @@ class RPActivityCount extends IRPUtilityCommmand {
     protected int[] CountActivity(IRPPackage rppackage, String targetSwimlane) 
     {
         int[] all_count_action = {0,0,0};
-        RPLog.Debug("Package:" + rppackage.getDisplayName()
+        debug("Package:" + rppackage.getDisplayName()
                 + " Count Activity target:" + targetSwimlane);
         
         //List<Object> activityCollection = rppackage.getBehavioralDiagrams().toList();
@@ -131,7 +120,7 @@ class RPActivityCount extends IRPUtilityCommmand {
             return count_action;
         }
 
-        RPLog.Debug("Count StateChart:" + chart.getDisplayName() + " Swimlane:"+targetSwimlane);
+        debug("Count StateChart:" + chart.getDisplayName() + " Swimlane:"+targetSwimlane);
 
         List<Object> flowElements = toList(chart.getElementsInDiagram());
         int[] count_state = CountElements(flowElements,targetSwimlane);
@@ -140,13 +129,7 @@ class RPActivityCount extends IRPUtilityCommmand {
             count_action[index] += count_state[index];
         }
 
-        RPLog.Info("Package," + getPackageName(chart)
-                + ",Activity," + chart.getDisplayName() 
-                + ",Owner," + (chart.getOwner() != null ? chart.getOwner().getDisplayName() : "--None--")
-                + ",Swimlane," + (targetSwimlane.length() > 0 ? targetSwimlane : "--None--")
-                + ",Action," + count_action[COUNT_INDEX.ACTION.getInt()]
-                + ",FlowFinal," + count_action[COUNT_INDEX.FLOWFINAL.getInt()]
-                + ",ActivityFinal," + count_action[COUNT_INDEX.ACTIVITYFINAL.getInt()]);
+        outputActivityCount(chart,targetSwimlane,count_action);
 
         return count_action;
     }
@@ -155,13 +138,13 @@ class RPActivityCount extends IRPUtilityCommmand {
     {
         int[] count_action = {0,0,0};
 
-        RPLog.Detail("\t\tElements:" + elements.size() );
+        trace("\t\tElements:" + elements.size() );
 
         for(Object flowobj : elements)
         {
             int[] count_state = {0,0,0};
             IRPModelElement model = getObject(flowobj);
-            RPLog.Detail("\t\tcontents:" + model.getMetaClass()
+            trace("\t\tcontents:" + model.getMetaClass()
                  + " Name:"+ model.getDisplayName()
                  + " class:"+ model.getClass().toString());
 
@@ -219,7 +202,7 @@ class RPActivityCount extends IRPUtilityCommmand {
 
         count_action[COUNT_INDEX.ACTION.getInt()]++;
 
-        RPLog.Debug("\t\t\tConnector:" 
+        debug("\t\t\tConnector:" 
             + " Name:"+ rpConnector.getDisplayName()
             + " Swimlane:"+ swimlaneName
             + " Owner:"+ (rpConnector.getOwner() == null ? "-" : rpConnector.getOwner().getDisplayName()));
@@ -262,15 +245,15 @@ class RPActivityCount extends IRPUtilityCommmand {
         }
         else
         {
-            RPLog.Detail("\t\t\tState Not Count " + rpstate.getDisplayName()
+            trace("\t\t\tState Not Count " + rpstate.getDisplayName()
                 + " class:"+ rpstate.getClass().toString());
             return count_action;
         }
 
-        RPLog.Debug("\t\t\tState:" + rpstate.getStateType()
-        + " Name:"+ rpstate.getDisplayName()
-        + " Swimlane:"+ swimlaneName
-        + " Owner:"+ (rpstate.getParent() == null ? "-" : rpstate.getParent().getDisplayName()));
+        debug("\t\t\tState:" + rpstate.getStateType()
+            + " Name:"+ rpstate.getDisplayName()
+            + " Swimlane:"+ swimlaneName
+            + " Owner:"+ (rpstate.getParent() == null ? "-" : rpstate.getParent().getDisplayName()));
 
         return count_action;
     }
@@ -292,5 +275,32 @@ class RPActivityCount extends IRPUtilityCommmand {
         }
 
         return swimlaneName;
+    } 
+
+    protected void outputActivityCountTitle()
+    {
+        info("Package,Activity,Action,FlowFinal,ActivityFinal,Swimlane,Owner");
+    } 
+
+    protected void outputActivityCount(IRPStatechart chart, String targetSwimlane,int[] count_action)
+    {
+        String packageName = "[ALL]";
+        String ownerName = "[ALL]";
+        String activityName = "[ALL]";
+
+        if(chart != null)
+        {
+            packageName = getPackageName(chart);
+            ownerName = (chart.getOwner() != null ? chart.getOwner().getDisplayName() : "--None--");
+            activityName = chart.getDisplayName();
+        }
+
+
+        info(packageName + "," + activityName 
+                + "," + count_action[COUNT_INDEX.ACTION.getInt()]
+                + "," + count_action[COUNT_INDEX.FLOWFINAL.getInt()]
+                + "," + count_action[COUNT_INDEX.ACTIVITYFINAL.getInt()]
+                + "," + (targetSwimlane.length() > 0 ? targetSwimlane : "--None--")
+                + "," + ownerName);
     } 
 }
