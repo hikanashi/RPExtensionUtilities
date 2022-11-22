@@ -35,8 +35,8 @@ applicableTo4=Package,ActivityDiagram
 isVisible4=1
 DLLServerCompatible4=1
 
-#REM: Image Out Activity
-name5=RPActivityImageOut
+#REM: Image Out Activity. format is EMF, BMP, JPEG, JPG, TIFF.
+name5=RPActivityImageOut\JPG
 isPluginCommand5=1
 command5=RPExtensionUtilities
 applicableTo5=Package,ActivityDiagram

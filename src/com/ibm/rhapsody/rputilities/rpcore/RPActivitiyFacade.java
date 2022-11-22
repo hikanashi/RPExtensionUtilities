@@ -11,6 +11,11 @@ import java.util.Set;
 
 public class RPActivitiyFacade extends ARPObject {
     
+    public RPActivitiyFacade() 
+    {
+        super(RPActivitiyFacade.class);
+    }
+
 
     public static List<IRPFlowchart> CollectActivity(IRPPackage rppackage,int recursive)
     {
@@ -34,7 +39,7 @@ public class RPActivitiyFacade extends ARPObject {
             IRPFlowchart rpflowchart = getObject(obj);
             append(activitylist,rpflowchart);
 
-            RPLog.Detail("CollectActivity:Package," + rppackage.getDisplayName()
+            strace("CollectActivity:Package," + rppackage.getDisplayName()
                 + ",Owner," + (rpflowchart.getOwner() != null ? rpflowchart.getOwner().getDisplayName() : "--None--")
                 + ",Activity," + rpflowchart.getDisplayName());            
         }
@@ -45,9 +50,10 @@ public class RPActivitiyFacade extends ARPObject {
 
     private static void append(Set<IRPFlowchart> set, IRPFlowchart obj)
     {
-        RPLog.Detail("append :" + obj.getDisplayName()
+        strace("append :" + obj.getDisplayName()
             + ",GUID," + obj.getGUID()
             + ",Owner," + (obj.getOwner() != null ? obj.getOwner().getDisplayName() : "--None--"));  
+
         if(set.contains(obj) != true)
         {
             set.add(obj);
