@@ -4,8 +4,7 @@ numberOfElements=5
 #REM: Definition of the plug-in
 name1=RPExtensionUtilities
 JavaMainClass1=com.ibm.rhapsody.rputilities.RPExtensionUtilities
-JavaClassPath1=$OMROOT\Profiles\RPExtensionUtilities\RPExtensionUtilities.jar
-#REM: JavaClassPath1=E:\Rhapsody\RPExtensionUtilities\package\RPExtensionUtilities\RPExtensionUtilities.jar
+JavaClassPath1=.\RPExtensionUtilities.jar
 isPlugin1=1
 isVisible1=0
 DLLServerCompatible1=1
