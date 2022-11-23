@@ -19,15 +19,26 @@ public class RPLogLevel {
     final static public RPLogLevel DEBUG = new RPLogLevel(DEBUG_INT, "DBG");
     final static public RPLogLevel TRACE = new RPLogLevel(TRACE_INT, "TRC");
 
+    /**
+     * @param i
+     * @param s
+     */
     RPLogLevel(int i, String s) {
         levelInt = i;
         levelStr = s;
     }
 
+    /**
+     * @return
+     */
     public int toInt() {
         return levelInt;
     }
 
+    /**
+     * @param levelInt
+     * @return
+     */
     public static RPLogLevel intToLevel(int levelInt) {
         switch (levelInt) {
         case (TRACE_INT):

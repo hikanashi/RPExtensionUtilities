@@ -8,11 +8,18 @@ import java.nio.file.Paths;
 
 public class RPFileSystem extends ARPObject {
     
+    /**
+     * 
+     */
     public RPFileSystem() {
         super(RPFileSystem.class);
     }
 
 
+    /**
+     * @param directryPath
+     * @return
+     */
     public boolean CreateDirectory(String directryPath) {
         Path p = Paths.get(directryPath);
 
@@ -32,6 +39,10 @@ public class RPFileSystem extends ARPObject {
         return true;
     }
 
+    /**
+     * @param filePath
+     * @return
+     */
     public boolean Delete(String filePath) {
         Path p = Paths.get(filePath);
         try 
@@ -50,12 +61,20 @@ public class RPFileSystem extends ARPObject {
         return true;
     }
 
+    /**
+     * @param filePath
+     * @return
+     */
     public int countFiles(String filePath) {
         File dir = new File(filePath);
         int count = countFiles(dir.listFiles());
         return count;
     }
 
+	/**
+	 * @param list
+	 * @return
+	 */
 	private static int countFiles(File[] list) {
         int file_count = 0;
 
