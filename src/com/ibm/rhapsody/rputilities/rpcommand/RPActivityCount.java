@@ -59,13 +59,14 @@ class RPActivityCount extends IRPUtilityCommmand {
             info("---------------------- Element["+ element.getDisplayName() 
                 + "] Count Activity[" + targetSwimlane + "]");
 
+            outputActivityCountTitle();
             int[] count_action = CountActivity(rppackage, targetSwimlane);
             outputActivityCount(null,targetSwimlane,count_action);
         }
         else if(element instanceof IRPFlowchart)
         {
             IRPFlowchart rpActivity = getElement();
-
+            outputActivityCountTitle();
             CountStateChart(rpActivity, targetSwimlane);
         }
         else
@@ -290,7 +291,7 @@ class RPActivityCount extends IRPUtilityCommmand {
 
         if(chart != null)
         {
-            packageName = getPackageName(chart);
+            packageName = getPackageName(chart,"/");
             ownerName = (chart.getOwner() != null ? chart.getOwner().getDisplayName() : "--None--");
             activityName = chart.getDisplayName();
         }

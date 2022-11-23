@@ -2,8 +2,11 @@ package com.ibm.rhapsody.rputilities.rpcore;
 
 import java.util.List;
 
+import com.telelogic.rhapsody.core.IRPClass;
 import com.telelogic.rhapsody.core.IRPCollection;
 import com.telelogic.rhapsody.core.IRPModelElement;
+import com.telelogic.rhapsody.core.IRPPackage;
+import com.telelogic.rhapsody.core.IRPProject;
 
 public abstract class ARPObject {
 	protected static RPLog slog_ = new RPLog(ARPObject.class);
@@ -131,20 +134,30 @@ public abstract class ARPObject {
 		log_.trace( message, exception);
 	}
 
-    protected static String getPackageName(IRPModelElement element)
+    protected static String getPackageName(IRPModelElement element, String delimiter)
     {
-        String packageName = "-";
-        IRPModelElement checkelement = element;
+        String packageName = "";
 
-        while(checkelement != null)
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
         {
-            if( checkelement.getIsOfMetaClass("Package") == 1 )
+            if( checkelement instanceof IRPProject) {
+				break;
+			}
+
+            if( !(checkelement instanceof IRPPackage) ) {
+				continue;
+			}
+
+            if(packageName.length() > 0)
+            {
+                packageName = checkelement.getDisplayName() + delimiter + packageName;
+            }
+            else
             {
                 packageName = checkelement.getDisplayName();
-                break;
             }
-            
-            checkelement = checkelement.getOwner();
         }
 
         return packageName;
@@ -153,14 +166,25 @@ public abstract class ARPObject {
 	protected static String getPathToProject(IRPModelElement element, String delimiter)
     {
         String elementPath = "";
-        IRPModelElement checkelement = element;
 
-        while(checkelement != null)
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
         {
-            if( checkelement.getIsOfMetaClass("Project") == 1 )
-            {
+			if( checkelement instanceof IRPClass) {
+				if(checkelement.getName().equals("TopLevel"))
+				{
+					continue;
+				}
+            }
+
+            if( checkelement instanceof IRPProject) {
                 break;
             }
+
+			slog_.trace("element:"+ checkelement.getDisplayName()
+				+ " MetaClass:" + checkelement.getMetaClass()
+				+ " ClassName:" + checkelement.getClass().getName());
 
             if(checkelement != element)
             {
@@ -170,8 +194,6 @@ public abstract class ARPObject {
             {
                 elementPath = checkelement.getDisplayName();
             }
-
-            checkelement = checkelement.getOwner();
         }
 
         return elementPath;
