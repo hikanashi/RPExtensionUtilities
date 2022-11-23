@@ -1,9 +1,5 @@
 package com.ibm.rhapsody.rputilities.rpcommand;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -58,6 +54,8 @@ class RPActivityImageOut extends IRPUtilityCommmand {
 
         info("Activitiy Image Out Start:" + element.getDisplayName() + "ImageFormat:" + imageFormat);
 
+        UpdateImageProperty(element);
+
         if(element instanceof IRPPackage)
         {
             IRPPackage rppackage = getElement();
@@ -83,6 +81,48 @@ class RPActivityImageOut extends IRPUtilityCommmand {
 
         return result;
     }
+
+
+    /**
+     * Update properties to prevent shrinking when outputting images
+     * @param element target element
+     * @return Property setting results(true:success false:failure)
+     */
+    protected boolean UpdateImageProperty(IRPModelElement element) 
+    {
+        if(element == null)
+        {
+            return false;
+        }
+
+        IRPProject rpProject = element.getProject();
+        if(rpProject == null)
+        {
+            return false;
+        }
+
+        String propertyKey = "General.Graphics.ExportedDiagramScale";
+        String updateValue = "NoPagination";
+
+        String currentValue = rpProject.getPropertyValue(propertyKey);
+        debug("before Project:" + rpProject.getDisplayName()
+            + " Value:"+ currentValue);
+        
+        if(currentValue.equals(updateValue)) {
+            debug("Property is already updated.");
+            return true;
+        }
+
+        rpProject.setPropertyValue(propertyKey,updateValue);
+
+        debug("after Project:" + rpProject.getDisplayName()
+            + " Value:"+ rpProject.getPropertyValue(propertyKey));
+
+        return true;
+    }
+
+
+
     /**
      * 選択されたパッケージ以下のアクティビティ図の画像を出力する
      * @param rppackage 選択されたパッケージ
