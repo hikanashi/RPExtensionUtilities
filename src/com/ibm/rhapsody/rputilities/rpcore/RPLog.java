@@ -131,12 +131,23 @@ public class RPLog {
 	private void loginternal( RPLogLevel level,String message, Throwable exception) 
 	{
 		loginternal(level, message);
+
+		logexception(level, exception);
+	}
+
+	private void logexception( RPLogLevel level, Throwable exception) 
+	{
         if( exception == null )
         {
             return;        
         }
 
-		loginternal( level, exception.toString());
+		loginternal( level, "<Exception>" + exception.getClass().getName() );
+		if(exception.getMessage() != null)
+		{
+			loginternal( level, "<ExceptionMessage>" + exception.getMessage() );
+		}
+		
 
 		StackTraceElement[] stacktrace = exception.getStackTrace();
 		for(int idx = 0; idx < stacktrace.length; idx++ )
@@ -144,6 +155,9 @@ public class RPLog {
 			StackTraceElement stack = stacktrace[idx];
 			loginternal( level, "\t at " + stack.toString());
 		}
+
+		logexception(level, exception.getCause());
+
 	}
 
     synchronized private void loginternal(RPLogLevel level, String message) 
