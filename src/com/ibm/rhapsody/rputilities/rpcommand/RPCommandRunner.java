@@ -14,10 +14,10 @@ public class RPCommandRunner extends ARPObject {
     }
 
     /**
-     * 選択されたメニューからコマンドを実行する。
-     * 選択メニュー名を/で分割したものをコマンドとする。
-     * @param utilCommand 選択されたメニュー名
-     * @param element 右クリック時に選択された要素(複数選択時はnull)
+     * Run a command from the selected menu.
+     * The command is the name of the selected menu, divided by /.
+     * @param utilCommand Name of the selected menu
+     * @param element element selected when right-clicked (null when multiple selections are made)
      */
     public static void RunCommand(String utilCommand, IRPModelElement element)
     {
@@ -49,10 +49,10 @@ public class RPCommandRunner extends ARPObject {
     }
 
     /**
-     * コマンド実行時のログ出力レベルを設定する。<br>
-     * コマンドの中に、下記が含まれる場合、ログ出力のレベルを変更する。<br>
-     *   - LogDebug：デバッグレベルのログを出力する<br>
-     *   - LogTrace：トレースレベルのログを出力する<br>
+     * Set the level of log output when the command is executed.
+     * Change the level of log output when the following are included in a command.
+     *   - LogDebug : Outputs debug level logs.
+     *   - LogTrace : Outputs trace-level logs.
      * @param commandargs
      */
     public static void setLogLevel(String[] commandargs)
@@ -71,13 +71,14 @@ public class RPCommandRunner extends ARPObject {
     }
 
     /**
-     * コマンドを実行する。
-     * コマンドの先頭を実行クラス名としてインスタンスを生成し、生成したインスタンスのcommandメソッドを実行する。
-     * commandメソッドには、コマンドの先頭を含む全てのコマンドを指定して実行することで、
-     * commandメソッド内で動作を切り替える事をを可能とする。
-     * @param commandargs コマンド配列
-     * @param element 右クリック時に選択された要素（複数選択はnull)
-     * @return コマンド実行結果(true:成功 false:失敗)
+     * Runs a command
+     * Create an instance with the head of the command as the execution class name,
+     * and run the command method of the created instance.
+     * By specifying and running all commands including the first command in the command method, 
+     * it is possible to This enables switching the operation within the command method.
+     * @param commandargs command array
+     * @param element element selected at right-clicked (null for multiple selections)
+     * @return result of command running (true:success false:failure)
      */
     public static boolean invokeCommand(String[] commandargs, IRPModelElement element)
     {

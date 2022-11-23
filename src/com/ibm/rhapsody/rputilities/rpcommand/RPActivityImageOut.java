@@ -22,17 +22,16 @@ class RPActivityImageOut extends IRPUtilityCommmand {
     protected final int NEED_IMAGEMAP = 0; 
 
     /**
-     * アクティビティ図画像出力クラス
-     * @param element 右クリック時に選択された要素
+     * Activity Diagram Image Output Class
+     * @param element Elements selected when right-clicked
      */
     public RPActivityImageOut(IRPModelElement element) 
     {
         super(RPActivityImageOut.class,element);
     }
 
-
     /* 
-     * 選択されたパッケージのアクティビティ画像を出力する
+     * Outputs an activity image for the selected package
      * @see com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
     public boolean command(String[] argment) 
@@ -121,12 +120,11 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         return true;
     }
 
-
-
     /**
-     * 選択されたパッケージ以下のアクティビティ図の画像を出力する
-     * @param rppackage 選択されたパッケージ
-     * @return 画像出力結果
+     * Outputs an image of the activity diagram below the selected package
+     * @param rppackage selected package
+     * @param imageFormat Output image format
+     * @return Image output result(true:success false:failure)
      */
     protected boolean ImageOutActivity(IRPPackage rppackage, String imageFormat) 
     {
@@ -150,6 +148,12 @@ class RPActivityImageOut extends IRPUtilityCommmand {
     }
 
 
+    /**
+     * Outputs an image of the specified activity diagram
+     * @param chart Activity diagram for output target
+     * @param imageFormat Output image format
+     * @return Image output result(true:success false:failure)
+     */
     protected boolean ImageOutStateChart(IRPStatechart chart, String imageFormat) 
     {
         if(chart == null )
@@ -183,6 +187,11 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         return true;
     }
 
+    /**
+     * Generate a directory to output images to
+     * @param chart Activity diagram for output target
+     * @return Result of directory generation(true:success false:failure)
+     */
     protected boolean CreateImageDirectory(IRPStatechart chart) 
     {
         if( chart == null )
@@ -211,6 +220,10 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         }
     }
 
+    /**
+     * Delete directory
+     * If directory is empty, delete the generated directory.
+     */
     protected void DeleteImageDirectory() 
     {
         if( m_ImageDirectory == null )
@@ -222,6 +235,12 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         filesystem.Delete(m_ImageDirectory);
     }
 
+    /**
+     * Get the absolute path of the output image of the specified activity diagram.
+     * @param chart Activity diagram for output target
+     * @param imageFormat Output image format
+     * @return Result of getting absolute path(true:success false:failure)
+     */
     protected String GetImageFilePath(IRPStatechart chart, String imageFormat) 
     {
         if( chart == null )

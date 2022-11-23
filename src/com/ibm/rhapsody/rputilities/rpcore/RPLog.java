@@ -11,20 +11,28 @@ public class RPLog {
 	protected Class<?> clazz_ = null;
 
 
+	/**
+	 * @param title
+	 * @param rpyApplication
+	 */
 	synchronized public static void Initialize(String title, IRPApplication rpyApplication)
     {
 		rhpApplication_ = rpyApplication;
 		title_ = title;
 	}
 
+	/**
+	 * 
+	 */
 	synchronized public static void Finalize()
     {
 		rhpApplication_ = null;
 		title_ = null;
 	}
 
+
 	/**
-	 * set Log level 
+	 * @param level
 	 */
 	synchronized public static void setLevel(RPLogLevel level)
 	{
@@ -33,13 +41,18 @@ public class RPLog {
 		level_ = level;
 	}
 
+
+
+	/**
+	 * @param clazz
+	 */
 	public RPLog(Class<?> clazz) {
         clazz_ = clazz;
     }
 
 	/**
 	 * Log an error message 
-	 * @param message, readable info message
+	 * @param message readable info message
 	 */
 	public void error(String message)
 	{
@@ -48,7 +61,8 @@ public class RPLog {
 
 	/**
 	 * Log an error message 
-	 * @param message, readable info message
+	 * @param message readable info messageslog_
+	 * @param exception Occurred exception
 	 */
 	public void error(String message, Throwable exception)
 	{
@@ -57,7 +71,7 @@ public class RPLog {
 
 	/**
 	 * Log an warning message 
-	 * @param message, readable info message
+	 * @param message readable info message
 	 */
 	public void warn(String message)
 	{
@@ -66,7 +80,8 @@ public class RPLog {
 
 	/**
 	 * Log an warning message 
-	 * @param message, readable info message
+	 * @param message readable info message
+	 * @param exception Occurred exception
 	 */
 	public void warn(String message, Throwable exception)
 	{
@@ -75,7 +90,7 @@ public class RPLog {
 
     /**
 	 * Log an information message 
-	 * @param message, readable info message
+	 * @param message readable info message
 	 */
 	public void info(String message)
 	{
@@ -84,7 +99,8 @@ public class RPLog {
 
     /**
 	 * Log an information message 
-	 * @param message, readable info message
+	 * @param message readable info message
+	 * @param exception Occurred exception
 	 */
 	public void info( String message, Throwable exception)
 	{
@@ -93,7 +109,8 @@ public class RPLog {
 
     /**
 	 * Log an Debug message 
-	 * @param message, readable debug message
+	 * @param message readable debug message
+	 * @param exception Occurred exception
 	 */
 	public void debug(String message)
 	{
@@ -102,7 +119,8 @@ public class RPLog {
 
     /**
 	 * Log an Debug message 
-	 * @param message, readable debug message
+	 * @param message readable debug message
+	 * @param exception Occurred exception
 	 */
 	public void debug(String message, Throwable exception)
 	{
@@ -111,7 +129,8 @@ public class RPLog {
 
 	/**
 	 * Log an Trace message 
-	 * @param message, readable debug message
+	 * @param message readable debug message
+	 * @param exception Occurred exception
 	 */
 	public void trace(String message)
 	{
@@ -120,7 +139,8 @@ public class RPLog {
 
 	/**
 	 * Log an Trace message 
-	 * @param message, readable debug message
+	 * @param message readable debug message
+	 * @param exception Occurred exception
 	 */
 	public void trace(String message, Throwable exception)
 	{
@@ -128,6 +148,11 @@ public class RPLog {
 	}
 
 
+	/**
+	 * @param level
+	 * @param message
+	 * @param exception
+	 */
 	private void loginternal( RPLogLevel level,String message, Throwable exception) 
 	{
 		loginternal(level, message);
@@ -135,6 +160,10 @@ public class RPLog {
 		logexception(level, exception);
 	}
 
+	/**
+	 * @param level
+	 * @param exception
+	 */
 	private void logexception( RPLogLevel level, Throwable exception) 
 	{
         if( exception == null )
@@ -160,6 +189,10 @@ public class RPLog {
 
 	}
 
+    /**
+     * @param level
+     * @param message
+     */
     synchronized private void loginternal(RPLogLevel level, String message) 
 	{
 		if(level_.toInt() > level.toInt() )

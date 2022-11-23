@@ -1,5 +1,5 @@
 [Helpers]
-numberOfElements=5
+numberOfElements=6
 
 #REM: Definition of the plug-in
 name1=RPExtensionUtilities
@@ -42,3 +42,11 @@ command5=RPExtensionUtilities
 applicableTo5=Package,ActivityDiagram
 isVisible5=1
 DLLServerCompatible5=1
+
+#REM: Doxygen Import
+name6=RPDoxygenImporter
+isPluginCommand6=1
+command6=RPExtensionUtilities
+applicableTo6=Package
+isVisible6=1
+DLLServerCompatible6=1

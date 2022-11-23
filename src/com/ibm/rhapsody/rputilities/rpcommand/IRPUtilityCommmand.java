@@ -8,8 +8,8 @@ abstract class IRPUtilityCommmand extends ARPObject {
     protected IRPModelElement   m_element = null;
 
     /**
-     * Rhapsodyユーティリティコマンドクラスのコンストラクタ
-     * @param element 右クリック時に選択された要素
+     * Constructor of Rhapsody utility command class
+     * @param element Elements selected when right-clicked
      */
     protected IRPUtilityCommmand(Class<?> clazz,IRPModelElement element) {
         super(clazz);
@@ -17,16 +17,16 @@ abstract class IRPUtilityCommmand extends ARPObject {
     }
 
     /**
-     * 右クリック時に実行されるコマンド
-     * @param argment 右クリック時に選択されたメニュー(hepファイルに記載されたnameをデリミタで分割した配列)
-     * @return コマンド実行結果(true:成功 false:失敗)
+     * Commands executed when right-clicke
+     * @param argment Menu selected when right-clicked (array of names in hep file divided by delimiters)
+     * @return Result of command execution (true: success false: failure)
      */
     abstract boolean command(String[] argment);
  
     /**
-     * 右クリック時に選択された要素を取得する
-     * @param <T> キャストしたい型
-     * @return 右クリック時に選択された要素(要素を複数選択時はnull)
+     * Get elements selected when right-clicked
+     * @param <T> Type to cast
+     * @return Elements selected when right-clicked(null when multiple elements are selected)
      */
     public <T> T getElement() 
     {

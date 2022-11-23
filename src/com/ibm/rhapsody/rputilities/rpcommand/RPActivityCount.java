@@ -11,26 +11,39 @@ import com.telelogic.rhapsody.core.IRPStatechart;
 import java.util.List;
 
 class RPActivityCount extends IRPUtilityCommmand {
+
     public enum COUNT_INDEX {
         ACTION(0),
         FLOWFINAL(1),
         ACTIVITYFINAL(2),
         ;
     
+        /**
+         * index value
+         */
         private final int id;
     
+        /**
+         * Constructor for index enum
+         * @param id index value
+         */
         private COUNT_INDEX(final int id) {
             this.id = id;
         }
     
+
+        /**
+         * Convert index enum to integer
+         * @return index value
+         */
         public int getInt() {
             return this.id;
         }
     }
     
     /**
-     * アクティビティ図のアクションカウントクラス
-     * @param element 右クリック時に選択された要素
+     * Action count class for activity diagram
+     * @param element Elements selected when right-clicked
      */
     public RPActivityCount(IRPModelElement element) 
     {
@@ -38,7 +51,7 @@ class RPActivityCount extends IRPUtilityCommmand {
     }
 
     /* 
-     * 選択されたパッケージのアクティビティをカウントする
+     * Count activity for selected packages
      * @see com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
     public boolean command(String[] argment) 
@@ -86,10 +99,10 @@ class RPActivityCount extends IRPUtilityCommmand {
     }
 
     /**
-     * 選択されたパッケージ以下のアクティビティ図のアクションをカウントする。
-     * @param rppackage 選択されたパッケージ
-     * @param targetSwimlane    カウント対象のスイムレーン名
-     * @return アクションのカウント結果の配列
+     * Count the actions in the activity diagram below the selected package.
+     * @param rppackage Selected Packages
+     * @param targetSwimlane    Name of swimlane to be counted
+     * @return Array of action count results
      */
     protected int[] CountActivity(IRPPackage rppackage, String targetSwimlane) 
     {
@@ -118,6 +131,12 @@ class RPActivityCount extends IRPUtilityCommmand {
     }
 
 
+    /**
+     * Count the actions in the activity diagram below the selected activity diagram.
+     * @param chart Selected activity diagram
+     * @param targetSwimlane    Name of swimlane to be counted
+     * @return Array of action count results
+     */
     protected int[] CountStateChart(IRPStatechart chart, String targetSwimlane) 
     {
         int[] count_action = {0,0,0};
@@ -141,6 +160,12 @@ class RPActivityCount extends IRPUtilityCommmand {
         return count_action;
     }
 
+    /**
+     * Count actions from elements in the activity diagram
+     * @param elements Elements in the activity diagram
+     * @param targetSwimlane  Name of swimlane to be counted
+     * @return Array of action count results
+     */
     protected int[] CountElements(List<Object> elements, String targetSwimlane) 
     {
         int[] count_action = {0,0,0};
@@ -179,6 +204,12 @@ class RPActivityCount extends IRPUtilityCommmand {
         return count_action;
     }
 
+    /**
+     * Count actions from activity diagram connectors
+     * @param rpConnector connector in the activity diagram
+     * @param targetSwimlane  Name of swimlane to be counted
+     * @return Array of action count results
+     */
     protected int[] CountConnector(IRPConnector rpConnector, String targetSwimlane) 
     {
         int[] count_action = {0,0,0};
@@ -216,7 +247,14 @@ class RPActivityCount extends IRPUtilityCommmand {
 
         return count_action;
     }
-                     
+         
+    
+    /**
+     * Count actions from activity diagram state
+     * @param rpstate state in the activity diagram
+     * @param targetSwimlane  Name of swimlane to be counted
+     * @return Array of action count results
+     */
     protected int[] CountState(IRPState rpstate, String targetSwimlane) 
     {
         int[] count_action = {0,0,0};
@@ -266,6 +304,11 @@ class RPActivityCount extends IRPUtilityCommmand {
         return count_action;
     }
 
+    /**
+     * Get the name of the swimlane in which state is located
+     * @param rpstate Target state
+     * @return swimlane name(Return "-" if not located in swimlane)
+     */
     protected String getSwimlaneName(IRPState rpstate)
     {
         String swimlaneName = "-";
@@ -285,11 +328,20 @@ class RPActivityCount extends IRPUtilityCommmand {
         return swimlaneName;
     } 
 
+    /**
+     * Output CVS header for count results
+     */
     protected void outputActivityCountTitle()
     {
         info("Package,Activity,Action,FlowFinal,ActivityFinal,Swimlane,Owner");
     } 
 
+    /**
+     * Output the count result of the action.
+     * @param chart Target Activity Diagram
+     * @param targetSwimlane　Target Swimlane name
+     * @param count_action　Action count results
+     */
     protected void outputActivityCount(IRPStatechart chart, String targetSwimlane,int[] count_action)
     {
         String packageName = "[ALL]";
