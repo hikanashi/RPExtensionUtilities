@@ -6,11 +6,12 @@ import com.telelogic.rhapsody.core.IRPCollection;
 import com.telelogic.rhapsody.core.IRPModelElement;
 
 public abstract class ARPObject {
-    protected Class<?> m_clazz = ARPObject.class;
+	protected static RPLog slog_ = new RPLog(ARPObject.class);
+	protected RPLog log_ = null;
 
 
     protected ARPObject(Class<?> clazz) {
-        m_clazz = clazz;
+        log_ = new RPLog(clazz);
     }
 
     /**
@@ -24,7 +25,7 @@ public abstract class ARPObject {
         try {
             return (T)obj;
         } catch(Exception e) {
-            RPLog.error(null,"getObject Cast Error", e);
+            slog_.error("getObject Cast Error", e);
             return null;            
         }
     }
@@ -34,7 +35,7 @@ public abstract class ARPObject {
         try {
             return collection.toList();
         } catch(Exception e) {
-            RPLog.error(null,"toList Cast Error", e);
+            slog_.error("toList Cast Error", e);
             return null;            
         }
     }
@@ -45,7 +46,7 @@ public abstract class ARPObject {
 	 */
 	public void error(String message)
 	{
-		RPLog.error(m_clazz,message);
+		log_.error(message);
 	}
 
 	/**
@@ -54,26 +55,9 @@ public abstract class ARPObject {
 	 */
 	public void error(String message, Throwable exception)
 	{
-		RPLog.error(m_clazz, message, exception);
+		log_.error( message, exception);
 	}
 
-	/**
-	 * Log an error message 
-	 * @param message, readable info message
-	 */
-	public static void serror(String message)
-	{
-		RPLog.error(null,message);
-	}
-
-	/**
-	 * Log an error message 
-	 * @param message, readable info message
-	 */
-	public static void serror(String message, Throwable exception)
-	{
-		RPLog.error(null, message, exception);
-	}
 
 	/**
 	 * Log an warning message 
@@ -81,7 +65,7 @@ public abstract class ARPObject {
 	 */
 	public void warn(String message)
 	{
-		RPLog.warn(m_clazz, message);
+		log_.warn( message);
 	}
 
 	/**
@@ -90,33 +74,16 @@ public abstract class ARPObject {
 	 */
 	public void warn(String message, Throwable exception)
 	{
-		RPLog.warn(m_clazz, message, exception);
+		log_.warn( message, exception);
 	}
 
-	/**
-	 * Log an warning message 
-	 * @param message, readable info message
-	 */
-	public static void swarn(String message)
-	{
-		RPLog.warn(null, message);
-	}
-
-	/**
-	 * Log an warning message 
-	 * @param message, readable info message
-	 */
-	public static void swarn(String message, Throwable exception)
-	{
-		RPLog.warn(null, message, exception);
-	}
     /**
 	 * Log an information message 
 	 * @param message, readable info message
 	 */
 	public void info(String message)
 	{
-		RPLog.info(m_clazz, message);
+		log_.info( message);
 	}
 
     /**
@@ -125,25 +92,7 @@ public abstract class ARPObject {
 	 */
 	public void info(String message, Throwable exception)
 	{
-		RPLog.info(m_clazz, message, exception);
-	}
-
-    /**
-	 * Log an information message 
-	 * @param message, readable info message
-	 */
-	public static void sinfo(String message)
-	{
-		RPLog.info(null, message);
-	}
-
-    /**
-	 * Log an information message 
-	 * @param message, readable info message
-	 */
-	public static void sinfo(String message, Throwable exception)
-	{
-		RPLog.info(null, message, exception);
+		log_.info( message, exception);
 	}
 
     /**
@@ -152,7 +101,7 @@ public abstract class ARPObject {
 	 */
 	public void debug(String message)
 	{
-		RPLog.debug(m_clazz, message);
+		log_.debug( message);
 	}
 
     /**
@@ -161,25 +110,7 @@ public abstract class ARPObject {
 	 */
 	public void debug(String message, Throwable exception)
 	{
-		RPLog.debug(m_clazz, message, exception);
-	}
-
-    /**
-	 * Log an Debug message 
-	 * @param message, readable debug message
-	 */
-	public static void sdebug(String message)
-	{
-		RPLog.debug(null, message);
-	}
-
-    /**
-	 * Log an Debug message 
-	 * @param message, readable debug message
-	 */
-	public static void sdebug(String message, Throwable exception)
-	{
-		RPLog.debug(null, message, exception);
+		log_.debug( message, exception);
 	}
 
 	/**
@@ -188,7 +119,7 @@ public abstract class ARPObject {
 	 */
 	public void trace(String message)
 	{
-        RPLog.trace(m_clazz, message);
+        log_.trace( message);
 	}
 
 	/**
@@ -197,25 +128,7 @@ public abstract class ARPObject {
 	 */
 	public void trace(String message, Throwable exception)
 	{
-		RPLog.trace(m_clazz, message, exception);
-	}
-
-	/**
-	 * Log an Debug message 
-	 * @param message, readable debug message
-	 */
-	public static void strace(String message)
-	{
-        RPLog.trace(null, message);
-	}
-
-	/**
-	 * Log an Debug message 
-	 * @param message, readable debug message
-	 */
-	public static void strace(String message, Throwable exception)
-	{
-		RPLog.trace(null, message, exception);
+		log_.trace( message, exception);
 	}
 
     protected static String getPackageName(IRPModelElement element)

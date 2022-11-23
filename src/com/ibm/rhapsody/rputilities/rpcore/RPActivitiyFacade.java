@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public class RPActivitiyFacade extends ARPObject {
+	protected static RPLog slog_ = new RPLog(RPActivitiyFacade.class);
     
     public RPActivitiyFacade() 
     {
@@ -39,7 +40,7 @@ public class RPActivitiyFacade extends ARPObject {
             IRPFlowchart rpflowchart = getObject(obj);
             append(activitylist,rpflowchart);
 
-            strace("CollectActivity:Package," + rppackage.getDisplayName()
+            slog_.trace("CollectActivity:Package," + rppackage.getDisplayName()
                 + ",Owner," + (rpflowchart.getOwner() != null ? rpflowchart.getOwner().getDisplayName() : "--None--")
                 + ",Activity," + rpflowchart.getDisplayName());            
         }
@@ -50,7 +51,7 @@ public class RPActivitiyFacade extends ARPObject {
 
     private static void append(Set<IRPFlowchart> set, IRPFlowchart obj)
     {
-        strace("append :" + obj.getDisplayName()
+        slog_.trace("append :" + obj.getDisplayName()
             + ",GUID," + obj.getGUID()
             + ",Owner," + (obj.getOwner() != null ? obj.getOwner().getDisplayName() : "--None--"));  
 
