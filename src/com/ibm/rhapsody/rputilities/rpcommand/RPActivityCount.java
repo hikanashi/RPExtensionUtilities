@@ -218,14 +218,6 @@ class RPActivityCount extends IRPUtilityCommmand {
 
         String swimlaneName = getSwimlaneName(rpstate);
 
-        if(targetSwimlane.length() > 0 )
-        {       
-            if(swimlaneName.equals(targetSwimlane) != true)
-            {
-                return count_action;
-            }
-        }
-
         if( stateType.equals("Action") ||
             stateType.equals("EventState") ||
             stateType.equals("AcceptEventAction") ||
@@ -233,6 +225,15 @@ class RPActivityCount extends IRPUtilityCommmand {
             stateType.equals("CallOperation") ||
             stateType.equals("TimeEvent")) 
         {
+
+            if(targetSwimlane.length() > 0 )
+            {       
+                if(swimlaneName.equals(targetSwimlane) != true)
+                {
+                    return count_action;
+                }
+            }
+            
             count_action[COUNT_INDEX.ACTION.getInt()]++;
         }
         else if( stateType.equals("LocalTermination") )
