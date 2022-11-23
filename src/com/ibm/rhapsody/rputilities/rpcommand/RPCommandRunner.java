@@ -7,7 +7,7 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import java.lang.reflect.Constructor;
 
 public class RPCommandRunner extends ARPObject {
-
+	protected static RPLog slog_ = new RPLog(RPCommandRunner.class);
     public RPCommandRunner() 
     {
         super(RPCommandRunner.class);
@@ -29,7 +29,7 @@ public class RPCommandRunner extends ARPObject {
 			selElemName = "No selected element";
 		}
 
-		sdebug("OnMenuItemSelect " + utilCommand + " Selected element name is: " + selElemName);
+		slog_.debug("OnMenuItemSelect " + utilCommand + " Selected element name is: " + selElemName);
 
         try {
             String[] commandargs = utilCommand.split("\\\\");
@@ -39,11 +39,11 @@ public class RPCommandRunner extends ARPObject {
             boolean result = invokeCommand(commandargs, element);
             if(result != true) 
             {
-                serror("CommandError Menu:" + utilCommand + " Select Item:" + selElemName);     
+                slog_.error("CommandError Menu:" + utilCommand + " Select Item:" + selElemName);     
             }
     
         } catch(Exception e) {
-            serror("CommandError Menu:" + utilCommand + " Select Item:" + selElemName, e);       
+            slog_.error("CommandError Menu:" + utilCommand + " Select Item:" + selElemName, e);       
         }
 
     }
@@ -83,22 +83,22 @@ public class RPCommandRunner extends ARPObject {
     {
         if( commandargs.length < 1 )
         {
-            sinfo("name is invaild. Please check .hep file");
+            slog_.error("name is invaild. Please check .hep file");
             return false;
         }
 
         String className =  IRPUtilityCommmand.class.getPackage().getName() + "." + commandargs[0];
-        sdebug("className:"+ className + " commandargs:"+ commandargs.length);
+        slog_.debug("className:"+ className + " commandargs:"+ commandargs.length);
         
         try {
             Class<?> commandClass = Class.forName(className);
             Constructor<?> constructor = commandClass.getDeclaredConstructor(IRPModelElement.class);
             IRPUtilityCommmand rpcommnad = (IRPUtilityCommmand) constructor.newInstance(element);
-            sdebug("Create Command:"+ className);
+            slog_.debug("Create Command:"+ className);
 
             if(rpcommnad == null)
             {
-                sinfo("className:"+ className + " is newInstance fail");
+                slog_.error("className:"+ className + " is newInstance fail");
                 return false;
             }
 
@@ -106,7 +106,7 @@ public class RPCommandRunner extends ARPObject {
         } 
         catch(Exception e) 
         {
-            serror("CommandError:"+ className, e);
+            slog_.error("CommandError:"+ className, e);
             return false;       
         }
     }
