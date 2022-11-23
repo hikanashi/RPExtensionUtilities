@@ -1,7 +1,13 @@
 package com.ibm.rhapsody.rputilities.rpcommand;
 
-import com.ibm.rhapsody.rputilities.rpcore.RPActivitiyFacade;
-import com.telelogic.rhapsody.core.*;
+import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
+import com.telelogic.rhapsody.core.IRPConnector;
+import com.telelogic.rhapsody.core.IRPFlowchart;
+import com.telelogic.rhapsody.core.IRPModelElement;
+import com.telelogic.rhapsody.core.IRPPackage;
+import com.telelogic.rhapsody.core.IRPState;
+import com.telelogic.rhapsody.core.IRPStatechart;
+
 import java.util.List;
 
 class RPActivityCount extends IRPUtilityCommmand {
@@ -91,8 +97,8 @@ class RPActivityCount extends IRPUtilityCommmand {
         debug("Package:" + rppackage.getDisplayName()
                 + " Count Activity target:" + targetSwimlane);
         
-        //List<Object> activityCollection = rppackage.getBehavioralDiagrams().toList();
-        List<IRPFlowchart> activityCollection = RPActivitiyFacade.CollectActivity(rppackage,1);
+        RPActivityFacade activityFacade = new RPActivityFacade();
+        List<IRPFlowchart> activityCollection = activityFacade.CollectActivity(rppackage,1);
         for(IRPFlowchart rpflowchart : activityCollection)
         {
             String swimlaneName = String.copyValueOf(targetSwimlane.toCharArray());

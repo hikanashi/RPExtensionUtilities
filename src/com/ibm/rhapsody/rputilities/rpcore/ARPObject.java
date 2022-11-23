@@ -9,9 +9,7 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPProject;
 
 public abstract class ARPObject {
-	protected static RPLog slog_ = new RPLog(ARPObject.class);
 	protected RPLog log_ = null;
-
 
     protected ARPObject(Class<?> clazz) {
         log_ = new RPLog(clazz);
@@ -24,21 +22,21 @@ public abstract class ARPObject {
      * @return 指定の型に変換されたオブジェクト(変換失敗時はnull)
      */
     @SuppressWarnings("unchecked")
-    public static <T> T getObject(Object obj) {
+    public <T> T getObject(Object obj) {
         try {
             return (T)obj;
         } catch(Exception e) {
-            slog_.error("getObject Cast Error", e);
+            error("getObject Cast Error", e);
             return null;            
         }
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> toList(IRPCollection collection) {
+    public <T> List<T> toList(IRPCollection collection) {
         try {
             return collection.toList();
         } catch(Exception e) {
-            slog_.error("toList Cast Error", e);
+            error("toList Cast Error", e);
             return null;            
         }
     }
@@ -163,7 +161,7 @@ public abstract class ARPObject {
         return packageName;
     }
 
-	protected static String getPathToProject(IRPModelElement element, String delimiter)
+	protected String getPathToProject(IRPModelElement element, String delimiter)
     {
         String elementPath = "";
 
@@ -182,7 +180,7 @@ public abstract class ARPObject {
                 break;
             }
 
-			slog_.trace("element:"+ checkelement.getDisplayName()
+			trace("element:"+ checkelement.getDisplayName()
 				+ " MetaClass:" + checkelement.getMetaClass()
 				+ " ClassName:" + checkelement.getClass().getName());
 

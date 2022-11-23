@@ -9,16 +9,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RPActivitiyFacade extends ARPObject {
-	protected static RPLog slog_ = new RPLog(RPActivitiyFacade.class);
-    
-    public RPActivitiyFacade() 
+public class RPActivityFacade extends ARPObject {
+
+    public RPActivityFacade() 
     {
-        super(RPActivitiyFacade.class);
+        super(RPActivityFacade.class);
     }
 
 
-    public static List<IRPFlowchart> CollectActivity(IRPPackage rppackage,int recursive)
+    public List<IRPFlowchart> CollectActivity(IRPPackage rppackage,int recursive)
     {
         Set<IRPFlowchart> activitylist = new LinkedHashSet<IRPFlowchart>();
 
@@ -40,7 +39,7 @@ public class RPActivitiyFacade extends ARPObject {
             IRPFlowchart rpflowchart = getObject(obj);
             append(activitylist,rpflowchart);
 
-            slog_.trace("CollectActivity:Package," + rppackage.getDisplayName()
+            trace("CollectActivity:Package," + rppackage.getDisplayName()
                 + ",Owner," + (rpflowchart.getOwner() != null ? rpflowchart.getOwner().getDisplayName() : "--None--")
                 + ",Activity," + rpflowchart.getDisplayName());            
         }
@@ -49,9 +48,9 @@ public class RPActivitiyFacade extends ARPObject {
     }
 
 
-    private static void append(Set<IRPFlowchart> set, IRPFlowchart obj)
+    private void append(Set<IRPFlowchart> set, IRPFlowchart obj)
     {
-        slog_.trace("append :" + obj.getDisplayName()
+        trace("append :" + obj.getDisplayName()
             + ",GUID," + obj.getGUID()
             + ",Owner," + (obj.getOwner() != null ? obj.getOwner().getDisplayName() : "--None--"));  
 
@@ -61,7 +60,7 @@ public class RPActivitiyFacade extends ARPObject {
         }
     }
 
-    private static List<IRPFlowchart> toList(Set<IRPFlowchart> set)
+    private List<IRPFlowchart> toList(Set<IRPFlowchart> set)
     {
         List<IRPFlowchart> list = new ArrayList<IRPFlowchart>(set);
         return list;

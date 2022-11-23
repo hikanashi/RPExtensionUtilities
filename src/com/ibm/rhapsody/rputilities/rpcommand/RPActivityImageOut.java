@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.rpcore.RPActivitiyFacade;
+import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
 import com.telelogic.rhapsody.core.IRPCollection;
 import com.telelogic.rhapsody.core.IRPFlowchart;
@@ -134,9 +134,9 @@ class RPActivityImageOut extends IRPUtilityCommmand {
                 + " ImageOut Activity");
         
         boolean result = false;
-
+        RPActivityFacade activityFacade = new RPActivityFacade();
         //List<Object> activityCollection = rppackage.getBehavioralDiagrams().toList();
-        List<IRPFlowchart> activityCollection = RPActivitiyFacade.CollectActivity(rppackage,1);
+        List<IRPFlowchart> activityCollection = activityFacade.CollectActivity(rppackage,1);
         for(IRPFlowchart rpflowchart : activityCollection)
         {
             result = ImageOutStateChart(rpflowchart, imageFormat);
