@@ -1,5 +1,6 @@
-package com.ibm.rhapsody.rputilities.rpcommand;
+package com.ibm.rhapsody.rputilities.rpcommand.doxygenimporter;
 
+import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.window.FileSelector;
 import com.telelogic.rhapsody.core.IRPModelElement;
 
