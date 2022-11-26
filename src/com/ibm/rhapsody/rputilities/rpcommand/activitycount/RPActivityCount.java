@@ -8,7 +8,6 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPState;
 import com.telelogic.rhapsody.core.IRPStateVertex;
-import com.telelogic.rhapsody.core.IRPStatechart;
 import com.telelogic.rhapsody.core.IRPSwimlane;
 
 import java.util.ArrayList;
@@ -33,8 +32,7 @@ public class RPActivityCount extends IRPUtilityCommmand {
     public boolean command(String[] argment) 
     {
         IRPModelElement element = getElement();
-        if(element == null)
-        {
+        if(element == null) {
             error("name[" + argment[0] + "] is need select element.\n"
                 + "Please select one Element.");
             return false;

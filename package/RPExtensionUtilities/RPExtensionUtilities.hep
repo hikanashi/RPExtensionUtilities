@@ -1,10 +1,11 @@
 [Helpers]
-numberOfElements=6
+numberOfElements=5
 
 #REM: Definition of the plug-in
 name1=RPExtensionUtilities
 JavaMainClass1=com.ibm.rhapsody.rputilities.RPExtensionUtilities
 JavaClassPath1=.\RPExtensionUtilities.jar
+
 isPlugin1=1
 isVisible1=0
 DLLServerCompatible1=1
@@ -28,17 +29,17 @@ isVisible3=1
 DLLServerCompatible3=1
 
 #REM: Image Out Activity. format is EMF, BMP, JPEG, JPG, TIFF.
-name5=imageout.RPActivityImageOut\JPG
-isPluginCommand5=1
-command5=RPExtensionUtilities
-applicableTo5=Package,ActivityDiagram
-isVisible5=1
-DLLServerCompatible5=1
+name4=imageout.RPActivityImageOut\JPG
+isPluginCommand4=1
+command4=RPExtensionUtilities
+applicableTo4=Package,ActivityDiagram
+isVisible4=1
+DLLServerCompatible4=1
 
 #REM: Doxygen Import
-name6=RPDoxygenImporter
-isPluginCommand6=1
-command6=RPExtensionUtilities
-applicableTo6=Package
-isVisible6=1
-DLLServerCompatible6=1
+name5=importer.RPDoxygenXML
+isPluginCommand5=1
+command5=RPExtensionUtilities
+applicableTo5=Package
+isVisible5=1
+DLLServerCompatible5=1

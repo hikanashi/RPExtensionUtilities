@@ -5,6 +5,7 @@
 package com.ibm.rhapsody.rputilities;
 
 import com.ibm.rhapsody.rputilities.rpcommand.RPCommandRunner;
+import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
 import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.telelogic.rhapsody.core.*;
 
@@ -20,6 +21,14 @@ public class RPExtensionUtilities extends RPUserPlugin {
 		// keep the application interface for later use
 		m_rhpApplication = rpyApplication;
 		RPLog.Initialize("RPUtilities", rpyApplication);
+		
+		if(m_rhpApplication != null) {
+			IRPProject rpproject = m_rhpApplication.activeProject();
+			if(rpproject != null) {
+				RPFileSystem.setActiveProjectPath(rpproject.getCurrentDirectory());
+			}
+		}
+
 		slog_.info("Plugin Load:"+ this.getClass().toString());
 	}
 

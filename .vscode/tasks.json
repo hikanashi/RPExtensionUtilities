@@ -19,7 +19,7 @@
 			"args": [
 				"-cvf",
 				"../package/RPExtensionUtilities/${workspaceFolderBasename}.jar",
-				"com"
+				"com",
 			],
 			"options": {
 				"cwd": "${workspaceFolder}/bin"

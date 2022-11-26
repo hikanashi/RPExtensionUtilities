@@ -1,7 +1,5 @@
 package com.ibm.rhapsody.rputilities.rpcommand.imageout;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
@@ -201,16 +199,12 @@ public class RPActivityImageOut extends IRPUtilityCommmand {
         }
 
         IRPProject rpProject = chart.getProject();
-        
-        LocalDateTime nowDate = LocalDateTime.now();
-        DateTimeFormatter dateformatter =
-            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String formatNowDate = dateformatter.format(nowDate);
+        RPFileSystem filesystem = new RPFileSystem();
+        String formatNowDate = RPFileSystem.CreateDateTimeString(null);
         
         String directryPath = rpProject.getCurrentDirectory()
             + "/" + IMAGEOUTDIRECTRY_PREFIX + "_" + formatNowDate;
 
-        RPFileSystem filesystem = new RPFileSystem();
         if( filesystem.CreateDirectory(directryPath) ) {
             m_ImageDirectory = directryPath;
             return true;

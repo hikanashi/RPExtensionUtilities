@@ -1,15 +1,19 @@
 package com.ibm.rhapsody.rputilities.rpcore;
 
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.telelogic.rhapsody.core.IRPApplication;
 
 public class RPLog {
-
 	protected static IRPApplication rhpApplication_ = null;
     protected static String title_ = "unknown";
 	protected static RPLogLevel level_ = RPLogLevel.INFO;
+	protected static FileHandler logfileHandler_ = null;
 
 	protected Class<?> clazz_ = null;
-
+	protected Logger logger_ = null;
 
 	/**
 	 * @param title
@@ -18,7 +22,11 @@ public class RPLog {
 	synchronized public static void Initialize(String title, IRPApplication rpyApplication)
     {
 		rhpApplication_ = rpyApplication;
-		title_ = title;
+		title_ = title;	
+
+		// System.setProperty(
+		// 	"java.util.logging.SimpleFormatter.format",
+		// 	"%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s %2$s %5$s%6$s%n");
 	}
 
 	/**
@@ -28,6 +36,9 @@ public class RPLog {
     {
 		rhpApplication_ = null;
 		title_ = null;
+		if(logfileHandler_ != null ) {
+			logfileHandler_.close();
+		}
 	}
 
 
@@ -48,7 +59,24 @@ public class RPLog {
 	 */
 	public RPLog(Class<?> clazz) {
         clazz_ = clazz;
-    }
+
+		if(logfileHandler_ == null) {
+			try {
+				String logname = "rputilities" + RPFileSystem.CreateDateTimeString(null) + ".log";
+				logfileHandler_ = new FileHandler(logname);
+				logfileHandler_.setFormatter(new java.util.logging.SimpleFormatter());
+			}
+			catch(Exception e) {
+				loginternal(RPLogLevel.ERROR, "Log initialize error",e);
+			}
+		}
+
+		if(clazz_ != null) {
+			logger_ = Logger.getLogger(clazz_.getName());
+			logger_.addHandler(logfileHandler_);
+			logger_.setLevel(getLevel(level_));
+		}
+	}
 
 	/**
 	 * Log an error message 
@@ -57,6 +85,9 @@ public class RPLog {
 	public void error(String message)
 	{
 		loginternal(RPLogLevel.ERROR, message);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.ERROR),message);
+		}
 	}
 
 	/**
@@ -67,6 +98,9 @@ public class RPLog {
 	public void error(String message, Throwable exception)
 	{
 		loginternal( RPLogLevel.ERROR, message, exception);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.ERROR),message,exception);
+		}
 	}
 
 	/**
@@ -76,6 +110,9 @@ public class RPLog {
 	public void warn(String message)
 	{
 		loginternal( RPLogLevel.WARN, message);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.WARN),message);
+		}
 	}
 
 	/**
@@ -86,6 +123,9 @@ public class RPLog {
 	public void warn(String message, Throwable exception)
 	{
 		loginternal( RPLogLevel.WARN, message, exception);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.WARN),message,exception);
+		}
 	}
 
     /**
@@ -95,6 +135,9 @@ public class RPLog {
 	public void info(String message)
 	{
 		loginternal( RPLogLevel.INFO, message);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.INFO),message);
+		}
 	}
 
     /**
@@ -105,6 +148,9 @@ public class RPLog {
 	public void info( String message, Throwable exception)
 	{
 		loginternal( RPLogLevel.INFO, message, exception);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.INFO),message,exception);
+		}
 	}
 
     /**
@@ -115,6 +161,9 @@ public class RPLog {
 	public void debug(String message)
 	{
 		loginternal( RPLogLevel.DEBUG, message);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.DEBUG),message);
+		}
 	}
 
     /**
@@ -124,7 +173,11 @@ public class RPLog {
 	 */
 	public void debug(String message, Throwable exception)
 	{
+		// logger_.debug(message, exception);
 		loginternal( RPLogLevel.DEBUG, message, exception);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.DEBUG),message,exception);
+		}
 	}
 
 	/**
@@ -135,6 +188,9 @@ public class RPLog {
 	public void trace(String message)
 	{
         loginternal( RPLogLevel.TRACE, message);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.TRACE),message);
+		}
 	}
 
 	/**
@@ -145,16 +201,39 @@ public class RPLog {
 	public void trace(String message, Throwable exception)
 	{
 		loginternal( RPLogLevel.TRACE, message, exception);
+		if(logger_ != null) {
+			logger_.log(getLevel(RPLogLevel.TRACE),message,exception);
+		}
 	}
 
+
+	private Level getLevel( RPLogLevel level ) {
+		if(level.toInt() == RPLogLevel.ERROR.toInt()) {
+			return Level.SEVERE;
+		}
+		else if( level.toInt() == RPLogLevel.WARN.toInt()) {
+			return Level.WARNING;
+		}
+		else if( level.toInt() == RPLogLevel.INFO.toInt()) {
+			return Level.INFO;
+		}
+		else if( level.toInt() == RPLogLevel.DEBUG.toInt()) {
+			return Level.FINE;
+		}
+		else if( level.toInt() == RPLogLevel.TRACE.toInt()) {
+			return Level.FINER;
+		}
+		else {
+			return Level.FINEST;
+		}
+	}
 
 	/**
 	 * @param level
 	 * @param message
 	 * @param exception
 	 */
-	private void loginternal( RPLogLevel level,String message, Throwable exception) 
-	{
+	private void loginternal( RPLogLevel level,String message, Throwable exception) {
 		loginternal(level, message);
 
 		logexception(level, exception);
@@ -164,8 +243,7 @@ public class RPLog {
 	 * @param level
 	 * @param exception
 	 */
-	private void logexception( RPLogLevel level, Throwable exception) 
-	{
+	private void logexception( RPLogLevel level, Throwable exception) {
         if( exception == null )
         {
             return;        
@@ -193,8 +271,7 @@ public class RPLog {
      * @param level
      * @param message
      */
-    synchronized private void loginternal(RPLogLevel level, String message) 
-	{
+    synchronized private void loginternal(RPLogLevel level, String message) {		
 		if(level_.toInt() > level.toInt() )
 		{
 			return;

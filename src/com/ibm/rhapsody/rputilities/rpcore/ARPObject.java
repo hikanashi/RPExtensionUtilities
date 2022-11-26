@@ -10,8 +10,10 @@ import com.telelogic.rhapsody.core.IRPProject;
 
 public abstract class ARPObject {
 	protected RPLog log_ = null;
+	protected Class<?> clazz_ = null;
 
     protected ARPObject(Class<?> clazz) {
+		clazz_ = clazz;
         log_ = new RPLog(clazz);
     }
 

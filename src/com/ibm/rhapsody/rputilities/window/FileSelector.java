@@ -12,6 +12,7 @@ public class FileSelector {
     }
   
     public String GetOpenDirectoryDialog() {
+        String selectPath = null;
         JFileChooser filechooser = null;
         if(lastPath_ != null) {
             filechooser = new JFileChooser(lastPath_);
@@ -25,12 +26,12 @@ public class FileSelector {
 
         if (selected == JFileChooser.APPROVE_OPTION) {
             File file = filechooser.getSelectedFile();
-            lastPath_ = file.getAbsolutePath();
+            selectPath = file.getAbsolutePath();
 
-            log_.info("Approve Target:"+ lastPath_);
+            log_.debug("Approve Selected Target:"+ selectPath);
         }      
 
-        return lastPath_;
+        return selectPath;
     }
 
 

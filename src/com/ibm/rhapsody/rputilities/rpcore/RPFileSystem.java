@@ -5,14 +5,61 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class RPFileSystem extends ARPObject {
-    
+    protected static String activeProjectPath_ = null;
+
+
     /**
      * 
      */
     public RPFileSystem() {
         super(RPFileSystem.class);
+    }
+
+    /**
+     * @param directryPath
+     * @return
+     */
+    public boolean IsReadable(String path) {
+        Path pathobj = Paths.get(path);
+        return Files.isReadable(pathobj);
+    }
+
+    /**
+     * @param directryPath
+     * @return
+     */
+    public boolean IsWritable(String path) {
+        Path pathobj = Paths.get(path);
+        return Files.isWritable(pathobj);
+    }
+
+
+    /**
+     * @param directryPath
+     * @return
+     */
+    public boolean isExists(String path) {
+        Path pathobj = Paths.get(path);
+        return Files.exists(pathobj);
+    }
+
+
+    public static String CreateDateTimeString(String format) {
+        String formatString = format;
+        if(formatString == null)
+        {
+            formatString = "yyyyMMddHHmmssSSS";
+        }
+
+        LocalDateTime nowDate = LocalDateTime.now();
+        DateTimeFormatter dateformatter =
+            DateTimeFormatter.ofPattern(formatString);
+        String formatNowDate = dateformatter.format(nowDate);
+        return formatNowDate;
     }
 
 
@@ -21,13 +68,14 @@ public class RPFileSystem extends ARPObject {
      * @return
      */
     public boolean CreateDirectory(String directryPath) {
-        Path p = Paths.get(directryPath);
+        Path pathobj = Paths.get(directryPath);
 
         try 
         {
-            if(Files.isDirectory(p) != true)
+            if(Files.isDirectory(pathobj) != true)
             {
-                Files.createDirectory(p);
+                debug("CreateDirectory:" + directryPath );
+                Files.createDirectory(pathobj);
             }
         } 
         catch(IOException e) 
@@ -44,12 +92,22 @@ public class RPFileSystem extends ARPObject {
      * @return
      */
     public boolean Delete(String filePath) {
-        Path p = Paths.get(filePath);
+        if(filePath == null ) {
+            return false;
+        }
+
+        Path pathobj = Paths.get(filePath);
+
         try 
         {
-            if(countFiles(filePath) < 1)
+            int filecount = countFiles(filePath);
+            if(filecount < 1)
             {
-                Files.delete(p);
+                debug("Delete:" + filePath );
+                Files.delete(pathobj);
+            }
+            else {
+                warn("Can't Delete:" + filePath + " isn't empty file:" + filecount );
             }
         } 
         catch(IOException e) 
@@ -69,6 +127,15 @@ public class RPFileSystem extends ARPObject {
         File dir = new File(filePath);
         int count = countFiles(dir.listFiles());
         return count;
+    }
+
+
+    public static String getActiveProjectPath() {
+        return activeProjectPath_;
+    }
+
+    public static void setActiveProjectPath(String path) {
+        activeProjectPath_ = path;
     }
 
 	/**
