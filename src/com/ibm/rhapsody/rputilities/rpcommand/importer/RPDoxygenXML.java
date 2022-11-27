@@ -1,5 +1,7 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
+import java.util.List;
+
 import com.ibm.rhapsody.rputilities.doxygen.*;
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
@@ -51,26 +53,11 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         if( manager == null) {
             return false;
         }
-        
-        String tag = "memberdef";
-        // String tag = "compounddef";
-        DoxygenObjectManager.TagMap map = manager.getMap(tag);
-        info("ParseXML success:" + map.size());
+                
+        boolean result = false;
+        result  = importModel(rppackage,manager);
 
-        // int index = 0;
-        // for(DoxygenType value : map.values()) {
-        //     if(!(value instanceof DoxygenTypeCompound)) {
-        //         continue;
-        //     }
-
-        //     value.debugout(0);
-        //     index++;
-        //     if(index > 10) {
-        //         break;
-        //     }
-        // }
-
-        return true;
+        return result;
     }
 
     protected DoxygenObjectManager Parse(String doxygenPath) {
@@ -86,9 +73,57 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         if(result != true) {
             return null;
         }
+
+        info("ParseXML success:" + xmlparser.getManager().size());
         
         return xmlparser.getManager();
     }
 
+    protected boolean importModel(IRPPackage rppackage, DoxygenObjectManager manager) {
+        // String tag = "compounddef";
+        // int index = 0;
+        // for(DoxygenType value : map.values()) {
+        //     if(!(value instanceof DoxygenTypeCompound)) {
+        //         continue;
+        //     }
+
+        //     value.debugout(0);
+        //     index++;
+        //     if(index > 10) {
+        //         break;
+        //     }
+        // }
+
+        RPFunctionImporter importer = new RPFunctionImporter();
+        boolean result = false;
+        List <DoxygenType> list = null;
+
+        list = manager.getList(TAGTYPE.TYPEDEF);
+        info("Typedef:"+ list.size());
+
+        for(DoxygenType value : list) {
+            DoxygenTypeTypedef obj = getObject(value);
+            result = importer.importTypedef(rppackage, obj);
+            if( result != true ) {
+                return result;
+            }
+        }
+
+        list = manager.getList(TAGTYPE.FUNCTION);
+        info("Function:"+ list.size());
+
+        for(DoxygenType value : list) {
+            DoxygenTypeFunction obj = getObject(value);
+            result = importer.importAPI(rppackage, obj);
+            if( result != true ) {
+                return result;
+            }
+        }
+
+
+
+        info("importModel Finish");
+        return result;
+    }
 
 }

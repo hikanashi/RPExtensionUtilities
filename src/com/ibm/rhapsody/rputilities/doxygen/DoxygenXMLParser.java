@@ -9,10 +9,10 @@ import javax.xml.transform.stream.*;
 
 import java.io.FileInputStream;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamReader;
 
 public class DoxygenXMLParser extends ARPObject {
     protected DoxygenObjectManager manager_ = new DoxygenObjectManager();
@@ -114,22 +114,29 @@ public class DoxygenXMLParser extends ARPObject {
 
         info("XmlParse Start:" + xmlPath);
 
-        XMLStreamReader reader = null;
+        DoxygenXMLParseOption option = new DoxygenXMLParseOption();
         boolean result = false;
 
 		try {
 			XMLInputFactory factory = XMLInputFactory.newInstance();
             FileInputStream inputStream = new FileInputStream(Paths.get(xmlPath).toFile());
-			reader = factory.createXMLStreamReader(inputStream);
 
-            DoxygenType target = null;
-            StringBuffer lasttag = new StringBuffer();
-			while (reader.hasNext()) {
-                int eventType = reader.next();
-                target = parseNode(reader, eventType, target, lasttag);
-			}
+			option.reader = factory.createXMLStreamReader(inputStream);
+
+            while (option.reader.hasNext()) {
+                option.eventType = option.reader.next();
+                option.parent =  parseNode(option);
+            }
 
             debug("XmlParse finish");
+
+            List<DoxygenType> lists = manager_.getList(TAGTYPE.REF);
+            if( lists != null ) {
+                debug("Link reference:" + lists.size());
+                for(DoxygenType type : lists) {
+                    type.linkObject();
+                }
+            }
 
             result = true;
         } 
@@ -138,9 +145,9 @@ public class DoxygenXMLParser extends ARPObject {
             result = false;
 		} finally {
             try {
-                if (reader != null) {
+                if (option.reader != null) {
                     debug("close XMLStreamReader");
-                    reader.close();
+                    option.reader.close();
                 }
             }
             catch(Exception e) {
@@ -152,23 +159,20 @@ public class DoxygenXMLParser extends ARPObject {
         return result;
     }
 
-    protected DoxygenType parseNode(XMLStreamReader reader, int eventType, DoxygenType parent, StringBuffer lasttag) {
-        DoxygenType target = parent;
+    protected DoxygenType parseNode(DoxygenXMLParseOption option) {
+        DoxygenType target = option.parent;
 
-        switch (eventType) {
+        switch (option.eventType) {
         case XMLStreamConstants.START_ELEMENT:
-            DoxygenType createTarget = null;
-            if(lasttag.length() > 0) {
-                lasttag.delete(0,lasttag.length());
-            }
-            lasttag.append(reader.getName().getLocalPart());
+            option.startElement(option.reader.getName().getLocalPart());
 
-            createTarget = CreateNode(lasttag.toString(), reader, target);
+            DoxygenType createTarget = null;
+            createTarget = CreateNode(option);
             if(createTarget != null ) { 
-                target = createTarget.createElement(reader, lasttag.toString());
+                target = createTarget.createElement(option.reader, option.currenttag.toString());
             }
             else if(target != null) {
-                target = target.startElement(reader, lasttag.toString());
+                target = target.startElement(option.reader, option.currenttag.toString());
             }
 
             if( createTarget != null ) {
@@ -177,73 +181,67 @@ public class DoxygenXMLParser extends ARPObject {
             break;
         case XMLStreamConstants.CHARACTERS:
             if(target != null) {
-                target = target.characters(reader, lasttag.toString());
+                target = target.characters(option.reader, option.currenttag.toString());
             }
             break;
         case XMLStreamConstants.END_ELEMENT:
             if(target != null) {
-                target = target.endElement(reader);
+                target = target.endElement(option.reader);
             }
+            option.endElement();
             break;
         case XMLStreamConstants.END_DOCUMENT:
             debug("End Document");
-            lasttag = null;
-            target = null;
+            option.endDocument();
             break;
         default:
-            warn("\tUnknown Event:" + eventType);
+            warn("\tUnknown Event:" + option.eventType);
             break;
         }
 
         return target;
     }
 
-    protected DoxygenType CreateNode(String tag, XMLStreamReader reader, DoxygenType parent) {
+    protected DoxygenType CreateNode(DoxygenXMLParseOption option) {
 
         DoxygenType typeobj = null;
+        
+        for (TAGTYPE type : TAGTYPE.values()) {
+            if(type.getTag().equals(option.currenttag.toString()) != true ) {
+                continue;
+            }
 
-        if (tag.equals("memberdef")) {
-            String kind = reader.getAttributeValue(null, "kind");
+            if(type.isNeedParent()) {
+                if( option.parent == null ) {
+                    continue;
+                }
 
-            if(kind.equals("define")) {
-                typeobj = new DoxygenTypeDefilne();
+                if( option.parent.isCreateChildlen(type,option) != true ) {
+                    continue;
+                }
             }
-            else if(kind.equals("enum")) {
-                typeobj = new DoxygenTypeEnum();
+
+            if(type.getKeytype() == TAGTYPE.KEYTYPE.KEY_ATTR_KIND) {
+                String attrvalue = option.reader.getAttributeValue(null, type.getAttrName());
+                if(type.getAttrValue().equals(attrvalue)) {
+                    typeobj = type.newInstance();
+                    break;
+                }
             }
-            else if(kind.equals("function")) {
-                typeobj = new DoxygenTypeFunction();
+            else {
+                typeobj = type.newInstance();
+                break;
             }
-            else if(kind.equals("typedef")) {
-                typeobj = new DoxygenTypeTypedef();
-            }
-            else if(kind.equals("variable")) {
-                typeobj = new DoxygenTypeVariable();
-            }
-        }
-        else if(tag.equals("param")) {
-            if(parent instanceof DoxygenTypeFunction) {
-                typeobj = new DoxygenTypeParam();
-            }
-        }
-        else if(tag.equals("enumvalue")) {
-            if(parent instanceof DoxygenTypeEnum) {
-                typeobj = new DoxygenTypeEnumValue();
-            }
-        }
-        else if(tag.equals("ref")) {
-            if(parent != null) {
-                typeobj = new DoxygenTypeRef();
-            }
-        }
-        else if(tag.equals("compounddef")) {
-            typeobj = new DoxygenTypeCompound();
+        };
+
+        
+        if(typeobj == null) {
+            return typeobj;
         }
 
-        if(typeobj != null) {
-            typeobj.setManager(manager_);
-            typeobj.setParent(parent);
-        }
+        typeobj.setIndent(option.indent);
+        typeobj.setManager(manager_);
+        typeobj.setParent(option.parent);
 
         return typeobj;
     }

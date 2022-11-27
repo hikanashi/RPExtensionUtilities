@@ -7,6 +7,22 @@ public class DoxygenTypeFunction extends DoxygenType {
         super(DoxygenTypeFunction.class);
     }
 
+    public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
+        if(type.equals(TAGTYPE.PARAM) == true) {
+            return true;
+        }
+
+        if(type.equals(TAGTYPE.REF) != true) {
+            return false;
+        }
+
+        if(option.breforettag.toString().equals("type") == true) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
         trace("createElementInternal");
         return this;

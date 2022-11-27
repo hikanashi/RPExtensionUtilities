@@ -20,6 +20,11 @@ public class DoxygenTypeCompound extends DoxygenType {
 
     protected DoxygenType charactersInternal(String tag, String text) {
         trace("charactersInternal");
+
+        if(tag.equals("compoundname")) {
+            append(name_,text);
+        }
+
         return this;
     }
 

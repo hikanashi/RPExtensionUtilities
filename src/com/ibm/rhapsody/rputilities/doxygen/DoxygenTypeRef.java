@@ -10,17 +10,26 @@ public class DoxygenTypeRef extends DoxygenType {
         super(DoxygenTypeRef.class);
     }
 
+
     protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
         trace("createElementInternal");
 
         id_ = reader.getAttributeValue(null, "refid");
         kindref_ = reader.getAttributeValue(null, "kindref");
 
+        return this;
+    }
+
+    protected void linkObject() {
+        
+        getParent().type_.append(" " + getText());
+
         if(manager_ != null) {
             refobj = manager_.getObject(kindref_ + "def", id_);
         }
 
-        return this;
+        // debug("ref index:"+ getIndent() + " parent:"+ getParent().getIndent());
+        return;
     }
 
     protected DoxygenType startElementInternal(XMLStreamReader reader, String tag) {

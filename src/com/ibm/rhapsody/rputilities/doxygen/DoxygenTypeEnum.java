@@ -8,6 +8,14 @@ public class DoxygenTypeEnum extends DoxygenType {
         super(DoxygenTypeEnum.class);
     }
 
+    public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
+        if(type.equals(TAGTYPE.ENUMVAL)) {
+            return true;
+        }
+
+        return false;
+    }
+
     protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
         trace("createElementInternal");
         return this;

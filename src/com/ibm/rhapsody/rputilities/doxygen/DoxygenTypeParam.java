@@ -3,9 +3,14 @@ package com.ibm.rhapsody.rputilities.doxygen;
 import javax.xml.stream.XMLStreamReader;
 
 public class DoxygenTypeParam extends DoxygenType {
+    protected String direction_ = "In";
 
     public DoxygenTypeParam() {
         super(DoxygenTypeParam.class);
+    }
+    
+    public String getDirection() {
+        return direction_;
     }
 
     protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {

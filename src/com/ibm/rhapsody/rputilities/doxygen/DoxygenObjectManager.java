@@ -1,12 +1,14 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public class DoxygenObjectManager extends ARPObject {
-    public class TagMap extends HashMap<String, DoxygenType> {}
+    private class TagMap extends HashMap<String, DoxygenType> {}
     protected Map<String, TagMap> objectMap_ = new HashMap<String, TagMap>();
 
     public DoxygenObjectManager() {
@@ -33,12 +35,39 @@ public class DoxygenObjectManager extends ARPObject {
         objectMap_.put(type.getTag(), map);
     }
 
-    public TagMap getMap(String tag) {
+    public int size() {
+        int count = 0;
+        for(TagMap value : objectMap_.values()) {
+            count += value.size();
+        }
+        return count;
+    }
+
+    public Map<String, DoxygenType> getMap(String tag) {
         return objectMap_.getOrDefault(tag, null);
     }
 
+    public List<DoxygenType> getList(TAGTYPE type) {
+        TagMap map = null;
+    
+        map = objectMap_.getOrDefault(type.getTag(), null);
+        if(map == null) {
+            return null;
+        }
+
+        List<DoxygenType> list = new ArrayList<DoxygenType>();
+        for(DoxygenType child : map.values()) {
+            if(child.equals(type)) {
+                list.add(child);
+            }
+        }  
+
+        return list;
+    }
+
     public DoxygenType getObject(String tag, String id) {
-        TagMap map = getMap(tag);
+        TagMap map = null;
+        map = objectMap_.getOrDefault(tag, null);
         if(map == null) {
             return null;
         }

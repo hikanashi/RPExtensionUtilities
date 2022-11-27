@@ -13,6 +13,7 @@ public abstract class DoxygenType extends ARPObject {
     protected DoxygenType parent_ = null;
     protected List<DoxygenType> children_ = new ArrayList<DoxygenType>();
     protected String id_ = null;
+    protected String kind_ = null;
     protected String tag_ = null;
     protected StringBuffer type_ = new StringBuffer(); 
     protected StringBuffer name_ = new StringBuffer(); 
@@ -20,12 +21,24 @@ public abstract class DoxygenType extends ARPObject {
     protected StringBuffer briefdescription_ = new StringBuffer(); 
     protected StringBuffer detaileddescription_ = new StringBuffer();
     protected StringBuffer inbodydescription_ = new StringBuffer();
+    protected int indent_ = 0;
 
     
     protected DoxygenType(Class<?> clazz) {
         super(clazz);
     }
 
+    public void setIndent(int indent) {
+        indent_ = indent;
+    }
+    
+    public int getIndent() {
+        return indent_;
+    }
+
+    public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
+        return false;
+    }
 
     public void setManager(DoxygenObjectManager manager) {
         manager_ = manager;
@@ -39,6 +52,18 @@ public abstract class DoxygenType extends ARPObject {
         return children_;
     }
 
+    public List<DoxygenType> getChildlen(TAGTYPE type) {
+        List<DoxygenType> list = new ArrayList<DoxygenType>();
+        
+        for(DoxygenType child : children_) {
+            if(child.equals(type)) {
+                list.add(child);
+            }
+        }
+
+        return list;
+    }
+
     public void setParent(DoxygenType parent) {
         if(parent == null ) {
             return;
@@ -49,42 +74,68 @@ public abstract class DoxygenType extends ARPObject {
     }
 
     public String getId() {
-        return id_;
+        if( id_ != null) {
+            return id_;
+        } else {
+            return "";
+        }
+    }
+    
+    public String getKind() {
+        if( kind_ != null) {
+            return kind_;
+        } else {
+            return "";
+        }
     }
 
     public String getTag() {
-        return tag_;
+        if( tag_ != null) {
+            return tag_;
+        } else {
+            return "";
+        }
     }
 
     public String getText() {
-        return text_.toString();
+        return text_.toString().trim();
     }
 
     public String getType() {
-        return type_.toString();
+        return type_.toString().trim();
     }
 
     public String getName() {
-        return name_.toString();
+        return name_.toString().trim();
     }
 
     public String getBriefdescription() {
-        return briefdescription_.toString();
+        return briefdescription_.toString().trim();
     }
 
     public String getDetaileddescription() {
-        return detaileddescription_.toString();
+        return detaileddescription_.toString().trim();
     }
 
     public String getInbodydescription() {
-        return inbodydescription_.toString();
+        return inbodydescription_.toString().trim();
+    }
+
+    public boolean equals(TAGTYPE type) {
+        if(type.getKeytype() == TAGTYPE.KEYTYPE.KEY_ATTR_KIND) {
+            if(getKind().equals(type.getAttrValue())) {
+                return true;
+            }
+        }
+        else {
+            if(getTag().equals(type.getTag())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     abstract protected DoxygenType createElementInternal(XMLStreamReader reader, String tag);
-    abstract protected DoxygenType startElementInternal(XMLStreamReader reader, String tag);
-    abstract protected DoxygenType charactersInternal(String tag, String text);
-    abstract protected DoxygenType endElementInternal(String tag);
-    abstract protected void debugoutInternal(StringBuffer logbuffer);
 
     public DoxygenType createElement(XMLStreamReader reader, String tag) {
         DoxygenType target = this;
@@ -97,12 +148,14 @@ public abstract class DoxygenType extends ARPObject {
         // }
 
         tag_ = tag;
+
         id_ = reader.getAttributeValue(null, "id");
-
+        kind_ = reader.getAttributeValue(null, "kind");
         target = createElementInternal(reader, tag);
-
         return target;
     }
+
+    abstract protected DoxygenType startElementInternal(XMLStreamReader reader, String tag);
 
     public DoxygenType startElement(XMLStreamReader reader, String tag) {
         // trace("\tEvent:START_ELEMENT"  + " Name:"+ reader.getLocalName() );
@@ -117,6 +170,8 @@ public abstract class DoxygenType extends ARPObject {
 
         return target;
     }
+
+    abstract protected DoxygenType charactersInternal(String tag, String text);
 
     public DoxygenType characters(XMLStreamReader reader, String tag) {
         DoxygenType target = this;
@@ -151,10 +206,7 @@ public abstract class DoxygenType extends ARPObject {
         return target;
     }
 
-    protected void append(StringBuffer menber, String text) {
-        String value = text.replaceAll("\\r\\n|\\r|\\n", "");
-        menber.append(value);
-    }
+    abstract protected DoxygenType endElementInternal(String tag);
 
     public DoxygenType endElement(XMLStreamReader reader) {
         // trace("\tEvent:END_ELEMENT"  + " Name:"+ reader.getLocalName() );
@@ -167,15 +219,15 @@ public abstract class DoxygenType extends ARPObject {
             return target;
         }
 
-        for(DoxygenType child : getChildlen()) {
-            if( child instanceof DoxygenTypeRef) {
-                type_.append(" " + child.getText());
-            }
-        }
-
         target = target.getParent();
         return target;
     }
+
+    protected void linkObject() {
+        return;
+    }
+
+    abstract protected void debugoutInternal(StringBuffer logbuffer);
 
     public void debugout(int index) {        
         StringBuffer logbuffer = new StringBuffer();
@@ -199,4 +251,10 @@ public abstract class DoxygenType extends ARPObject {
             child.debugout(index+1);
         }
     }
+
+    protected void append(StringBuffer menber, String text) {
+        String value = text.replaceAll("\\r\\n|\\r|\\n", "");
+        menber.append(value);
+    }
+
 }
