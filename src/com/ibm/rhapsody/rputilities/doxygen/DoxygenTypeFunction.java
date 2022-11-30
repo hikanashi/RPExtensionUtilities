@@ -1,7 +1,5 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
-import javax.xml.stream.XMLStreamReader;
-
 public class DoxygenTypeFunction extends DoxygenType {
     public DoxygenTypeFunction() {
         super(DoxygenTypeFunction.class);
@@ -16,38 +14,18 @@ public class DoxygenTypeFunction extends DoxygenType {
             return false;
         }
 
-        if(option.breforettag.toString().equals("type") == true) {
+        if(option.getBeforetTag().equals("type") == true) {
             return true;
         }
+ 
+        debug(String.format("name:%s(%s) Type:%s is current:%s before:%s isn't type",
+                            getName(), 
+                            getId(),
+                            type.toString(),
+                            option.getCurrentTag(),
+                            option.getBeforetTag()));
         
         return false;
     }
     
-    protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
-        trace("createElementInternal");
-        return this;
-    }
-
-    protected DoxygenType startElementInternal(XMLStreamReader reader, String tag) {
-        trace("startElementInternal");
-
-        return this;
-    }
-
-    protected DoxygenType charactersInternal(String tag, String text) {
-        trace("charactersInternal");
-               
-        return this;
-    }
-
-    protected DoxygenType endElementInternal(String tag) {
-        trace("endElementInternal");
-        return this;
-    }
-
-    
-    protected void debugoutInternal(StringBuffer logbuffer) {
-        
-    }
-
 }

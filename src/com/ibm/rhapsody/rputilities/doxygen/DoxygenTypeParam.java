@@ -1,7 +1,5 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
-import javax.xml.stream.XMLStreamReader;
-
 public class DoxygenTypeParam extends DoxygenType {
     protected String direction_ = "In";
 
@@ -13,32 +11,25 @@ public class DoxygenTypeParam extends DoxygenType {
         return direction_;
     }
 
-    protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
-        trace("createElementInternal");
-        return this;
+    public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
+        if(type.equals(TAGTYPE.REF) != true) {
+            return false;
+        }
+
+        if(option.getBeforetTag().equals("type") == true) {
+            return true;
+        }
+        
+        return false;
     }
 
-    protected DoxygenType startElementInternal(XMLStreamReader reader, String tag) {
-        trace("startElementInternal");
-        return this;
-    }
+    protected void charactersSubInternal(String tag, String text) {
 
-    protected DoxygenType charactersInternal(String tag, String text) {
-        trace("charactersInternal");
         if(tag.equals("declname")) {
             append(name_,text);
         }
 
-        return this;
+        return;
     }
-
-    protected DoxygenType endElementInternal(String tag) {
-        trace("endElementInternal");
-        DoxygenType target = this;
-        return target;
-    }
-    
-    protected void debugoutInternal(StringBuffer logbuffer) {
-        
-    }
+   
 }

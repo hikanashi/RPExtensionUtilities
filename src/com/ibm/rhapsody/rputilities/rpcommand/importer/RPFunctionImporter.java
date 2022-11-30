@@ -1,17 +1,9 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
-import java.util.List;
-
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeFunction;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeParam;
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeTypedef;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
-import com.telelogic.rhapsody.core.IRPArgument;
-import com.telelogic.rhapsody.core.IRPEvent;
 import com.telelogic.rhapsody.core.IRPPackage;
-import com.telelogic.rhapsody.core.IRPType;
 
 public class RPFunctionImporter extends ARPObject {
 
@@ -19,109 +11,101 @@ public class RPFunctionImporter extends ARPObject {
         super(RPFunctionImporter.class);
     }
 
-    public boolean importAPI(IRPPackage rppackage, DoxygenTypeFunction function) {
-        boolean result = false;
+    public boolean importAPI(IRPPackage rootPackage, DoxygenTypeFunction function, String currentVersion) {
 
-        if(rppackage == null) {
+        if(rootPackage == null) {
             error("Package: is null");
             return false;
         }
 
         if(function == null) {
-            error("Package:"+ rppackage.getDisplayName() + " function is null");
+            error("Package:"+ rootPackage.getDisplayName() + " function is null");
             return false;
         }
 
-        trace("Function is API:" + function.getType() + " " + function.getName());
-        //result = importActivity(rppackage, function);
-        result = true;
+        debug("Function is API:" + function.getType() + " " + function.getName());
+        RPStateChartBridge functionBridge = new RPStateChartBridge(function,rootPackage);
+        functionBridge.importElement(currentVersion);
 
-        return result;
+        return true;
     }
 
-    public boolean importTypedef(IRPPackage rppackage, DoxygenTypeTypedef typedef) {
-        boolean result = false;
+    public boolean importTypedef(IRPPackage rootPackage, DoxygenTypeTypedef typedef, String currentVersion) {
 
-        if(rppackage == null) {
+        if(rootPackage == null) {
             error("Package: is null");
             return false;
         }
 
         if(typedef == null) {
-            error("Package:"+ rppackage.getDisplayName() + " typedef is null");
+            error("Package:"+ rootPackage.getDisplayName() + " typedef is null");
             return false;
         }
 
         // If it contains "(", it is a callback.
         if(typedef.isCallback()) {
             debug("typedef is Callback:" + typedef.getType()+ " " + typedef.getName());
-            result = importEvent(rppackage, typedef);
+            RPEventBridge eventBridge = new RPEventBridge(typedef,rootPackage);
+            eventBridge.importElement(currentVersion);
         }
         else {
-            debug("typedef is unkown:" + typedef.getType() + " " + typedef.getName());
-            //result = importActivity(rppackage, function);
-            result = true;
-        }
-
-        return result;
-    }
-
-    
-    protected boolean importEvent(IRPPackage rppackage, DoxygenTypeTypedef typedef) {
-        // function.debugout(0);
-        IRPEvent rpEventNew = rppackage.addEvent(typedef.getName());
-       
-        List<DoxygenType> params = typedef.getChildlen(TAGTYPE.PARAM);
-        for(DoxygenType value : params ) {
-            DoxygenTypeParam param = getObject(value);
-            IRPArgument	rpArgment = rpEventNew.addArgument(param.getName());
-            rpArgment.setArgumentDirection(param.getDirection());
-
-            IRPType type = SearchDataType(rppackage, param);
-            if( type != null ) {
-                rpArgment.setType(type);
-            }
+            warn("typedef is unkown:" + typedef.getType() + " " + typedef.getName());
         }
 
         return true;
     }
-
-    protected IRPType SearchDataType(IRPPackage rppackage, DoxygenType value) {
-        IRPType type = null;
-        IRPType basetype = null;
-
-        RPTypeBridge rpbridge = new RPTypeBridge(value);
-
-        // for predefine type
-        if(rpbridge.isReference() == true ) {
-            type = rppackage.findType(rpbridge.getBaseType() + " *");
-        } else {
-            type = rppackage.findType(rpbridge.getFullType()); 
-        }
-
-        // for user-defined type
-        if(type == null) {
-            type = rppackage.findType(rpbridge.getType());
-        }
-
-        // for typedef base type
-        if(rpbridge.getType().equals(rpbridge.getBaseType()) != true) {
-            basetype = rppackage.findType(rpbridge.getBaseType());
-
-            if(basetype == null) {
-                debug("add BaseType:"+ rpbridge.getBaseType());
-                basetype = rppackage.addType(rpbridge.getBaseType());
-            }
-        }
-
-        if(type == null) {
-            debug("add Type:"+ rpbridge.getType());
-            value.debugout(0);
-            type = rppackage.addType(rpbridge.getType());
-        }
-
-        rpbridge.apply(type,basetype);
-        return type;
-    }
-
 }
+
+
+// 指定されたパッケージ以下のイベントかアクティビティ図を取得する
+// （SysActがじゃま）
+//　今のバージョンのパッケージ以外にchangedもdeleteもついていないアイテムがあればそれがdeleteとする
+
+
+// イベント
+    // 戻り値
+    // 引数（タイプは別）
+// アクティビティ図
+    // ピン　タイプは別登録
+    // 戻り値はRETURN名前固定
+// タイプ
+    // ENUM
+    // Typedef
+    // Langage
+    // Struct
+    // Union
+
+// defineはなに？LANGUAGE？作らない？LANGUAGEぐらいしかできない 
+
+
+// Serarch Item from Base Package
+// アイテムがある
+// バージョンを確認する
+
+// 今のバージョンと一致
+// 変更箇所を上書きする
+    // アイテムが一致するか見る
+        // 完全一致する
+            // １最新バージョンに移動
+        // 不一致
+            // 
+
+// 今のバージョンよりも新しい（バージョンアップ）
+// 今の箇所はchangedに名称変更して、新しく作る
+
+// 今のバージョンよりも古い（バージョンダウン）
+// changedを付けたバージョンで検索
+    // なければchangedで作る
+    // あれば内容を反映
+
+
+// アイテムがない
+
+// アイテムのモジュールパスを決定する（バージョンパッケージ以下のサブパッケージの構成を決める）
+
+// まずは対象バージョンのパッケージがあるか見る
+//  サブパッケージがなければ作る（アイテムを入れるパスまで作る）
+//　アイテムを移動なら該当パッケージ以下にアイテムを移動
+    // 説明など影響がないところも反映
+// アイテム作成なら新規に作る
+// タグに適用バージョンを入れておく。（複数定義可能なやつか）

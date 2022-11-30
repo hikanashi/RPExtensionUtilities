@@ -11,18 +11,16 @@ public class DoxygenTypeRef extends DoxygenType {
     }
 
 
-    protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
+    protected void createElementInternal(XMLStreamReader reader, String tag) {
         trace("createElementInternal");
 
         id_ = reader.getAttributeValue(null, "refid");
         kindref_ = reader.getAttributeValue(null, "kindref");
 
-        return this;
+        return;
     }
 
     protected void linkObject() {
-        
-        getParent().type_.append(" " + getText());
 
         if(manager_ != null) {
             refobj = manager_.getObject(kindref_ + "def", id_);
@@ -32,22 +30,17 @@ public class DoxygenTypeRef extends DoxygenType {
         return;
     }
 
-    protected DoxygenType startElementInternal(XMLStreamReader reader, String tag) {
-        trace("startElementInternal");
-        return this;
-    }
-
-    protected DoxygenType charactersInternal(String tag, String text) {
-        trace("charactersInternal");
-        append(text_,text);
-        return this;
-    }
-
-    protected DoxygenType endElementInternal(String tag) {
+    protected void endThisElementInternal(String tag) {
         trace("endElementInternal");
-        return this;
-    }
+        
+        if(getParent().type_.length() > 0) {
+            getParent().type_.append(" " + getText());
+        } else {
+            getParent().type_.append(getText());
+        }
 
+        return;
+    }
     
     protected void debugoutInternal(StringBuffer logbuffer) {
         logbuffer.append(",kindref:"+ kindref_ 

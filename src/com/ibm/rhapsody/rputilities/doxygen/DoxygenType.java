@@ -135,8 +135,7 @@ public abstract class DoxygenType extends ARPObject {
         return false;
     }
 
-    abstract protected DoxygenType createElementInternal(XMLStreamReader reader, String tag);
-
+ 
     public DoxygenType createElement(XMLStreamReader reader, String tag) {
         DoxygenType target = this;
 
@@ -151,13 +150,15 @@ public abstract class DoxygenType extends ARPObject {
 
         id_ = reader.getAttributeValue(null, "id");
         kind_ = reader.getAttributeValue(null, "kind");
-        target = createElementInternal(reader, tag);
+        createElementInternal(reader, tag);
         return target;
     }
 
-    abstract protected DoxygenType startElementInternal(XMLStreamReader reader, String tag);
+    protected void createElementInternal(XMLStreamReader reader, String tag) {
+        return;
+    }
 
-    public DoxygenType startElement(XMLStreamReader reader, String tag) {
+    public DoxygenType startSubElement(XMLStreamReader reader, String tag) {
         // trace("\tEvent:START_ELEMENT"  + " Name:"+ reader.getLocalName() );
         // for(int index = 0; index < reader.getAttributeCount(); index++ ) {
         //     trace("\t\t Name:" + reader.getAttributeName(index) 
@@ -166,21 +167,24 @@ public abstract class DoxygenType extends ARPObject {
         // }
 
         DoxygenType target = this;
-        target = startElementInternal(reader, tag);
+        startSubElementInternal(reader, tag);
 
         return target;
     }
 
-    abstract protected DoxygenType charactersInternal(String tag, String text);
+    protected void startSubElementInternal(XMLStreamReader reader, String tag) {
+        return;
+    }
 
     public DoxygenType characters(XMLStreamReader reader, String tag) {
         DoxygenType target = this;
+        // trace("\tEvent:CHARACTERS"  + " Tag:" + tag + " Text:"+ reader.getText() );
+        String text = new String(reader.getText()).trim();
+
         if(tag == null) {        
             return target;
         }
-        
-        // trace("\tEvent:CHARACTERS"  + " Tag:" + tag + " Text:"+ reader.getText() );
-        String text = new String(reader.getText()).trim();
+
         if(tag.equals(getTag())) {
             text_.append(text);
         }
@@ -200,34 +204,43 @@ public abstract class DoxygenType extends ARPObject {
             inbodydescription_.append(text);
         }
         else {
-            target = charactersInternal(tag, text);
+            charactersSubInternal(tag, text);
         }
 
         return target;
     }
 
-    abstract protected DoxygenType endElementInternal(String tag);
+    protected void charactersSubInternal(String tag, String text) {
+        return;
+    }
 
     public DoxygenType endElement(XMLStreamReader reader) {
         // trace("\tEvent:END_ELEMENT"  + " Name:"+ reader.getLocalName() );
         DoxygenType target = this;
         String tag = reader.getName().getLocalPart();
         
-        target = endElementInternal(tag);
-
         if(tag.equals(getTag()) != true) {
+            endSubElementInternal(tag);
             return target;
         }
+
+        endThisElementInternal(tag);
 
         target = target.getParent();
         return target;
     }
 
-    protected void linkObject() {
+    protected void endThisElementInternal(String tag) {
         return;
     }
 
-    abstract protected void debugoutInternal(StringBuffer logbuffer);
+    protected void endSubElementInternal(String tag) {
+
+    }
+
+    protected void linkObject() {
+        return;
+    }
 
     public void debugout(int index) {        
         StringBuffer logbuffer = new StringBuffer();
@@ -251,6 +264,11 @@ public abstract class DoxygenType extends ARPObject {
             child.debugout(index+1);
         }
     }
+
+    protected void debugoutInternal(StringBuffer logbuffer) {
+        return;
+    }
+
 
     protected void append(StringBuffer menber, String text) {
         String value = text.replaceAll("\\r\\n|\\r|\\n", "");

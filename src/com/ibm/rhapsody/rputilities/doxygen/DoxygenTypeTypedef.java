@@ -1,7 +1,5 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
-import javax.xml.stream.XMLStreamReader;
-
 public class DoxygenTypeTypedef extends DoxygenType {
     protected StringBuffer argsstring_ = new StringBuffer();
     
@@ -34,52 +32,32 @@ public class DoxygenTypeTypedef extends DoxygenType {
             return false;
         }
 
-        if(option.breforettag.toString().equals("type") == true) {
+        if(option.getBeforetTag().equals("type") == true) {
             return true;
         }
         
         return false;
     }
 
-    protected DoxygenType createElementInternal(XMLStreamReader reader, String tag) {
-        trace("createElementInternal");
-        return this;
-    }
-
-    protected DoxygenType startElementInternal(XMLStreamReader reader, String tag) {
-        trace("startElementInternal");
-        return this;
-    }
-
-    protected DoxygenType charactersInternal(String tag, String text) {
-        trace("charactersInternal");
+    protected void charactersSubInternal(String tag, String text) {
+        trace("charactersSubInternal");
 
         if(tag.equals("argsstring")) {
             append(argsstring_,text);
         }
 
-        return this;
+        return;
     }
 
-    protected DoxygenType endElementInternal(String tag) {
-        DoxygenType target = this;
-
-        if(tag.equals(getTag()) != true) {
-            return target;
-        }
-
+    protected void endThisElementInternal(String tag) {
         if(argsstring_.length() < 1) {
-            return target;
+            return;
         }
 
-        trace("endElementInternal:"+ argsstring_.toString());
+        trace("endThisElementInternal:"+ argsstring_.toString());
 
         CreateParameter(argsstring_.toString());
-        return this;
-    }
-
-    protected void debugoutInternal(StringBuffer logbuffer) {
-        
+        return;
     }
 
     protected void CreateParameter(String argstring) {
@@ -119,6 +97,10 @@ public class DoxygenTypeTypedef extends DoxygenType {
                         param.type_.append(" *");
                     }
                 }
+            }
+
+            if( param.name_.length() < 1 ) {
+                param.name_.append("argument_" + allindex );
             }
 
             param.setParent(this);

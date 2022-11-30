@@ -169,10 +169,10 @@ public class DoxygenXMLParser extends ARPObject {
             DoxygenType createTarget = null;
             createTarget = CreateNode(option);
             if(createTarget != null ) { 
-                target = createTarget.createElement(option.reader, option.currenttag.toString());
+                target = createTarget.createElement(option.reader, option.getCurrentTag());
             }
             else if(target != null) {
-                target = target.startElement(option.reader, option.currenttag.toString());
+                target = target.startSubElement(option.reader, option.getCurrentTag());
             }
 
             if( createTarget != null ) {
@@ -181,7 +181,7 @@ public class DoxygenXMLParser extends ARPObject {
             break;
         case XMLStreamConstants.CHARACTERS:
             if(target != null) {
-                target = target.characters(option.reader, option.currenttag.toString());
+                target = target.characters(option.reader, option.getCurrentTag());
             }
             break;
         case XMLStreamConstants.END_ELEMENT:
@@ -207,7 +207,7 @@ public class DoxygenXMLParser extends ARPObject {
         DoxygenType typeobj = null;
         
         for (TAGTYPE type : TAGTYPE.values()) {
-            if(type.getTag().equals(option.currenttag.toString()) != true ) {
+            if(type.getTag().equals(option.getCurrentTag()) != true ) {
                 continue;
             }
 
@@ -239,7 +239,7 @@ public class DoxygenXMLParser extends ARPObject {
             return typeobj;
         }
 
-        typeobj.setIndent(option.indent);
+        typeobj.setIndent(option.getIndent());
         typeobj.setManager(manager_);
         typeobj.setParent(option.parent);
 

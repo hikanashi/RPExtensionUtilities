@@ -1,35 +1,55 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.stream.XMLStreamReader;
 
-public class DoxygenXMLParseOption {
+import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
+
+public class DoxygenXMLParseOption extends ARPObject {
     public XMLStreamReader reader;
     public int eventType;
     public DoxygenType parent = null;
-    public StringBuffer breforettag = new StringBuffer();
-    public StringBuffer currenttag = new StringBuffer();
-    public Integer indent = 0;
+    protected List<StringBuffer> taglist_ = new ArrayList<StringBuffer>();
+
+    public DoxygenXMLParseOption() {
+        super(DoxygenXMLParseOption.class);
+    }
+
+    public String getCurrentTag() {
+        if(taglist_.size() > 0) {
+            return taglist_.get(taglist_.size()-1).toString();
+        }
+
+        return "";
+    }
+
+    public String getBeforetTag() {
+        if(taglist_.size() > 1) {
+            return taglist_.get(taglist_.size()-2).toString();
+        }
+
+        return "";
+        
+    }
+
+    public int getIndent() {
+        return taglist_.size();
+    }
+
 
     public void startElement( String tag ) {
-        if(breforettag.length() > 0) {
-            breforettag.delete(0,breforettag.length());
-        }
-        breforettag.append(currenttag);
-
-        if(currenttag.length() > 0) {
-            currenttag.delete(0,currenttag.length());
-        }
-        currenttag.append(tag);
-        indent++;
+        taglist_.add(new StringBuffer(tag));
     }
 
     public void endElement() {
-        indent--;
+        if(taglist_.size() > 0 ) { 
+            taglist_.remove(taglist_.size()-1);
+        }
     }
 
     public void endDocument() {
         parent = null;
-        currenttag = null;
-        indent = 0;
     }
 }

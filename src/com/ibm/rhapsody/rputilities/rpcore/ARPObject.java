@@ -49,6 +49,107 @@ public abstract class ARPObject {
         }
     }
 
+
+
+    /**
+	 * Get the package to which the element belongs
+     * @param element　Target Element
+     * @return Package Object
+     */
+    protected IRPPackage getPackage(IRPModelElement element)
+    {
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
+        {
+            if( checkelement instanceof IRPPackage) {
+				IRPPackage rpPackage = getObject(checkelement);
+				return rpPackage;
+			}
+        }
+
+        return null;
+    }
+
+    /**
+	 * Obtains the name of the package to which the element belongs.
+	 * If the packages belonging to the element are nested, the package names under the project are combined with delimiter.
+     * @param element　Target Element
+     * @param delimiter delimiter when concatenating package names
+     * @return Package Name
+     */
+    protected static String getPackagePath(IRPModelElement element, String delimiter)
+    {
+        String packageName = "";
+
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
+        {
+            if( checkelement instanceof IRPProject) {
+				break;
+			}
+
+            if( !(checkelement instanceof IRPPackage) ) {
+				continue;
+			}
+
+            if(packageName.length() > 0)
+            {
+                packageName = checkelement.getDisplayName() + delimiter + packageName;
+            }
+            else
+            {
+                packageName = checkelement.getDisplayName();
+            }
+        }
+
+        return packageName;
+    }
+
+	/**
+	 * Get the path from the project to the target element.
+	 * Excluding TopLevel classes.
+	 * @param element Target Element
+	 * @param delimiter delimiter when concatenating element names
+	 * @return path name 
+	 */
+	protected String getPathToProject(IRPModelElement element, String delimiter)
+    {
+        String elementPath = "";
+
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
+        {
+			if( checkelement instanceof IRPClass) {
+				if(checkelement.getName().equals("TopLevel"))
+				{
+					continue;
+				}
+            }
+
+            if( checkelement instanceof IRPProject) {
+                break;
+            }
+
+			trace("element:"+ checkelement.getDisplayName()
+				+ " MetaClass:" + checkelement.getMetaClass()
+				+ " ClassName:" + checkelement.getClass().getName());
+
+            if(checkelement != element)
+            {
+                elementPath = checkelement.getDisplayName() + delimiter + elementPath;
+            }
+            else
+            {
+                elementPath = checkelement.getDisplayName();
+            }
+        }
+
+        return elementPath;
+    }
+
 	/**
 	 * Log an error message 
 	 * @param message, readable info message
@@ -139,84 +240,4 @@ public abstract class ARPObject {
 	{
 		log_.trace( message, exception);
 	}
-
-    /**
-	 * Obtains the name of the package to which the element belongs.
-	 * If the packages belonging to the element are nested, the package names under the project are combined with delimiter.
-     * @param element　Target Element
-     * @param delimiter delimiter when concatenating package names
-     * @return Package Name
-     */
-    protected static String getPackageName(IRPModelElement element, String delimiter)
-    {
-        String packageName = "";
-
-        for(IRPModelElement checkelement = element;
-			checkelement != null;
-			checkelement = checkelement.getOwner())
-        {
-            if( checkelement instanceof IRPProject) {
-				break;
-			}
-
-            if( !(checkelement instanceof IRPPackage) ) {
-				continue;
-			}
-
-            if(packageName.length() > 0)
-            {
-                packageName = checkelement.getDisplayName() + delimiter + packageName;
-            }
-            else
-            {
-                packageName = checkelement.getDisplayName();
-            }
-        }
-
-        return packageName;
-    }
-
-	/**
-	 * Get the path from the project to the target element.
-	 * Excluding TopLevel classes.
-	 * @param element Target Element
-	 * @param delimiter delimiter when concatenating element names
-	 * @return path name 
-	 */
-	protected String getPathToProject(IRPModelElement element, String delimiter)
-    {
-        String elementPath = "";
-
-        for(IRPModelElement checkelement = element;
-			checkelement != null;
-			checkelement = checkelement.getOwner())
-        {
-			if( checkelement instanceof IRPClass) {
-				if(checkelement.getName().equals("TopLevel"))
-				{
-					continue;
-				}
-            }
-
-            if( checkelement instanceof IRPProject) {
-                break;
-            }
-
-			trace("element:"+ checkelement.getDisplayName()
-				+ " MetaClass:" + checkelement.getMetaClass()
-				+ " ClassName:" + checkelement.getClass().getName());
-
-            if(checkelement != element)
-            {
-                elementPath = checkelement.getDisplayName() + delimiter + elementPath;
-            }
-            else
-            {
-                elementPath = checkelement.getDisplayName();
-            }
-        }
-
-        return elementPath;
-    } 
-
 }

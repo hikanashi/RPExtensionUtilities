@@ -102,7 +102,7 @@ public class RPActivityCount extends IRPUtilityCommmand {
         debug("Count StateChart:" + chart.getDisplayName());
 
         List<Object> flowElements = toList(chart.getElementsInDiagram());
-        ActiounCounter counter = new ActiounCounter( getPackageName(chart,"/"), chart.getDisplayName());
+        ActiounCounter counter = new ActiounCounter( getPackagePath(chart,"/"), chart.getDisplayName());
         List<IRPSwimlane> swimlanes = toList(chart.getSwimlanes());
         for(IRPSwimlane swimlane : swimlanes) {
             counter.InitAction(swimlane.getDisplayName());

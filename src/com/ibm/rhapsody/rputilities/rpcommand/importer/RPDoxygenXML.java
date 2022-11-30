@@ -32,8 +32,8 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
 
         RPLog.setLevel(RPLogLevel.DEBUG);
 
-        IRPPackage rppackage = getElement(); 
-        if(rppackage == null) {
+        IRPPackage rootPackage = getElement(); 
+        if(rootPackage == null) {
             error("name[" + argment[0] + "] is need select element.\n"
                 + "Please select one Element.");
             return false;
@@ -48,6 +48,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
          */
 
         String doxygenPath = "E:\\Rhapsody\\Doxygen\\out\\xml";
+        String currentVersion = "v01.00.00";
 
         DoxygenObjectManager manager = Parse(doxygenPath);;
         if( manager == null) {
@@ -55,7 +56,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         }
                 
         boolean result = false;
-        result  = importModel(rppackage,manager);
+        result  = importModel(rootPackage,manager,currentVersion);
 
         return result;
     }
@@ -79,7 +80,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         return xmlparser.getManager();
     }
 
-    protected boolean importModel(IRPPackage rppackage, DoxygenObjectManager manager) {
+    protected boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion) {
         // String tag = "compounddef";
         // int index = 0;
         // for(DoxygenType value : map.values()) {
@@ -102,8 +103,9 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         info("Typedef:"+ list.size());
 
         for(DoxygenType value : list) {
-            DoxygenTypeTypedef obj = getObject(value);
-            result = importer.importTypedef(rppackage, obj);
+            DoxygenTypeTypedef obj = getObject(value);            
+
+            result = importer.importTypedef(rootPackage, obj, currentVersion);
             if( result != true ) {
                 return result;
             }
@@ -114,13 +116,11 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
 
         for(DoxygenType value : list) {
             DoxygenTypeFunction obj = getObject(value);
-            result = importer.importAPI(rppackage, obj);
+            result = importer.importAPI(rootPackage, obj, currentVersion);
             if( result != true ) {
                 return result;
             }
         }
-
-
 
         info("importModel Finish");
         return result;
