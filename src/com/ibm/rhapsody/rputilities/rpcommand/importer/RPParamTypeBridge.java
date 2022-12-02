@@ -1,6 +1,7 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
 import com.telelogic.rhapsody.core.IRPModelElement;
@@ -56,23 +57,31 @@ public class RPParamTypeBridge extends ARPBridge {
             base_type_  = base_type_ .replaceAll("const", "");
         }
 
+        String patternPointer = "\\*";
         if(type_ .contains("*")) {
             kind_ = RPTYPE_KIND.TYPEDEF;
             isReference_ = 1;
-            base_type_  = base_type_ .replaceAll("\\*", "");
+            base_type_  = base_type_ .replaceAll(patternPointer, "");
         }
 
-        if(type_ .contains("\\.\\.\\.")) {
+        String patternVariableArgument ="\\.\\.\\.";
+        if(type_ .contains(patternVariableArgument)) {
             kind_ = RPTYPE_KIND.LANG;
-            base_type_  = base_type_ .replaceAll("\\.\\.\\.", "VariableArgument");
+            base_type_  = base_type_ .replaceAll(patternVariableArgument, "VariableArgument");
         }
+
+        String patternIllegalCharcter = " |,|\\(|\\)";
+        if(type_ .matches(patternIllegalCharcter) ) {
+            // kind_ = RPTYPE_KIND.LANG;
+        }
+        base_type_  = base_type_ .replaceAll(patternIllegalCharcter, "_");
 
         base_type_ = base_type_.trim();
 
         type_ = type_.trim();
-        type_  = type_ .replaceAll(" ", "_");
-        type_  = type_ .replaceAll("\\*", "pointer");
-        type_  = type_ .replaceAll("\\.\\.\\.", "VariableArgument");
+        type_  = type_ .replaceAll(patternPointer, "pointer");
+        type_  = type_ .replaceAll(patternVariableArgument, "VariableArgument");
+        type_  = type_ .replaceAll(patternIllegalCharcter, "_");
     }
     
 
@@ -125,6 +134,10 @@ public class RPParamTypeBridge extends ARPBridge {
     }
 
     public IRPType createBaseType(IRPPackage modulePackage, String version) {
+        if(getType().equals(getBaseType()) == true) {
+            return null;
+        }
+        debug("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
         IRPType rpBaseType = modulePackage.addType(getBaseType());   
         setApplicableVersion(rpBaseType, version);  
         return rpBaseType;
@@ -138,7 +151,7 @@ public class RPParamTypeBridge extends ARPBridge {
             return false;
         }
 
-        if(type_.equals(rpType.getName()) != true) {
+        if(type_.length() > 0 && type_.equals(rpType.getName()) != true) {
             debug(full_type_ + " change Name "+ rpType.getName() + "->" + type_);
             return true;
         }
@@ -169,7 +182,7 @@ public class RPParamTypeBridge extends ARPBridge {
             rpType.setDisplayName(full_type_);
         }
 
-        if(type_.equals(rpType.getName()) != true) {
+        if(type_.equals(rpType.getName()) != true && type_.length() > 0) {
             debug(full_type_ + " apply Name "+ rpType.getName() + "->" + type_);
             rpType.setName(type_);
         }
@@ -222,17 +235,17 @@ public class RPParamTypeBridge extends ARPBridge {
         }
 
         if(baseTypeName.equals(myBaseName) != true ) {
-            debug(full_type_ + " change BaseType "+ myBaseName + "->" + baseTypeName);
+            debug(full_type_ + " apply BaseType "+ myBaseName + "->" + baseTypeName);
             rpType.setTypedefBaseType(rpbasetype);
         }
 
         if(isConstant_ != rpType.getIsTypedefConstant() ) {
-            debug(full_type_+ " change Constant "+ rpType.getIsTypedefConstant() + "->" + isConstant_);
+            debug(full_type_+ " apply Constant "+ rpType.getIsTypedefConstant() + "->" + isConstant_);
             rpType.setIsTypedefConstant(isConstant_);
         }
 
         if(isReference_ != rpType.getIsTypedefReference() ) {
-            debug(full_type_+ " change Reference "+ rpType.getIsTypedefReference() + "->" + isReference_);
+            debug(full_type_+ " apply Reference "+ rpType.getIsTypedefReference() + "->" + isReference_);
             rpType.setIsTypedefReference(isReference_);
         }
         return;

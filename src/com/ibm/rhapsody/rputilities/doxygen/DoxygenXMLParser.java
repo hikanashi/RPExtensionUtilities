@@ -169,10 +169,10 @@ public class DoxygenXMLParser extends ARPObject {
             DoxygenType createTarget = null;
             createTarget = CreateNode(option);
             if(createTarget != null ) { 
-                target = createTarget.createElement(option.reader, option.getCurrentTag());
+                target = createTarget.createElement(option);
             }
             else if(target != null) {
-                target = target.startSubElement(option.reader, option.getCurrentTag());
+                target = target.startSubElement(option);
             }
 
             if( createTarget != null ) {
@@ -181,12 +181,12 @@ public class DoxygenXMLParser extends ARPObject {
             break;
         case XMLStreamConstants.CHARACTERS:
             if(target != null) {
-                target = target.characters(option.reader, option.getCurrentTag());
+                target = target.characters(option);
             }
             break;
         case XMLStreamConstants.END_ELEMENT:
             if(target != null) {
-                target = target.endElement(option.reader);
+                target = target.endElement(option);
             }
             option.endElement();
             break;

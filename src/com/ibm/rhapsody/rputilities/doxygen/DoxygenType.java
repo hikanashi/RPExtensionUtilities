@@ -136,7 +136,7 @@ public abstract class DoxygenType extends ARPObject {
     }
 
  
-    public DoxygenType createElement(XMLStreamReader reader, String tag) {
+    public DoxygenType createElement(DoxygenXMLParseOption option) {
         DoxygenType target = this;
 
         // trace("\tEvent:START_ELEMENT"  + " Name:"+ reader.getLocalName() );
@@ -146,19 +146,19 @@ public abstract class DoxygenType extends ARPObject {
         //         + " Value:" + reader.getAttributeValue(index));
         // }
 
-        tag_ = tag;
+        tag_ = option.getCurrentTag();
 
-        id_ = reader.getAttributeValue(null, "id");
-        kind_ = reader.getAttributeValue(null, "kind");
-        createElementInternal(reader, tag);
+        id_ = option.reader.getAttributeValue(null, "id");
+        kind_ = option.reader.getAttributeValue(null, "kind");
+        createElementInternal(option);
         return target;
     }
 
-    protected void createElementInternal(XMLStreamReader reader, String tag) {
+    protected void createElementInternal(DoxygenXMLParseOption option) {
         return;
     }
 
-    public DoxygenType startSubElement(XMLStreamReader reader, String tag) {
+    public DoxygenType startSubElement(DoxygenXMLParseOption option) {
         // trace("\tEvent:START_ELEMENT"  + " Name:"+ reader.getLocalName() );
         // for(int index = 0; index < reader.getAttributeCount(); index++ ) {
         //     trace("\t\t Name:" + reader.getAttributeName(index) 
@@ -167,19 +167,20 @@ public abstract class DoxygenType extends ARPObject {
         // }
 
         DoxygenType target = this;
-        startSubElementInternal(reader, tag);
+        startSubElementInternal(option);
 
         return target;
     }
 
-    protected void startSubElementInternal(XMLStreamReader reader, String tag) {
+    protected void startSubElementInternal(DoxygenXMLParseOption option) {
         return;
     }
 
-    public DoxygenType characters(XMLStreamReader reader, String tag) {
+    public DoxygenType characters(DoxygenXMLParseOption option) {
         DoxygenType target = this;
         // trace("\tEvent:CHARACTERS"  + " Tag:" + tag + " Text:"+ reader.getText() );
-        String text = new String(reader.getText()).trim();
+        String tag = option.getCurrentTag();
+        String text = new String(option.reader.getText()).trim();
 
         if(tag == null) {        
             return target;
@@ -188,25 +189,27 @@ public abstract class DoxygenType extends ARPObject {
         if(tag.equals(getTag())) {
             text_.append(text);
         }
-        else if(tag.equals("name")) {
-            append(name_,text);
+        else if(option.getBeforetTag().equals(getTag())) {
+            if(tag.equals("name")) {
+                append(name_,text);
+            }
+            else if(tag.equals("type")) {
+                append(type_,text);
+            }
+            else if(tag.equals("briefdescription")) {
+                briefdescription_.append(text);
+            }
+            else if(tag.equals("detaileddescription")) {
+                detaileddescription_.append(text);
+            }
+            else if(tag.equals("inbodydescription")) {
+                inbodydescription_.append(text);
+            }
+            else {
+                charactersSubInternal(tag, text);
+            }
         }
-        else if(tag.equals("type")) {
-            append(type_,text);
-        }
-        else if(tag.equals("briefdescription")) {
-            briefdescription_.append(text);
-        }
-        else if(tag.equals("detaileddescription")) {
-            detaileddescription_.append(text);
-        }
-        else if(tag.equals("inbodydescription")) {
-            inbodydescription_.append(text);
-        }
-        else {
-            charactersSubInternal(tag, text);
-        }
-
+        
         return target;
     }
 
@@ -214,10 +217,10 @@ public abstract class DoxygenType extends ARPObject {
         return;
     }
 
-    public DoxygenType endElement(XMLStreamReader reader) {
+    public DoxygenType endElement(DoxygenXMLParseOption option) {
         // trace("\tEvent:END_ELEMENT"  + " Name:"+ reader.getLocalName() );
         DoxygenType target = this;
-        String tag = reader.getName().getLocalPart();
+        String tag = option.reader.getName().getLocalPart();
         
         if(tag.equals(getTag()) != true) {
             endSubElementInternal(tag);

@@ -40,8 +40,10 @@ public abstract class ARPBridge extends ARPObject {
         boolean update = false;
         current_element = searchElement(rootPackage_);
         if( current_element != null ) {
+            
+            String baseVersion = GetBaseVersion(current_element);
             update = isUpdate(current_element);
-            if( update == true ) {
+            if( update == true && baseVersion.equals(currentVersion) != true) {
                 unavailable_element = current_element;
                 current_element = null;
             }
@@ -100,6 +102,12 @@ public abstract class ARPBridge extends ARPObject {
 
     public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
 
+        updateOwner(element,modulePackage);
+        setApplicableVersion(element, currentVersion);
+        applyByType(element, currentVersion);
+    }
+
+    protected void updateOwner(IRPModelElement element, IRPPackage modulePackage) {
         IRPPackage ownerPackage = getPackage(element);
         String ownerID = "";
         String ownerName = "";
@@ -116,9 +124,6 @@ public abstract class ARPBridge extends ARPObject {
                     modulePackage.getGUID()));
             element.setOwner(modulePackage);
         }
-
-        setApplicableVersion(element, currentVersion);
-        applyByType(element, currentVersion);
     }
 
     protected IRPType CreateType(DoxygenType param, String currentVersion) {
@@ -166,6 +171,21 @@ public abstract class ARPBridge extends ARPObject {
         rpelement.setTagValue(versiontag, tagvalue);
 
         return true;
+    }
+
+    public String GetBaseVersion(IRPModelElement rpelement) {
+        String baseVersion = "";
+        IRPPackage versionPackage = GetBaseVersionPackage(rpelement);
+        if(versionPackage == null) {
+            return baseVersion;
+        }
+
+        IRPTag versiontag = versionPackage.getTag(TAG_VERSION_PACKAGE);
+        if(versiontag == null ) {
+            return baseVersion;
+        }
+
+        return versiontag.getValue();
     }
 
 
@@ -267,7 +287,7 @@ public abstract class ARPBridge extends ARPObject {
 
 
     protected String convertAvailableName( String name ) {
-        return name.replaceAll("\\.", "_");
+        return name.replaceAll("\\.|-", "_");
     }
 
 }
