@@ -1,7 +1,5 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
-import java.util.List;
-
 import com.ibm.rhapsody.rputilities.doxygen.*;
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
@@ -81,46 +79,19 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
     }
 
     protected boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion) {
-        // String tag = "compounddef";
-        // int index = 0;
-        // for(DoxygenType value : map.values()) {
-        //     if(!(value instanceof DoxygenTypeCompound)) {
-        //         continue;
-        //     }
-
-        //     value.debugout(0);
-        //     index++;
-        //     if(index > 10) {
-        //         break;
-        //     }
-        // }
 
         RPFunctionImporter importer = new RPFunctionImporter();
         boolean result = false;
-        List <DoxygenType> list = null;
 
-        list = manager.getList(TAGTYPE.TYPEDEF);
-        info("Typedef:"+ list.size());
-
-        for(DoxygenType value : list) {
-            DoxygenTypeTypedef obj = getObject(value);            
-
-            result = importer.importTypedef(rootPackage, obj, currentVersion);
-            if( result != true ) {
-                return result;
-            }
+        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
+        if(result != true ) {
+            return result;
         }
 
-        list = manager.getList(TAGTYPE.FUNCTION);
-        info("Function:"+ list.size());
-
-        for(DoxygenType value : list) {
-            DoxygenTypeFunction obj = getObject(value);
-            result = importer.importAPI(rootPackage, obj, currentVersion);
-            if( result != true ) {
-                return result;
-            }
-        }
+        // result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
+        // if(result != true ) {
+        //     return result;
+        // }
 
         info("importModel Finish");
         return result;

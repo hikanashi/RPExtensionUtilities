@@ -1,7 +1,6 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
 import com.telelogic.rhapsody.core.IRPModelElement;
@@ -41,8 +40,12 @@ public class RPParamTypeBridge extends ARPBridge {
         return (isReference_ == 1);
     }
 
-    protected void initialize(DoxygenType value) {
-        full_type_ = value.getType().trim();
+    protected void initialize(DoxygenType doxygen) {
+        if( doxygen == null ) {
+            return;
+        }
+        
+        full_type_ = doxygen.getType().trim();
         type_ = new String(full_type_);
         base_type_ = new String(full_type_);
 
@@ -71,12 +74,11 @@ public class RPParamTypeBridge extends ARPBridge {
         }
 
         String patternIllegalCharcter = " |,|\\(|\\)";
-        if(type_ .matches(patternIllegalCharcter) ) {
-            // kind_ = RPTYPE_KIND.LANG;
-        }
-        base_type_  = base_type_ .replaceAll(patternIllegalCharcter, "_");
-
+        // if(type_ .matches(patternIllegalCharcter) ) {
+        //     kind_ = RPTYPE_KIND.LANG;
+        // }
         base_type_ = base_type_.trim();
+        base_type_  = base_type_ .replaceAll(patternIllegalCharcter, "_");
 
         type_ = type_.trim();
         type_  = type_ .replaceAll(patternPointer, "pointer");
@@ -84,8 +86,12 @@ public class RPParamTypeBridge extends ARPBridge {
         type_  = type_ .replaceAll(patternIllegalCharcter, "_");
     }
     
+    protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
+        List<IRPModelElement> list = toList(rpPackage.getTypes());
+        return list;
+    }
 
-    public IRPModelElement searchElementByType(IRPPackage rppackage) {
+    public IRPModelElement findElementByType(IRPPackage rppackage) {
         IRPModelElement element = null;
         // for predefine type
         if(isReference() == true ) {
@@ -128,7 +134,7 @@ public class RPParamTypeBridge extends ARPBridge {
     }
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        debug("create Type:" + getType() + " in package:" + modulePackage.getName());
+        trace("create Type:" + getType() + " in package:" + modulePackage.getName());
         IRPType rpType = modulePackage.addType(getType());   
         return rpType;
     }
@@ -137,7 +143,7 @@ public class RPParamTypeBridge extends ARPBridge {
         if(getType().equals(getBaseType()) == true) {
             return null;
         }
-        debug("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
+        trace("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
         IRPType rpBaseType = modulePackage.addType(getBaseType());   
         setApplicableVersion(rpBaseType, version);  
         return rpBaseType;
@@ -152,12 +158,12 @@ public class RPParamTypeBridge extends ARPBridge {
         }
 
         if(type_.length() > 0 && type_.equals(rpType.getName()) != true) {
-            debug(full_type_ + " change Name "+ rpType.getName() + "->" + type_);
+            trace(full_type_ + " change Name "+ rpType.getName() + "->" + type_);
             return true;
         }
 
         if(GetKind().equals(rpType.getKind()) != true ) {
-            debug(full_type_ + " change Kind "+ rpType.getKind() + "->" + GetKind());
+            trace(full_type_ + " change Kind "+ rpType.getKind() + "->" + GetKind());
             return true;
         }
 
@@ -178,17 +184,17 @@ public class RPParamTypeBridge extends ARPBridge {
         IRPType rpType = getObject(element);
 
         if(full_type_.equals(rpType.getDisplayName()) != true) {
-            debug(full_type_ + " apply DisplayName "+ rpType.getDisplayName() + "->" + full_type_);
+            trace(full_type_ + " apply DisplayName "+ rpType.getDisplayName() + "->" + full_type_);
             rpType.setDisplayName(full_type_);
         }
 
         if(type_.equals(rpType.getName()) != true && type_.length() > 0) {
-            debug(full_type_ + " apply Name "+ rpType.getName() + "->" + type_);
+            trace(full_type_ + " apply Name "+ rpType.getName() + "->" + type_);
             rpType.setName(type_);
         }
 
         if(GetKind().equals(rpType.getKind()) != true ) {
-            debug(full_type_ + " change Kind "+ rpType.getKind() + "->" + GetKind());
+            trace(full_type_ + " change Kind "+ rpType.getKind() + "->" + GetKind());
             rpType.setKind(GetKind());
         }
 
@@ -218,9 +224,8 @@ public class RPParamTypeBridge extends ARPBridge {
             rpbasetype = searchBaseType(versionPackage);
 
             if( rpbasetype == null ) { 
-                IRPPackage modulePackage = getPackage(rpType);
+                IRPPackage modulePackage = GetBaseVersionPackage(rpType);
                 rpbasetype = createBaseType(modulePackage,currentVersion);
-                debug("add BaseType:"+ getBaseType());
             }
         }
 
@@ -235,17 +240,17 @@ public class RPParamTypeBridge extends ARPBridge {
         }
 
         if(baseTypeName.equals(myBaseName) != true ) {
-            debug(full_type_ + " apply BaseType "+ myBaseName + "->" + baseTypeName);
+            trace(full_type_ + " apply BaseType "+ myBaseName + "->" + baseTypeName);
             rpType.setTypedefBaseType(rpbasetype);
         }
 
         if(isConstant_ != rpType.getIsTypedefConstant() ) {
-            debug(full_type_+ " apply Constant "+ rpType.getIsTypedefConstant() + "->" + isConstant_);
+            trace(full_type_+ " apply Constant "+ rpType.getIsTypedefConstant() + "->" + isConstant_);
             rpType.setIsTypedefConstant(isConstant_);
         }
 
         if(isReference_ != rpType.getIsTypedefReference() ) {
-            debug(full_type_+ " apply Reference "+ rpType.getIsTypedefReference() + "->" + isReference_);
+            trace(full_type_+ " apply Reference "+ rpType.getIsTypedefReference() + "->" + isReference_);
             rpType.setIsTypedefReference(isReference_);
         }
         return;

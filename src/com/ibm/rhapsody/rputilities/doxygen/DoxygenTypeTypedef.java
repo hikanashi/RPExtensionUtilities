@@ -71,7 +71,7 @@ public class DoxygenTypeTypedef extends DoxygenType {
 
             String[] one_arg = all_args[allindex].split(" ");
             TAGTYPE paramtype = TAGTYPE.PARAM;
-            DoxygenType param = paramtype.newInstance();
+            DoxygenType param = paramtype.newDoxygenInstance();
 
             for(int oneindex = 0; oneindex < one_arg.length; oneindex++) {
                 String argelement = one_arg[oneindex].trim();

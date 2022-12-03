@@ -4,8 +4,6 @@ package com.ibm.rhapsody.rputilities.doxygen;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.xml.stream.XMLStreamReader;
-
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public abstract class DoxygenType extends ARPObject {

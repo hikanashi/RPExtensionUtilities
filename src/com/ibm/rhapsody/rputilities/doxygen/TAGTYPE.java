@@ -23,14 +23,14 @@ public enum TAGTYPE {
     private final String attrvalue_;
     private final KEYTYPE type_;
     private final boolean needParent_;
-    private final Class<?> clazz_;
+    private final Class<?> doxygenclazz_;
 
-    TAGTYPE(final String tag, final KEYTYPE type, final String attrvalue, boolean needParent, Class<?> clazz) {
+    TAGTYPE(final String tag, final KEYTYPE type, final String attrvalue, boolean needParent, Class<?> doxygenclazz) {
         tag_ = tag;
         type_ = type;
         attrvalue_ = attrvalue;
         needParent_ = needParent;
-        clazz_ = clazz;
+        doxygenclazz_ = doxygenclazz;
     }
 
     public KEYTYPE getKeytype() {
@@ -57,11 +57,11 @@ public enum TAGTYPE {
         return needParent_;
     }
 
-    public DoxygenType newInstance() {
+    public DoxygenType newDoxygenInstance() {
         DoxygenType type = null;
 
         try {
-            Constructor<?> constructor = clazz_.getDeclaredConstructor();
+            Constructor<?> constructor = doxygenclazz_.getDeclaredConstructor();
             type = (DoxygenType) constructor.newInstance();
             type.tag_ = tag_;
             if(type_ == KEYTYPE.KEY_ATTR_KIND) {
@@ -73,5 +73,7 @@ public enum TAGTYPE {
 
         return type;
     }
+
+
 
 }

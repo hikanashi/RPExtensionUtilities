@@ -224,12 +224,12 @@ public class DoxygenXMLParser extends ARPObject {
             if(type.getKeytype() == TAGTYPE.KEYTYPE.KEY_ATTR_KIND) {
                 String attrvalue = option.reader.getAttributeValue(null, type.getAttrName());
                 if(type.getAttrValue().equals(attrvalue)) {
-                    typeobj = type.newInstance();
+                    typeobj = type.newDoxygenInstance();
                     break;
                 }
             }
             else {
-                typeobj = type.newInstance();
+                typeobj = type.newDoxygenInstance();
                 break;
             }
         };

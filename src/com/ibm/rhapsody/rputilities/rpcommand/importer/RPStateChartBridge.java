@@ -24,10 +24,21 @@ public class RPStateChartBridge extends ARPBridge {
     }
 
     protected void initialize(DoxygenType doxygen) {
-        doxygen.debugout(0);
+        if( doxygen == null ) {
+            return;
+        }
+
+        // doxygen.debugout(0);
     }
 
-    public IRPModelElement searchElementByType(IRPPackage rppackage) {
+    protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
+        List<IRPModelElement> list = new ArrayList<>(toList(rpPackage.getAllNestedElements()));
+        list.removeIf(element -> !(element instanceof IRPFlowchart));
+        return list;
+    }
+
+
+    public IRPModelElement findElementByType(IRPPackage rppackage) {
         // trace("find ActivityDiagram key:" + doxygen_.getName() + " package:"+ rppackage.getName());
         IRPModelElement rpelement = rppackage.findNestedElementRecursive(doxygen_.getName(),"ActivityDiagram");
         return rpelement;
@@ -35,7 +46,7 @@ public class RPStateChartBridge extends ARPBridge {
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         IRPFlowchart rpFlowchart = modulePackage.addActivityDiagram();
-        debug("create " + rpFlowchart.getDisplayName() 
+        trace("create " + rpFlowchart.getDisplayName() 
             + " name:" + doxygen_.getName() 
             + " meta:"+ rpFlowchart.getMetaClass());
         if(doxygen_.getName().length() > 0) {
@@ -50,7 +61,7 @@ public class RPStateChartBridge extends ARPBridge {
         IRPFlowchart rpActivity = getObject(element);
 
         if(doxygen_.getName().equals(rpActivity.getName()) != true) {
-            debug("Activity Name is change "+ rpActivity.getName() + "->" + doxygen_.getName());
+            trace("Activity Name is change "+ rpActivity.getName() + "->" + doxygen_.getName());
             return true;
         }
 
@@ -58,7 +69,7 @@ public class RPStateChartBridge extends ARPBridge {
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
 
         if(pins.size() != params.size() + 1) {
-            debug("Activity:" + doxygen_.getName() 
+            trace("Activity:" + doxygen_.getName() 
                 + " Argment count is change "+ pins.size() + "->" + params.size()+1);
             return true;
         }
@@ -84,12 +95,12 @@ public class RPStateChartBridge extends ARPBridge {
         DoxygenTypeParam param = getObject(type);
 
         if(param.getName().length() > 0 && param.getName().equals(rpPin.getName()) != true) {
-            debug(activityName + " Pin Name is change "+ rpPin.getName() + "->" + param.getName());
+            trace(activityName + " Pin Name is change "+ rpPin.getName() + "->" + param.getName());
             return true;
         }
 
         if(param.getDirection().equals(rpPin.getPinDirection()) != true) {
-            debug(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + param.getDirection());
+            trace(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + param.getDirection());
             return true;
         }
 
@@ -109,12 +120,12 @@ public class RPStateChartBridge extends ARPBridge {
     protected boolean isUpdateReturnPin(String activityName, IRPPin rpPin, DoxygenType type) {
 
         if(rpPin.getName().equals(PIN_RETURN_NAME) != true) {
-            debug(activityName + " Pin Name is change "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
+            trace(activityName + " Pin Name is change "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
             return true;
         }
 
         if(rpPin.getPinDirection().equals(PIN_RETURN_DIRECTION) != true) {
-            debug(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
+            trace(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
             return true;
         }
 
@@ -136,7 +147,7 @@ public class RPStateChartBridge extends ARPBridge {
         IRPFlowchart rpActivity = getObject(element);
 
         if(doxygen_.getName().equals(rpActivity.getName()) != true) {
-            debug("Activity Name is apply "+ rpActivity.getName() + "->" + doxygen_.getName());
+            trace("Activity Name is apply "+ rpActivity.getName() + "->" + doxygen_.getName());
             rpActivity.setName(doxygen_.getName());
         }
 
@@ -152,13 +163,13 @@ public class RPStateChartBridge extends ARPBridge {
             if( find_index >= 0) {
                 rpPin =  pins.get(find_index);
                 pins.remove(find_index);
-                debug(String.format("Activity:%s pin:%s is exist(index:%d)",
+                trace(String.format("Activity:%s pin:%s is exist(index:%d)",
                         rpActivity.getDisplayName() , 
                         rpPin.getName(),
                         find_index));
             } 
             else {
-                debug(String.format("Activity:%s pin:%s is create",
+                trace(String.format("Activity:%s pin:%s is create",
                         rpActivity.getDisplayName() , argmentName));
                 rpPin = rpActivity.addActivityParameter(argmentName);
             }
@@ -194,7 +205,7 @@ public class RPStateChartBridge extends ARPBridge {
     protected void deletePins(List<IRPPin> args ) {
         for(int index = args.size() - 1; index > 0; index--){
             IRPPin rpPin = args.get(index);
-            debug("\tdelete pin:"+ rpPin.getName());
+            trace("\tdelete pin:"+ rpPin.getName());
             rpPin.deleteFromProject();
         }
         
@@ -207,12 +218,12 @@ public class RPStateChartBridge extends ARPBridge {
         }
 
         if(param.getName().length() > 0 && rpPin.getName().equals(param.getName()) != true) {
-            debug(activityName + " Pin Name is apply "+ rpPin.getName() + "->" + param.getName());
+            trace(activityName + " Pin Name is apply "+ rpPin.getName() + "->" + param.getName());
             rpPin.setName(param.getName());
         }
 
         if(rpPin.getPinDirection().equals(param.getDirection()) != true) {
-            debug(activityName + " Direction is apply "+ rpPin.getPinDirection() + "->" + param.getDirection());
+            trace(activityName + " Direction is apply "+ rpPin.getPinDirection() + "->" + param.getDirection());
             rpPin.setPinDirection(param.getDirection());
         }
 
@@ -225,12 +236,12 @@ public class RPStateChartBridge extends ARPBridge {
 
     protected void applyReturnPin(String activityName, IRPPin rpPin, DoxygenType param, String currentVersion) {
         if(rpPin.getName().equals(PIN_RETURN_NAME) != true) {
-            debug(activityName + " Pin Name is apply "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
+            trace(activityName + " Pin Name is apply "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
             rpPin.setName(PIN_RETURN_NAME);
         }
 
         if(rpPin.getPinDirection().equals(PIN_RETURN_DIRECTION) != true) {
-            debug(activityName + " Direction is apply "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
+            trace(activityName + " Direction is apply "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
             rpPin.setPinDirection(PIN_RETURN_DIRECTION);
         }
 

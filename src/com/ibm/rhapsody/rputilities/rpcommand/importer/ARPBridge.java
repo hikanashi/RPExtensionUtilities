@@ -1,6 +1,8 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeCompound;
@@ -14,6 +16,7 @@ public abstract class ARPBridge extends ARPObject {
     protected final String TAG_VERSION_PACKAGE = "Version";
     protected final String TAG_VERSION_APPLICABLE = "FirstApplicableVersion";
     protected final String TAG_VERSION_UNAVAILABLE = "UnavailableStartVersion";
+    protected final String TAG_EXCLUDED_ELEMENT = "Excluded";
     protected final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
     protected final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
 
@@ -27,30 +30,39 @@ public abstract class ARPBridge extends ARPObject {
 
     }
 
-    abstract public IRPModelElement searchElementByType(IRPPackage rpPackage);
-    abstract public IRPModelElement createElementByType(IRPPackage modulPackage);
-    abstract public boolean isUpdate(IRPModelElement element);
-    abstract public void applyByType(IRPModelElement element, String currentVersion);
+    abstract protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage);
+    abstract protected IRPModelElement findElementByType(IRPPackage rpPackage);
+    abstract protected IRPModelElement createElementByType(IRPPackage modulPackage);
+    abstract protected boolean isUpdate(IRPModelElement element);
+    abstract protected void applyByType(IRPModelElement element, String currentVersion);
 
 
     public IRPModelElement importElement(String currentVersion) {
-        IRPModelElement current_element = null;
-        IRPModelElement unavailable_element = null; 
 
+        IRPModelElement current_element = findElement(rootPackage_);
+        IRPModelElement unavailable_element = null; 
+        String baseVersion = getBaseVersion(current_element);
         boolean update = false;
-        current_element = searchElement(rootPackage_);
-        if( current_element != null ) {
-            
-            String baseVersion = GetBaseVersion(current_element);
+        int compareResult = 0;
+
+        if( current_element != null ) {   
+            compareResult = compareVersion(baseVersion, currentVersion);
             update = isUpdate(current_element);
-            if( update == true && baseVersion.equals(currentVersion) != true) {
-                unavailable_element = current_element;
-                current_element = null;
-            }
+        }
+
+        if( update == true && compareResult < 0) {
+            unavailable_element = current_element;
+            current_element = null;
+        }
+
+        if(compareResult > 0) {
+            warn(String.format("Version %s is older than %s. so can't import.",
+                     currentVersion, baseVersion));
+            return null;
         }
 
         IRPPackage versionPackage = createVersionPackage(currentVersion);
-        IRPPackage modulePackage = CreateModulePackage(versionPackage);
+        IRPPackage modulePackage = createModulePackage(versionPackage);
 
         if( current_element != null ) {
             apply(current_element, modulePackage, currentVersion);
@@ -64,19 +76,19 @@ public abstract class ARPBridge extends ARPObject {
 
         apply(current_element, modulePackage, currentVersion);
 
-        if(unavailable_element != null) {
-            unavailableElement(unavailable_element, current_element, currentVersion);
-        }
+        changedElement(unavailable_element, current_element, currentVersion);
 
         return current_element;
     }
 
-    public IRPModelElement searchElement(IRPPackage rpPackage) {
+
+
+    public IRPModelElement findElement(IRPPackage rpPackage) {
         if(rpPackage == null) { 
             return null;
         }
 
-        IRPModelElement element = searchElementByType(rpPackage);
+        IRPModelElement element = findElementByType(rpPackage);
 
         if(element != null) {
             return element;
@@ -85,7 +97,7 @@ public abstract class ARPBridge extends ARPObject {
         List<IRPPackage> packages = toList(rpPackage.getPackages());
 
         for(IRPPackage subPackage :  packages) {
-            element = searchElement(subPackage);
+            element = findElement(subPackage);
             if(element != null) {
                 return element;
             }
@@ -94,35 +106,120 @@ public abstract class ARPBridge extends ARPObject {
         return null;
     }
 
-    public IRPModelElement createElement(IRPPackage versionPackage) {
-        IRPPackage targetPackage = CreateModulePackage(versionPackage);
+    public void replaceOldElement(String currentVersion) {
+
+        Set<IRPModelElement> list = getElements(rootPackage_, currentVersion);
+
+        debug(String.format("replaceOldElement:%s version:%s target:%d",
+                getClass().getSimpleName(),
+                currentVersion,
+                list.size()));
+
+        for(IRPModelElement element : list) {
+            if( isDeleteTarget(element) != true) {
+                continue;
+            }
+
+            deletedElement(element, null, currentVersion);
+        }
+
+        return;
+    }
+
+    public Set<IRPModelElement> getElements(IRPPackage rpPackage, String currentVersion) {
+        Set<IRPModelElement> elements = new HashSet<IRPModelElement>();
+        if(rpPackage == null) { 
+            return null;
+        }
+
+        if( rpPackage.getGUID().equals(rootPackage_.getGUID()) != true ) {
+            String version = getBaseVersion(rpPackage);
+            int compareResult = compareVersion(version, currentVersion);
+            if( compareResult >= 0) {
+                debug(String.format("getElements package:%s(version:%s) isn't old current(%s):%d",
+                    rpPackage.getName(),
+                    version,
+                    currentVersion,
+                    compareResult));
+                return null;
+            } else {
+                debug(String.format("getElements package:%s(version:%s) is target old current(%s):%d",
+                    rpPackage.getName(),
+                    version,
+                    currentVersion,
+                    compareResult));  
+            }
+
+            List<IRPModelElement> list = getElementsByType(rpPackage);
+            if(list != null) {
+                elements.addAll(list);
+            }
+        }
+
+        List<IRPPackage> packages = toList(rpPackage.getPackages());
+        for(IRPPackage subPackage :  packages) {
+            if( isDeleteTarget(subPackage) != true ) {
+                continue;
+            }
+
+            Set<IRPModelElement> sublist =  getElements(subPackage, currentVersion);
+            if( sublist != null) {
+                elements.addAll(sublist);
+            }
+        }
+
+        return elements;
+    }
+
+    protected boolean isDeleteTarget(IRPModelElement element) {
+        if( element == null ) {
+            return false;
+        }
+
+        String[] notTargetTag = {TAG_VERSION_UNAVAILABLE,TAG_EXCLUDED_ELEMENT};
+
+        for(int index=0; index < notTargetTag.length; index++) {
+            IRPTag rptag = element.getTag(notTargetTag[index]);
+            if( rptag != null ) {
+                debug(String.format("element:%s has tag:%s. so excluded delete.", 
+                            element.getName(),
+                            rptag.getName()));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected IRPModelElement createElement(IRPPackage versionPackage) {
+        IRPPackage targetPackage = createModulePackage(versionPackage);
         IRPModelElement element = createElementByType(targetPackage); 
         return element;
     }
 
-    public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
+    protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
 
         updateOwner(element,modulePackage);
         setApplicableVersion(element, currentVersion);
         applyByType(element, currentVersion);
     }
 
-    protected void updateOwner(IRPModelElement element, IRPPackage modulePackage) {
-        IRPPackage ownerPackage = getPackage(element);
+    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement) {
+        IRPPackage ownerPackage = getPackage(currentElement);
         String ownerID = "";
         String ownerName = "";
-        if(getPackage(element) != null) {
+        if(getPackage(currentElement) != null) {
             ownerID = ownerPackage.getGUID();
             ownerName = ownerPackage.getName();
         }
-        if( ownerID.equals(modulePackage.getGUID()) != true ) {
-            debug(String.format("element:%s's owner %s(%s) set owner:%s(%s)",
-                    element.getName(),
+        if( ownerID.equals(ownerElement.getGUID()) != true ) {
+            trace(String.format("element:%s's owner %s(%s)->%s(%s)",
+                    currentElement.getName(),
                     ownerName,
                     ownerID,
-                    modulePackage.getName(),
-                    modulePackage.getGUID()));
-            element.setOwner(modulePackage);
+                    ownerElement.getName(),
+                    ownerElement.getGUID()));
+            currentElement.setOwner(ownerElement);
         }
     }
 
@@ -141,16 +238,32 @@ public abstract class ARPBridge extends ARPObject {
         return setTagOnlyOnce(rpelement,TAG_VERSION_UNAVAILABLE,version);
     }
 
+    protected void deletedElement(IRPModelElement unavailable, IRPModelElement current, String currentVersion) {
+        unavailableElement(unavailable, current, ELEMENT_NAME_DELETE_PREFIX, currentVersion);
+    }
 
-    protected void unavailableElement(IRPModelElement unavailable, IRPModelElement current, String currentVersion) {
+    protected void changedElement(IRPModelElement unavailable, IRPModelElement current, String currentVersion) {
+        unavailableElement(unavailable, current, ELEMENT_NAME_CHANGE_PREFIX, currentVersion);
+    }
+
+    protected void unavailableElement(IRPModelElement unavailable, IRPModelElement current, String prefix, String currentVersion) {
+        if( unavailable == null ) {
+            return;
+        }
+
         setUnabavailableVersion(unavailable,currentVersion);
 
         String change_name = String.format("%s_%s_%s", 
-                                ELEMENT_NAME_CHANGE_PREFIX,
+                                prefix,
                                 convertAvailableName(currentVersion),
                                 unavailable.getName());
-        
+        debug(String.format("change unavailable %s->%s",
+                    unavailable.getName(), change_name ));
         unavailable.setName(change_name);
+
+        if( current == null ) {
+            return;
+        }
 
         // TODO addLinkToElement
 
@@ -173,8 +286,18 @@ public abstract class ARPBridge extends ARPObject {
         return true;
     }
 
-    public String GetBaseVersion(IRPModelElement rpelement) {
+    protected int compareVersion(String srcVersion, String destVersion) {
+        int compare = srcVersion.compareTo(destVersion);
+        trace("srcVersion:"+ srcVersion + " dstVersion:" + destVersion + " result:" + compare);
+        return compare;
+    }
+
+    public String getBaseVersion(IRPModelElement rpelement) {
         String baseVersion = "";
+        if(rpelement == null) {
+            return baseVersion;
+        }
+
         IRPPackage versionPackage = GetBaseVersionPackage(rpelement);
         if(versionPackage == null) {
             return baseVersion;
@@ -254,7 +377,7 @@ public abstract class ARPBridge extends ARPObject {
         return versionPackage;
     }
 
-    public IRPPackage CreateModulePackage(IRPPackage versionPackage) {
+    public IRPPackage createModulePackage(IRPPackage versionPackage) {
         if(versionPackage == null ) {
             return null;
         }
