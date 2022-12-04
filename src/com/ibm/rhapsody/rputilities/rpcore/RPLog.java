@@ -10,6 +10,7 @@ public class RPLog {
 	protected static IRPApplication rhpApplication_ = null;
     protected static String title_ = "unknown";
 	protected static RPLogLevel level_ = RPLogLevel.INFO;
+	protected static String logfilename_ = null;
 	protected static FileHandler logfileHandler_ = null;
 
 	protected Class<?> clazz_ = null;
@@ -38,6 +39,8 @@ public class RPLog {
 		title_ = null;
 		if(logfileHandler_ != null ) {
 			logfileHandler_.close();
+			RPFileSystem system = new RPFileSystem();
+			system.Delete(logfilename_);
 		}
 	}
 
@@ -62,8 +65,8 @@ public class RPLog {
 
 		if(logfileHandler_ == null) {
 			try {
-				String logname = "rputilities" + RPFileSystem.CreateDateTimeString(null) + ".log";
-				logfileHandler_ = new FileHandler(logname);
+				logfilename_ = "rputilities" + RPFileSystem.CreateDateTimeString(null) + ".log";
+				logfileHandler_ = new FileHandler(logfilename_);
 				logfileHandler_.setFormatter(new java.util.logging.SimpleFormatter());
 			}
 			catch(Exception e) {

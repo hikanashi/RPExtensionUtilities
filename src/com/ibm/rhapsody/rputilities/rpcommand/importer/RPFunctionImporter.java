@@ -111,7 +111,14 @@ public class RPFunctionImporter extends ARPObject {
                 return false;
             }
 
-            if(++index > ELEMENT_IMPORT_LIMIT) {
+            if(++index >= ELEMENT_IMPORT_LIMIT) {
+                warn(String.format("importModel tag:%s/%s(%s) is over the maximum number of imports(%d)",
+                            tagtype.getTag(),
+                            tagtype.getAttrName(),
+                            tagtype.getAttrValue(),
+                            ELEMENT_IMPORT_LIMIT));
+                warn("Therefore, data beyond the maximum number will not be imported count:"
+                    + (list.size() - ELEMENT_IMPORT_LIMIT));
                 break;
             }
         }

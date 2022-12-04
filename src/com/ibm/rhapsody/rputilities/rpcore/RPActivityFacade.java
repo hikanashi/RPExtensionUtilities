@@ -14,10 +14,8 @@ public class RPActivityFacade extends ARPObject {
     /**
      * 
      */
-    public RPActivityFacade() 
-    {
+    public RPActivityFacade() {
         super(RPActivityFacade.class);
-
     }
 
     /**

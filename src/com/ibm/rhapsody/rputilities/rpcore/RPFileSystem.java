@@ -97,6 +97,9 @@ public class RPFileSystem extends ARPObject {
         }
 
         Path pathobj = Paths.get(filePath);
+        if(Files.exists(pathobj) != true) {
+            return false;
+        }
 
         try 
         {

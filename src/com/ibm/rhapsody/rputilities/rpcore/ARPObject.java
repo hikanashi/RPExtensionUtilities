@@ -244,7 +244,7 @@ public abstract class ARPObject {
     public void debugMemory(String title) {
         System.gc();
         Runtime runtime = Runtime.getRuntime();
-        debug(String.format("%s total:%d free:%d use:%d", 
+        info(String.format("%s total:%d free:%d use:%d", 
             title,
             runtime.totalMemory(),
             runtime.freeMemory(),
