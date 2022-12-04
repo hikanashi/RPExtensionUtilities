@@ -1,4 +1,7 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.doxygen.type;
+
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 
 public class DoxygenTypeFunction extends DoxygenType {
     public DoxygenTypeFunction() {

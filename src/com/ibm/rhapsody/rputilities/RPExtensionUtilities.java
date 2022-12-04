@@ -11,19 +11,28 @@ import com.telelogic.rhapsody.core.*;
 
 public class RPExtensionUtilities extends RPUserPlugin {
 	protected static RPLog slog_ = new RPLog(RPExtensionUtilities.class);
-	protected IRPApplication m_rhpApplication = null;
+	protected static IRPApplication rpApplication_ = null;
+
+
+	/**
+	 * get Rhapsody Application
+	 * @return Rhapsody Application
+	 */
+	public static IRPApplication getApplication() {
+		return rpApplication_;
+	}
 
 	/* 
 	 * called when the plug-in is loaded
 	 * @see com.telelogic.rhapsody.core.RPUserPlugin#RhpPluginInit(com.telelogic.rhapsody.core.IRPApplication)
 	 */
-	public void RhpPluginInit(final IRPApplication rpyApplication) {
+	public void RhpPluginInit(final IRPApplication rpApplication) {
 		// keep the application interface for later use
-		m_rhpApplication = rpyApplication;
-		RPLog.Initialize("RPUtilities", rpyApplication);
+		rpApplication_ = rpApplication;
+		RPLog.Initialize("RPUtilities", rpApplication);
 		
-		if(m_rhpApplication != null) {
-			IRPProject rpproject = m_rhpApplication.activeProject();
+		if(rpApplication_ != null) {
+			IRPProject rpproject = rpApplication_.activeProject();
 			if(rpproject != null) {
 				RPFileSystem.setActiveProjectPath(rpproject.getCurrentDirectory());
 			}
@@ -47,7 +56,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 	 */
 	public void OnMenuItemSelect(String menuItem) {
 		//show the selected element name
-		IRPModelElement element = m_rhpApplication.getSelectedElement();
+		IRPModelElement element = rpApplication_.getSelectedElement();
 		RPCommandRunner.RunCommand(menuItem, element);
 	}
 
@@ -69,7 +78,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 		slog_.info("Plugin cleanup:"+ this.getClass().toString());
 		//cleanup
 		RPLog.Finalize();
-		m_rhpApplication = null;
+		rpApplication_ = null;
 		//return true so the plug-in will be unloaded now (on project close)
 		return true;
 	}

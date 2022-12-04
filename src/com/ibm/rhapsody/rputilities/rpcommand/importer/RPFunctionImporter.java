@@ -2,10 +2,18 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeTypedef;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.ARPBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPDefineBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPEnumBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPEventBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPStateChartBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPStructBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPTypedefBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPUnionBridge;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
@@ -17,7 +25,51 @@ public class RPFunctionImporter extends ARPObject {
         super(RPFunctionImporter.class);
     }
 
-    protected boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion,TAGTYPE tagtype) {
+    public boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion) {
+        boolean result = false;
+
+        // debugMemory("Start Define");
+        // result = importModel(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
+        // if(result != true ) {
+        //     return result;
+        // }
+
+        debugMemory("Start Enum");
+        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("Start Union");
+        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.UNION);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("Start Struct");
+        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.STRUCT);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("Start Typedef");
+        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("Start Function");
+        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("importModel Finish");
+        info("importModel Finish");
+        return result;
+    }
+
+    protected boolean importModelbyType(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion,TAGTYPE tagtype) {
         if(rootPackage == null || manager == null || currentVersion == null || tagtype == null) {
             error(String.format("importModel argument is illegal. package:%s manager:%d version:%s type:%s",
                     (rootPackage != null ? rootPackage.getName() : "null"),

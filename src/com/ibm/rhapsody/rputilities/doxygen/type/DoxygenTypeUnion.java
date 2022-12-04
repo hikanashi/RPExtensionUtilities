@@ -1,9 +1,12 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.doxygen.type;
 
-public class DoxygenUnion extends DoxygenType {
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 
-    public DoxygenUnion() {
-        super(DoxygenUnion.class);
+public class DoxygenTypeUnion extends DoxygenType {
+
+    public DoxygenTypeUnion() {
+        super(DoxygenTypeUnion.class);
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {

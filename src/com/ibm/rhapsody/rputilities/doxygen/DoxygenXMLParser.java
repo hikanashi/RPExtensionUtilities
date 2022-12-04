@@ -1,5 +1,7 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
 
@@ -26,9 +28,26 @@ public class DoxygenXMLParser extends ARPObject {
         return manager_;
     }
 
+    public DoxygenObjectManager Parse(String doxygenPath) {
+        debugMemory("Start Parse");
+ 
+        String xsltPhath = doxygenPath + "\\combine.xslt";
+        String sourcePath = doxygenPath+ "\\index.xml";
 
-    public boolean Parse(String xsltPath, String sourceTreePath, String outputPath) 
-    {
+        String formatNowDate = RPFileSystem.CreateDateTimeString(null);
+        String resultPath = RPFileSystem.getActiveProjectPath() + "\\result_" + formatNowDate + ".xml";
+
+        boolean result = ParseInternal(xsltPhath, sourcePath, resultPath);
+        if(result != true) {
+            return null;
+        }
+
+        info("ParseXML success:" + getManager().size());
+
+        return getManager();
+    }
+
+    protected boolean ParseInternal(String xsltPath, String sourceTreePath, String outputPath) {
         boolean result = false;
 
 		try {
@@ -53,7 +72,7 @@ public class DoxygenXMLParser extends ARPObject {
         return result;
     }
 
-    public boolean Transform(String xsltPath, String sourceTreePath, String outputPath) 
+    protected boolean Transform(String xsltPath, String sourceTreePath, String outputPath) 
     {
         info("Transform xslt" + xsltPath + " source:" + sourceTreePath + " output:" + outputPath);
 
@@ -103,7 +122,7 @@ public class DoxygenXMLParser extends ARPObject {
         return true;
     }
 
-    public boolean XmlParse(String xmlPath) 
+    protected boolean XmlParse(String xmlPath) 
     {
         RPFileSystem filesystem = new RPFileSystem();
             

@@ -240,4 +240,14 @@ public abstract class ARPObject {
 	{
 		log_.trace( message, exception);
 	}
+
+    public void debugMemory(String title) {
+        System.gc();
+        Runtime runtime = Runtime.getRuntime();
+        debug(String.format("%s total:%d free:%d use:%d", 
+            title,
+            runtime.totalMemory(),
+            runtime.freeMemory(),
+            runtime.totalMemory() - runtime.freeMemory() ));
+    }
 }

@@ -1,10 +1,11 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.doxygen.type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public class DoxygenObjectManager extends ARPObject {

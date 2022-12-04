@@ -1,4 +1,4 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.doxygen.type;
 
 public class DoxygenTypeDefilne extends DoxygenType {
     protected StringBuffer initializer_ = new StringBuffer(); 

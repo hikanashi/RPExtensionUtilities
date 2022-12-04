@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamReader;
 
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public class DoxygenXMLParseOption extends ARPObject {

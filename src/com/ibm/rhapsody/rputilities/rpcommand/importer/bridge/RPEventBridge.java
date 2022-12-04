@@ -1,11 +1,11 @@
-package com.ibm.rhapsody.rputilities.rpcommand.importer;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeParam;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeTypedef;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
 import com.telelogic.rhapsody.core.IRPArgument;
 import com.telelogic.rhapsody.core.IRPClassifier;
 import com.telelogic.rhapsody.core.IRPEvent;

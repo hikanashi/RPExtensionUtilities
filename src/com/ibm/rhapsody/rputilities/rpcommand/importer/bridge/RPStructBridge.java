@@ -1,21 +1,22 @@
-package com.ibm.rhapsody.rputilities.rpcommand.importer;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
 import com.telelogic.rhapsody.core.IRPAttribute;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPUnionBridge extends ARPBridge {
+public class RPStructBridge extends ARPBridge {
     protected String name_ = null;
-    protected RPTYPE_KIND kind_ = RPTYPE_KIND.UNION;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.STRUCT;
 
-    public RPUnionBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPUnionBridge.class, doxygen, rootPackage);
+    public RPStructBridge(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPStructBridge.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 
@@ -25,7 +26,7 @@ public class RPUnionBridge extends ARPBridge {
             return;
         }
 
-        name_ = kind_.getImplicitName(doxygen_.getQualifiedName());
+        name_ = kind_.getImplicitName(doxygen_.getName());
     }
 
     protected String getName() {
@@ -49,7 +50,7 @@ public class RPUnionBridge extends ARPBridge {
             return false;
         }
 
-        if( rpType.isUnion() == 1) {
+        if( rpType.isStruct() == 1) {
             return true;
         }
 
@@ -78,7 +79,7 @@ public class RPUnionBridge extends ARPBridge {
         }
 
         if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
-            trace("Union change Name "+ rpType.getName() + "->" + getName());
+            trace("Struct change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
@@ -125,11 +126,35 @@ public class RPUnionBridge extends ARPBridge {
 
         List<DoxygenType> variables = doxygen_.getChildlen(TAGTYPE.VARIABLE);
         for( DoxygenType variable : variables) {
-            IRPAttribute rpAttribute  = rpType.addAttribute(variable.getName());
+            IRPAttribute rpAttribute = createAttribute(rpType, variable);
             applyStructMember(rpAttribute, variable, currentVersion);
         }
 
         return;
+    }
+
+    protected IRPAttribute createAttribute(IRPType rpType, DoxygenType value) {
+ 
+        String attributeName = null;
+        IRPAttribute rpAttribute = null;
+
+
+        for(int index = 0; ;index++) {
+            if(index == 0) {
+                attributeName = value.getName();
+            }
+            else {
+                attributeName = value.getName()+ Integer.toString(index);
+            }
+
+            rpAttribute = rpType.findAttribute(attributeName);
+            if(rpAttribute == null) {
+                break;
+            }
+        }
+
+        rpAttribute = rpType.addAttribute(attributeName);
+        return rpAttribute;
     }
 
     protected void applyStructMember(IRPAttribute rpAttribute, DoxygenType value, String currentVersion) {
@@ -142,5 +167,4 @@ public class RPUnionBridge extends ARPBridge {
         rpAttribute.setType(type);
         return;
     }
-
 }

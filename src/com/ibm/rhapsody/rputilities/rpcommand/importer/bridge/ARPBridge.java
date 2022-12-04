@@ -1,11 +1,11 @@
-package com.ibm.rhapsody.rputilities.rpcommand.importer;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeFile;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFile;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;

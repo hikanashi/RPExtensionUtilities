@@ -2,6 +2,19 @@ package com.ibm.rhapsody.rputilities.doxygen;
 
 import java.lang.reflect.Constructor;
 
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenStruct;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeDefilne;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeEnum;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeEnumValue;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFile;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFunction;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeRef;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeVariable;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeUnion;
+
 public enum TAGTYPE {
     DEFINE("memberdef",KEYTYPE.KEY_ATTR_KIND,"define",false,DoxygenTypeDefilne.class),
     ENUM("memberdef",KEYTYPE.KEY_ATTR_KIND,"enum",false,DoxygenTypeEnum.class),
@@ -12,7 +25,7 @@ public enum TAGTYPE {
     ENUMVAL("enumvalue",KEYTYPE.KEY_TAG,"",true,DoxygenTypeEnumValue.class),
     REF("ref",KEYTYPE.KEY_TAG,"",true,DoxygenTypeRef.class),
     STRUCT("compounddef",KEYTYPE.KEY_ATTR_KIND,"struct",false,DoxygenStruct.class),
-    UNION("compounddef",KEYTYPE.KEY_ATTR_KIND,"union",false,DoxygenUnion.class),
+    UNION("compounddef",KEYTYPE.KEY_ATTR_KIND,"union",false,DoxygenTypeUnion.class),
     FILE("compounddef",KEYTYPE.KEY_ATTR_KIND,"file",false,DoxygenTypeFile.class),
     ;
 
@@ -65,9 +78,9 @@ public enum TAGTYPE {
         try {
             Constructor<?> constructor = doxygenclazz_.getDeclaredConstructor();
             type = (DoxygenType) constructor.newInstance();
-            type.tag_ = tag_;
+            type.setTag(tag_);
             if(type_ == KEYTYPE.KEY_ATTR_KIND) {
-                type.kind_ = attrvalue_;
+                type.setKind(attrvalue_);
             }
 
         } catch(Exception e) {   

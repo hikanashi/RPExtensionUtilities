@@ -1,12 +1,14 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import java.lang.Runtime;
+
+import com.ibm.rhapsody.rputilities.RPExtensionUtilities;
 import com.ibm.rhapsody.rputilities.doxygen.*;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
-import com.ibm.rhapsody.rputilities.rpcore.RPLog;
-import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
-import com.ibm.rhapsody.rputilities.window.FileSelector;
+// import com.ibm.rhapsody.rputilities.rpcore.RPLog;
+// import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
@@ -27,7 +29,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
      */
     public boolean command(String[] argment) 
     {
-        info("Doxygen import");
+        info("Import Start");
 
         // RPLog.setLevel(RPLogLevel.DEBUG);
 
@@ -38,102 +40,26 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
             return false;
         }
 
-/* 
-        FileSelector file = new FileSelector();
-        String doxygenPath = file.GetOpenDirectoryDialog();
-        if(doxygenPath == null) {
-            return false;
-        }
-         */
-
+        ImportGUI ui = new ImportGUI(RPExtensionUtilities.getApplication());
+        
         String doxygenPath = "E:\\Rhapsody\\Doxygen\\out\\xml";
         String currentVersion = "v01.00.00";
 
-        DoxygenObjectManager manager = Parse(doxygenPath);;
-        if( manager == null) {
-            return false;
-        }
-
-                
-        boolean result = false;
-        result  = importModel(rootPackage,manager,currentVersion);
-
-        return result;
-    }
-
-    protected DoxygenObjectManager Parse(String doxygenPath) {
-        debugMemory("Start Parse");
- 
-        String xsltPhath = doxygenPath + "\\combine.xslt";
-        String sourcePath = doxygenPath+ "\\index.xml";
-
-        String formatNowDate = RPFileSystem.CreateDateTimeString(null);
-        String resultPath = RPFileSystem.getActiveProjectPath() + "\\result_" + formatNowDate + ".xml";
-
-        DoxygenXMLParser xmlparser = new DoxygenXMLParser();
-        boolean result = xmlparser.Parse(xsltPhath, sourcePath, resultPath);
-        if(result != true) {
-            return null;
-        }
-
-        info("ParseXML success:" + xmlparser.getManager().size());
-
-        return xmlparser.getManager();
-    }
-
-    protected boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion) {
-
-        RPFunctionImporter importer = new RPFunctionImporter();
-        boolean result = false;
-
-        // debugMemory("Start Define");
-        // result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
-        // if(result != true ) {
-        //     return result;
+        // DoxygenXMLParser xmlparser = new DoxygenXMLParser();
+        // DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);;
+        // if( manager == null) {
+        //     return false;
         // }
-
-        debugMemory("Start Enum");
-        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
-        if(result != true ) {
-            return result;
-        }
-
-        debugMemory("Start Union");
-        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.UNION);
-        if(result != true ) {
-            return result;
-        }
-
-        debugMemory("Start Struct");
-        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.STRUCT);
-        if(result != true ) {
-            return result;
-        }
-
-        debugMemory("Start Typedef");
-        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
-        if(result != true ) {
-            return result;
-        }
-
-        debugMemory("Start Function");
-        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
-        if(result != true ) {
-            return result;
-        }
-
-        debugMemory("importModel Finish");
-        info("importModel Finish");
-        return result;
+        
+        // RPFunctionImporter importer = new RPFunctionImporter();
+        // boolean result = false;
+        // result  = importer.importModel(rootPackage,manager,currentVersion);
+        // return result;
+        info("Import Finish");
+        return true;
     }
 
-    protected void debugMemory(String title) {
-        System.gc();
-        Runtime runtime = Runtime.getRuntime();
-        info(String.format("%s total:%d free:%d use:%d", 
-            title,
-            runtime.totalMemory(),
-            runtime.freeMemory(),
-            runtime.totalMemory() - runtime.freeMemory() ));
-    }
+
+
+
 }

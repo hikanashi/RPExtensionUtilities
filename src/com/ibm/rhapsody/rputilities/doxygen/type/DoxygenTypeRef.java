@@ -1,4 +1,4 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.doxygen.type;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -20,7 +20,7 @@ public class DoxygenTypeRef extends DoxygenType {
         return;
     }
 
-    protected void linkObject() {
+    public void linkObject() {
 
         if(manager_ != null) {
             refobj = manager_.getObject(kindref_ + "def", id_);

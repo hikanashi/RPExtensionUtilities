@@ -1,9 +1,11 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.doxygen.type;
 
 
 import java.util.List;
 import java.util.ArrayList;
 
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public abstract class DoxygenType extends ARPObject {
@@ -88,12 +90,20 @@ public abstract class DoxygenType extends ARPObject {
         }
     }
 
+    public void setKind(String kind) {
+        kind_ = kind;
+    }
+
     public String getTag() {
         if( tag_ != null) {
             return tag_;
         } else {
             return "";
         }
+    }
+
+    public void setTag(String tag) {
+        tag_ = tag;
     }
 
     public String getText() {
@@ -254,7 +264,7 @@ public abstract class DoxygenType extends ARPObject {
 
     }
 
-    protected void linkObject() {
+    public void linkObject() {
         return;
     }
 
