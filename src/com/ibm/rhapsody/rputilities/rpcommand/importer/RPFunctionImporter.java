@@ -61,6 +61,16 @@ public class RPFunctionImporter extends ARPObject {
             return bridge;
         }
 
+        if( tagtype == TAGTYPE.ENUM ) {
+            bridge = new RPEnumBridge(doxygen,rootPackage);
+            return bridge;
+        }
+
+        if( tagtype == TAGTYPE.DEFINE ) {
+            bridge = new RPDefineBridge(doxygen,rootPackage);
+            return bridge;
+        }
+
         if( tagtype == TAGTYPE.TYPEDEF ) {
             DoxygenTypeTypedef typedef = getObject(doxygen);
             if(typedef == null) {
@@ -76,10 +86,8 @@ public class RPFunctionImporter extends ARPObject {
             return bridge;
         }
 
-        // TODO ENUM data type
         // TODO UNION data type
         // TODO VARIABLE data type
-        // TODO DEFINE data type
 
         return bridge;
     }

@@ -39,6 +39,8 @@ public class RPOperationBridge extends ARPBridge {
     }
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
+        debug("create Operation:" + name_ + " in package:" + modulePackage.getName());
+
         IRPOperation rpOperation = modulePackage.addGlobalFunction(name_); 
         return rpOperation;
     }

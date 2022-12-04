@@ -2,6 +2,7 @@ package com.ibm.rhapsody.rputilities.doxygen;
 
 public class DoxygenTypeEnum extends DoxygenType {
 
+
     public DoxygenTypeEnum() {
         super(DoxygenTypeEnum.class);
     }
@@ -12,5 +13,6 @@ public class DoxygenTypeEnum extends DoxygenType {
         }
 
         return false;
-    }    
+    }
+    
 }

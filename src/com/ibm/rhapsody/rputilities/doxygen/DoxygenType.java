@@ -243,7 +243,7 @@ public abstract class DoxygenType extends ARPObject {
         return;
     }
 
-    public void debugout(int index) {        
+    public void logoutdebug(int index) {        
         StringBuffer logbuffer = new StringBuffer();
         for(int count=0; count < index; count++) {
             logbuffer.append("\t");
@@ -262,7 +262,7 @@ public abstract class DoxygenType extends ARPObject {
         debug(logbuffer.toString());
         
         for(DoxygenType child : getChildlen()) {
-            child.debugout(index+1);
+            child.logoutdebug(index+1);
         }
     }
 

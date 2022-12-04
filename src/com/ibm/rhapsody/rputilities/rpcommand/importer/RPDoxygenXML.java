@@ -83,6 +83,16 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         RPFunctionImporter importer = new RPFunctionImporter();
         boolean result = false;
 
+        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
+        if(result != true ) {
+            return result;
+        }
+
+        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
+        if(result != true ) {
+            return result;
+        }
+
         result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
         if(result != true ) {
             return result;

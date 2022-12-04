@@ -134,7 +134,7 @@ public class RPParamTypeBridge extends ARPBridge {
     }
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        trace("create Type:" + getType() + " in package:" + modulePackage.getName());
+        debug("create Type:" + getType() + " in package:" + modulePackage.getName());
         IRPType rpType = modulePackage.addType(getType());   
         return rpType;
     }
@@ -143,7 +143,7 @@ public class RPParamTypeBridge extends ARPBridge {
         if(getType().equals(getBaseType()) == true) {
             return null;
         }
-        trace("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
+        debug("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
         IRPType rpBaseType = modulePackage.addType(getBaseType());   
         setApplicableVersion(rpBaseType, version);  
         return rpBaseType;

@@ -48,6 +48,7 @@ public class RPEventBridge extends ARPBridge {
             return null;
         }
 
+        debug("create Event:" + name_ + " in package:" + modulePackage.getName());
         IRPEvent rpEvent = modulePackage.addEvent(name_); 
         return rpEvent;
     }

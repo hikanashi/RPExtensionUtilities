@@ -8,6 +8,10 @@ public class DoxygenTypeDefilne extends DoxygenType {
         super(DoxygenTypeDefilne.class);
     }
 
+    public String getInitializer() {
+        return initializer_.toString();
+    }
+    
     protected void charactersSubInternal(String tag, String text) {
         trace("charactersInternal");
 

@@ -46,7 +46,7 @@ public class RPStateChartBridge extends ARPBridge {
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         IRPFlowchart rpFlowchart = modulePackage.addActivityDiagram();
-        trace("create " + rpFlowchart.getDisplayName() 
+        debug("create " + rpFlowchart.getDisplayName() 
             + " name:" + doxygen_.getName() 
             + " meta:"+ rpFlowchart.getMetaClass());
         if(doxygen_.getName().length() > 0) {
