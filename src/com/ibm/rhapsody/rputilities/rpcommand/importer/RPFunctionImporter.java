@@ -11,6 +11,7 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
 public class RPFunctionImporter extends ARPObject {
+    protected final int ELEMENT_IMPORT_LIMIT = 1000;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);
@@ -28,12 +29,23 @@ public class RPFunctionImporter extends ARPObject {
 
         List <DoxygenType> list = null;
 
-        list = manager.getList(tagtype);
-        info(tagtype.getClass().getName()+":"+ list.size());
-        
+        list = manager.popList(tagtype);
+        if(list == null) {
+            return false;
+        }
+
+        info(String.format("importModel tag:%s/%s(%s) count:%d",
+                tagtype.getTag(),
+                tagtype.getAttrName(),
+                tagtype.getAttrValue(),
+                list.size()));
+
+        int index = 0;
         for(DoxygenType obj : list) {
-            debug(String.format("importModel tag:%s type:%s name:%s",
-                    tagtype.getClass().getName(),
+            debug(String.format("importModel tag:%s/%s(%s) type:%s name:%s",
+                    tagtype.getTag(),
+                    tagtype.getAttrName(),
+                    tagtype.getAttrValue(),
                     obj.getType(),
                     obj.getName()));
 
@@ -46,10 +58,22 @@ public class RPFunctionImporter extends ARPObject {
             if(element == null) {
                 return false;
             }
+
+            if(++index > ELEMENT_IMPORT_LIMIT) {
+                break;
+            }
         }
 
         ARPBridge bridge = newBridgeInstance(null, rootPackage, tagtype);        
         bridge.replaceOldElement(currentVersion);
+
+        // For typedefs other than callbacks
+        if( tagtype == TAGTYPE.TYPEDEF ) {
+            DoxygenTypeTypedef typedef = new DoxygenTypeTypedef();
+            bridge = newBridgeInstance(typedef, rootPackage, tagtype);        
+            bridge.replaceOldElement(currentVersion);
+        }
+
         return true;
     }
 
@@ -71,6 +95,17 @@ public class RPFunctionImporter extends ARPObject {
             return bridge;
         }
 
+        if( tagtype == TAGTYPE.STRUCT ) {
+            bridge = new RPStructBridge(doxygen,rootPackage);
+            return bridge;
+        }
+
+
+        if( tagtype == TAGTYPE.UNION ) {
+            bridge = new RPUnionBridge(doxygen,rootPackage);
+            return bridge;
+        }
+
         if( tagtype == TAGTYPE.TYPEDEF ) {
             DoxygenTypeTypedef typedef = getObject(doxygen);
             if(typedef == null) {
@@ -80,14 +115,11 @@ public class RPFunctionImporter extends ARPObject {
             else if(typedef.isCallback() == true) {
                 bridge = new RPEventBridge(doxygen, rootPackage);
             } else {
-                // TODO Another typedef
+                bridge = new RPTypedefBridge(doxygen, rootPackage);
             }
 
             return bridge;
         }
-
-        // TODO UNION data type
-        // TODO VARIABLE data type
 
         return bridge;
     }

@@ -12,7 +12,8 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
 public class RPEnumBridge extends ARPBridge {
-    String name_ = null;
+    protected String name_ = null;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.ENUM;
 
     public RPEnumBridge(DoxygenType doxygen, IRPPackage rootPackage) {
         super(RPEnumBridge.class, doxygen, rootPackage);
@@ -25,7 +26,7 @@ public class RPEnumBridge extends ARPBridge {
             return;
         }
 
-        name_ = doxygen_.getName().replaceAll("@","impliedname");
+        name_ = kind_.getImplicitName(doxygen_.getQualifiedName());
     }
 
     protected String getName() {
@@ -33,7 +34,7 @@ public class RPEnumBridge extends ARPBridge {
     }
     
     protected String GetKind() {
-        return "Enumeration";
+        return kind_.getString();
     }
 
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
@@ -64,9 +65,9 @@ public class RPEnumBridge extends ARPBridge {
 
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        debug("create Enum:" + getName() + " in package:" + modulePackage.getName());
+        debug("create " + kind_.getString() +":" + getName() + " in package:" + modulePackage.getName());
         // doxygen_.logoutdebug(0);
-        IRPType rpType = modulePackage.addType(getName());   
+        IRPType rpType = modulePackage.addType(getName());
         return rpType;
     }
 

@@ -130,13 +130,12 @@ public class DoxygenXMLParser extends ARPObject {
 
             debug("XmlParse finish");
 
-            List<DoxygenType> lists = manager_.getList(TAGTYPE.REF);
-            if( lists != null ) {
-                debug("Link reference:" + lists.size());
-                for(DoxygenType type : lists) {
-                    type.linkObject();
-                }
+            List<DoxygenType> lists = manager_.getAllType();
+            debug("Link reference:" + lists.size());
+            for(DoxygenType type : lists) {
+                type.linkObject();
             }
+            lists = null;
 
             result = true;
         } 
@@ -149,6 +148,7 @@ public class DoxygenXMLParser extends ARPObject {
                     debug("close XMLStreamReader");
                     option.reader.close();
                 }
+                option = null;
             }
             catch(Exception e) {
                 error("XMLStreamReader close Error" + xmlPath , e);
@@ -211,14 +211,14 @@ public class DoxygenXMLParser extends ARPObject {
                 continue;
             }
 
-            if(type.isNeedParent()) {
-                if( option.parent == null ) {
-                    continue;
-                }
-
+            if( option.parent != null ) {
                 if( option.parent.isCreateChildlen(type,option) != true ) {
                     continue;
                 }
+            } else {
+                if(type.isNeedParent()) {
+                    continue;
+                }    
             }
 
             if(type.getKeytype() == TAGTYPE.KEYTYPE.KEY_ATTR_KIND) {

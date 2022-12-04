@@ -1,5 +1,6 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
+import java.lang.Runtime;
 import com.ibm.rhapsody.rputilities.doxygen.*;
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
@@ -28,7 +29,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
     {
         info("Doxygen import");
 
-        RPLog.setLevel(RPLogLevel.DEBUG);
+        // RPLog.setLevel(RPLogLevel.DEBUG);
 
         IRPPackage rootPackage = getElement(); 
         if(rootPackage == null) {
@@ -52,6 +53,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         if( manager == null) {
             return false;
         }
+
                 
         boolean result = false;
         result  = importModel(rootPackage,manager,currentVersion);
@@ -60,7 +62,8 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
     }
 
     protected DoxygenObjectManager Parse(String doxygenPath) {
-        
+        debugMemory("Start Parse");
+ 
         String xsltPhath = doxygenPath + "\\combine.xslt";
         String sourcePath = doxygenPath+ "\\index.xml";
 
@@ -74,7 +77,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         }
 
         info("ParseXML success:" + xmlparser.getManager().size());
-        
+
         return xmlparser.getManager();
     }
 
@@ -83,28 +86,54 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         RPFunctionImporter importer = new RPFunctionImporter();
         boolean result = false;
 
-        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
-        if(result != true ) {
-            return result;
-        }
+        // debugMemory("Start Define");
+        // result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
+        // if(result != true ) {
+        //     return result;
+        // }
 
+        debugMemory("Start Enum");
         result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
         if(result != true ) {
             return result;
         }
 
+        debugMemory("Start Union");
+        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.UNION);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("Start Struct");
+        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.STRUCT);
+        if(result != true ) {
+            return result;
+        }
+
+        debugMemory("Start Typedef");
         result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
         if(result != true ) {
             return result;
         }
 
-        // result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
-        // if(result != true ) {
-        //     return result;
-        // }
+        debugMemory("Start Function");
+        result = importer.importModel(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
+        if(result != true ) {
+            return result;
+        }
 
+        debugMemory("importModel Finish");
         info("importModel Finish");
         return result;
     }
 
+    protected void debugMemory(String title) {
+        System.gc();
+        Runtime runtime = Runtime.getRuntime();
+        info(String.format("%s total:%d free:%d use:%d", 
+            title,
+            runtime.totalMemory(),
+            runtime.freeMemory(),
+            runtime.totalMemory() - runtime.freeMemory() ));
+    }
 }

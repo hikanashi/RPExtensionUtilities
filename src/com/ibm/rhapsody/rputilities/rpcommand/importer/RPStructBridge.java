@@ -4,19 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeDefilne;
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.telelogic.rhapsody.core.IRPAttribute;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPDefineBridge extends ARPBridge {
-    protected final String DECLARATION_PREFIX = "#define";
-
+public class RPStructBridge extends ARPBridge {
     protected String name_ = null;
-    protected RPTYPE_KIND kind_ = RPTYPE_KIND.LANG;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.STRUCT;
 
-    public RPDefineBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPDefineBridge.class, doxygen, rootPackage);
+    public RPStructBridge(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPStructBridge.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 
@@ -50,15 +49,9 @@ public class RPDefineBridge extends ARPBridge {
             return false;
         }
 
-        if( rpType.isKindLanguage() != 1) {
-            return false;
-        }
-
-        String declaration = rpType.getDeclaration();
-        if( declaration.startsWith(DECLARATION_PREFIX) == true){
+        if( rpType.isStruct() == 1) {
             return true;
         }
-
 
         return false;
     }
@@ -71,9 +64,9 @@ public class RPDefineBridge extends ARPBridge {
 
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        debug("create define:" + getName() + " in package:" + modulePackage.getName());
+        debug("create " + kind_.getString() +":" + getName() + " in package:" + modulePackage.getName());
         doxygen_.logoutdebug(0);
-        IRPType rpType = modulePackage.addType(getName());
+        IRPType rpType = modulePackage.addType(getName());   
         return rpType;
     }
 
@@ -85,7 +78,7 @@ public class RPDefineBridge extends ARPBridge {
         }
 
         if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
-            trace("define change Name "+ rpType.getName() + "->" + getName());
+            trace("Struct change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
@@ -125,14 +118,52 @@ public class RPDefineBridge extends ARPBridge {
             rpType.setKind(GetKind());
         }
 
-        DoxygenTypeDefilne define = getObject(doxygen_);
-        String declaration = String.format("%s\t%s\t%s",
-                                DECLARATION_PREFIX,
-                                getName(),
-                                define.getInitializer());
-        
-        rpType.setDeclaration(declaration);
+        List<IRPAttribute> attributes = toList(rpType.getAttributes());
+        for(IRPAttribute attribute : attributes) {
+            rpType.deleteAttribute(attribute);
+        }
 
+        List<DoxygenType> variables = doxygen_.getChildlen(TAGTYPE.VARIABLE);
+        for( DoxygenType variable : variables) {
+            IRPAttribute rpAttribute = createAttribute(rpType, variable);
+            applyStructMember(rpAttribute, variable, currentVersion);
+        }
+
+        return;
+    }
+
+    protected IRPAttribute createAttribute(IRPType rpType, DoxygenType value) {
+ 
+        String attributeName = null;
+        IRPAttribute rpAttribute = null;
+
+
+        for(int index = 0; ;index++) {
+            if(index == 0) {
+                attributeName = value.getName();
+            }
+            else {
+                attributeName = value.getName()+ Integer.toString(index);
+            }
+
+            rpAttribute = rpType.findAttribute(attributeName);
+            if(rpAttribute == null) {
+                break;
+            }
+        }
+
+        rpAttribute = rpType.addAttribute(attributeName);
+        return rpAttribute;
+    }
+
+    protected void applyStructMember(IRPAttribute rpAttribute, DoxygenType value, String currentVersion) {
+ 
+        IRPType type = CreateType(value, currentVersion);
+        if( type == null ) {
+            return;
+        }
+
+        rpAttribute.setType(type);
         return;
     }
 }

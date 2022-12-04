@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeCompound;
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenTypeFile;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
+import com.telelogic.rhapsody.core.IRPProject;
+import com.telelogic.rhapsody.core.IRPStereotype;
 import com.telelogic.rhapsody.core.IRPTag;
 import com.telelogic.rhapsody.core.IRPType;
 
@@ -19,6 +21,7 @@ public abstract class ARPBridge extends ARPObject {
     protected final String TAG_EXCLUDED_ELEMENT = "Excluded";
     protected final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
     protected final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
+    protected final String STEREOTYPE_VALUETYPE = "ValueType";
 
     DoxygenType doxygen_ = null;
     IRPPackage rootPackage_ = null;
@@ -198,6 +201,9 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
+        if(element instanceof IRPType) {
+            setStereoType(element, STEREOTYPE_VALUETYPE);
+        }
 
         updateOwner(element,modulePackage);
         setApplicableVersion(element, currentVersion);
@@ -264,9 +270,6 @@ public abstract class ARPBridge extends ARPObject {
         if( current == null ) {
             return;
         }
-
-        // TODO addLinkToElement
-
     }
 
     protected boolean setTagOnlyOnce(IRPModelElement rpelement, String tagname, String tagvalue) {
@@ -284,6 +287,58 @@ public abstract class ARPBridge extends ARPObject {
         rpelement.setTagValue(versiontag, tagvalue);
 
         return true;
+    }
+
+    protected void setStereoType(IRPModelElement rpelement, String stereotypeName) {
+        if(rpelement == null || stereotypeName == null) {
+            return;
+        }
+
+        IRPStereotype stereo = findStereoType(rpelement, stereotypeName);
+        if( stereo != null ) {
+            return;
+        }
+
+        stereo = findProjectStereoType(rpelement, stereotypeName);
+        if( stereo == null ) {
+            warn(String.format("Stereotype:%s is not found. so Element:%s can't set.",
+                    stereotypeName, rpelement.getName()));
+            return;
+        }
+
+        rpelement.addSpecificStereotype(stereo);
+    }
+
+    protected IRPStereotype findStereoType(IRPModelElement rpelement, String stereotypeName) {
+        if(rpelement == null || stereotypeName == null) {
+            return null;
+        }
+
+        List<IRPStereotype> stereotypes = toList(rpelement.getStereotypes());
+
+        for(IRPStereotype stereo : stereotypes) {
+            if(stereo.getName().equals(stereotypeName) == true) {
+                return stereo;
+            }
+        }
+        return null;
+    }
+
+    protected IRPStereotype findProjectStereoType(IRPModelElement rpelement, String stereotypeName) {
+        if(rpelement == null || stereotypeName == null) {
+            return null;
+        }
+
+        IRPProject rpProject = rpelement.getProject();
+
+        List<IRPStereotype> stereotypes = toList(rpProject.getAllStereotypes());
+
+        for(IRPStereotype stereo : stereotypes) {
+            if(stereo.getName().equals(stereotypeName) == true) {
+                return stereo;
+            }
+        }
+        return null;
     }
 
     protected int compareVersion(String srcVersion, String destVersion) {
@@ -388,7 +443,7 @@ public abstract class ARPBridge extends ARPObject {
             moduleType != null;
             moduleType = moduleType.getParent())  {
 
-            if(! (moduleType instanceof DoxygenTypeCompound)) {
+            if(! (moduleType instanceof DoxygenTypeFile)) {
                 continue;
             }
 

@@ -47,43 +47,51 @@ public class RPParamTypeBridge extends ARPBridge {
         
         full_type_ = doxygen.getType().trim();
         type_ = new String(full_type_);
-        base_type_ = new String(full_type_);
 
-        if(type_ .contains("struct")) {
+        if(type_ .contains("struct ")) {
             kind_ = RPTYPE_KIND.STRUCT;
-            base_type_  = base_type_ .replaceAll("struct", "");
+            type_  = type_ .replaceAll("struct ", "").trim();
         }
 
-        if(type_ .contains("const")) {
-            kind_ = RPTYPE_KIND.TYPEDEF;
+        if(type_ .contains("enum ")) {
+            kind_ = RPTYPE_KIND.ENUM;
+            type_  = type_ .replaceAll("enum ", "").trim();
+        }
+
+        if(type_ .contains("union ")) {
+            kind_ = RPTYPE_KIND.UNION;
+            type_  = type_ .replaceAll("union ", "").trim();
+        }
+
+        String patternVariableArgument = "\\.\\.\\.";
+        if(type_ .matches(patternVariableArgument)) {
+            kind_ = RPTYPE_KIND.LANG;
+            type_  = type_ .replaceAll(patternVariableArgument, "VariableArgument");
+        }
+
+        type_ = kind_.getImplicitName(type_);
+        base_type_ = new String(type_);
+
+        if(type_ .contains("const ")) {
             isConstant_ = 1;
-            base_type_  = base_type_ .replaceAll("const", "");
+            type_  = type_ .replaceAll("const ", "const_").trim();
+            base_type_  = base_type_ .replaceAll("const ", "").trim();
         }
 
         String patternPointer = "\\*";
         if(type_ .contains("*")) {
-            kind_ = RPTYPE_KIND.TYPEDEF;
             isReference_ = 1;
-            base_type_  = base_type_ .replaceAll(patternPointer, "");
+            type_  = type_ .replaceAll(patternPointer, "pointer").trim();
+            base_type_  = base_type_ .replaceAll(patternPointer, "").trim();
         }
 
-        String patternVariableArgument ="\\.\\.\\.";
-        if(type_ .contains(patternVariableArgument)) {
-            kind_ = RPTYPE_KIND.LANG;
-            base_type_  = base_type_ .replaceAll(patternVariableArgument, "VariableArgument");
+        if( isReference_ == 1 || isConstant_ == 1 ) {
+            kind_ = RPTYPE_KIND.TYPEDEF;
         }
 
-        String patternIllegalCharcter = " |,|\\(|\\)";
-        // if(type_ .matches(patternIllegalCharcter) ) {
-        //     kind_ = RPTYPE_KIND.LANG;
-        // }
-        base_type_ = base_type_.trim();
-        base_type_  = base_type_ .replaceAll(patternIllegalCharcter, "_");
-
-        type_ = type_.trim();
-        type_  = type_ .replaceAll(patternPointer, "pointer");
-        type_  = type_ .replaceAll(patternVariableArgument, "VariableArgument");
-        type_  = type_ .replaceAll(patternIllegalCharcter, "_");
+        String patternIllegalCharcter = " |,|:|\\(|\\)";
+        base_type_  = base_type_ .trim().replaceAll(patternIllegalCharcter, "_");
+        type_  = type_ .trim().replaceAll(patternIllegalCharcter, "_");
     }
     
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
@@ -135,7 +143,7 @@ public class RPParamTypeBridge extends ARPBridge {
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create Type:" + getType() + " in package:" + modulePackage.getName());
-        IRPType rpType = modulePackage.addType(getType());   
+        IRPType rpType = modulePackage.addType(getType());
         return rpType;
     }
 
@@ -146,6 +154,7 @@ public class RPParamTypeBridge extends ARPBridge {
         debug("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
         IRPType rpBaseType = modulePackage.addType(getBaseType());   
         setApplicableVersion(rpBaseType, version);  
+        setStereoType(rpBaseType, STEREOTYPE_VALUETYPE);
         return rpBaseType;
     }
 
@@ -179,6 +188,9 @@ public class RPParamTypeBridge extends ARPBridge {
         super.apply(element, modulePackage, currentVersion);
     }
 
+    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement) {
+        return;
+    }
 
     public void applyByType(IRPModelElement element, String currentVersion) {
         IRPType rpType = getObject(element);
@@ -203,11 +215,8 @@ public class RPParamTypeBridge extends ARPBridge {
             applyTypedef(rpType, currentVersion);
             break;
         case ENUM:
-            // TODO : enum make
         case STRUCT:
-            // TODO : struct make
         case UNION:
-            // TODO : union make
         case LANG:
         default:
             break;            
@@ -224,7 +233,7 @@ public class RPParamTypeBridge extends ARPBridge {
             rpbasetype = searchBaseType(versionPackage);
 
             if( rpbasetype == null ) { 
-                IRPPackage modulePackage = GetBaseVersionPackage(rpType);
+                IRPPackage modulePackage = getPackage(rpType);
                 rpbasetype = createBaseType(modulePackage,currentVersion);
             }
         }

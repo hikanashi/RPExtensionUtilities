@@ -43,11 +43,23 @@ public class DoxygenObjectManager extends ARPObject {
         return count;
     }
 
+    public List<DoxygenType> getAllType() {
+        List<DoxygenType> list = new ArrayList<DoxygenType>();
+
+        for(TagMap map:  objectMap_.values()) {
+            for(DoxygenType child : map.values()) {
+                list.add(child);
+            }  
+        }
+
+        return list;
+    }
+
     public Map<String, DoxygenType> getMap(String tag) {
         return objectMap_.getOrDefault(tag, null);
     }
 
-    public List<DoxygenType> getList(TAGTYPE type) {
+    public List<DoxygenType> popList(TAGTYPE type) {
         TagMap map = null;
     
         map = objectMap_.getOrDefault(type.getTag(), null);
@@ -60,7 +72,11 @@ public class DoxygenObjectManager extends ARPObject {
             if(child.equals(type)) {
                 list.add(child);
             }
-        }  
+        }
+      
+        for(DoxygenType child : list) {
+            map.remove(child.getId());
+        }
 
         return list;
     }

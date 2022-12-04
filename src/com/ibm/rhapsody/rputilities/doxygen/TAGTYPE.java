@@ -7,11 +7,13 @@ public enum TAGTYPE {
     ENUM("memberdef",KEYTYPE.KEY_ATTR_KIND,"enum",false,DoxygenTypeEnum.class),
     FUNCTION("memberdef",KEYTYPE.KEY_ATTR_KIND,"function",false,DoxygenTypeFunction.class),
     TYPEDEF("memberdef",KEYTYPE.KEY_ATTR_KIND,"typedef",false,DoxygenTypeTypedef.class),
-    VARIABLE("memberdef",KEYTYPE.KEY_ATTR_KIND,"variable",false,DoxygenTypeVariable.class),
+    VARIABLE("memberdef",KEYTYPE.KEY_ATTR_KIND,"variable",true,DoxygenTypeVariable.class),
     PARAM("param",KEYTYPE.KEY_TAG,"",true,DoxygenTypeParam.class),
     ENUMVAL("enumvalue",KEYTYPE.KEY_TAG,"",true,DoxygenTypeEnumValue.class),
     REF("ref",KEYTYPE.KEY_TAG,"",true,DoxygenTypeRef.class),
-    COMPOUND("compounddef",KEYTYPE.KEY_TAG,"",false,DoxygenTypeCompound.class),
+    STRUCT("compounddef",KEYTYPE.KEY_ATTR_KIND,"struct",false,DoxygenStruct.class),
+    UNION("compounddef",KEYTYPE.KEY_ATTR_KIND,"union",false,DoxygenUnion.class),
+    FILE("compounddef",KEYTYPE.KEY_ATTR_KIND,"file",false,DoxygenTypeFile.class),
     ;
 
     public enum KEYTYPE {

@@ -15,6 +15,7 @@ public abstract class DoxygenType extends ARPObject {
     protected String tag_ = null;
     protected StringBuffer type_ = new StringBuffer(); 
     protected StringBuffer name_ = new StringBuffer(); 
+    protected StringBuffer qualifiedname_ = new StringBuffer(); 
     protected StringBuffer text_ = new StringBuffer(); 
     protected StringBuffer briefdescription_ = new StringBuffer(); 
     protected StringBuffer detaileddescription_ = new StringBuffer();
@@ -107,6 +108,14 @@ public abstract class DoxygenType extends ARPObject {
         return name_.toString().trim();
     }
 
+    public String getQualifiedName() {
+        if(qualifiedname_.toString().length() > 0) {
+            return qualifiedname_.toString().trim();
+        } else {
+            return getName();
+        }
+    }
+    
     public String getBriefdescription() {
         return briefdescription_.toString().trim();
     }
@@ -190,6 +199,12 @@ public abstract class DoxygenType extends ARPObject {
         else if(option.getBeforetTag().equals(getTag())) {
             if(tag.equals("name")) {
                 append(name_,text);
+            }
+            else if(tag.equals("compoundname")) {
+                append(name_,text);
+            }
+            else if(tag.equals("qualifiedname")) {
+                append(qualifiedname_,text);
             }
             else if(tag.equals("type")) {
                 append(type_,text);
