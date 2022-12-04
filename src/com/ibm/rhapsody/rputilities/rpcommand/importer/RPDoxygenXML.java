@@ -11,8 +11,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
      * Doxygen's XML import class
      * @param element Elements selected when right-clicked
      */
-    public RPDoxygenXML(IRPModelElement element) 
-    {
+    public RPDoxygenXML(IRPModelElement element) {
         super(RPDoxygenXML.class,element);
     }
 
@@ -20,9 +19,14 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
      * Import Doxygen XML in the specified directory
      * @see com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
-    public boolean command(String[] argment) 
-    {
+    public boolean command(String[] argment) {
         // RPLog.setLevel(RPLogLevel.DEBUG);
+
+        warn("If Rhapsody is terminated, please increase the following items in rhapsody.ini.\n"
+            + "\t* MaxHeap=-Xmx"
+            + "\t* MaxStack=-Xss"        
+            + "rhapsody.ini is located in C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64");
+
         ImportGUI ui = new ImportGUI(getElement());
 
         return true;
