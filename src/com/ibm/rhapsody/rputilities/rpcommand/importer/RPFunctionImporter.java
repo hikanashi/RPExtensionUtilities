@@ -19,7 +19,7 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
 public class RPFunctionImporter extends ARPObject {
-    protected final int ELEMENT_IMPORT_LIMIT = 1000;
+    protected final int ELEMENT_IMPORT_LIMIT = 10000;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);

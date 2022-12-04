@@ -2,7 +2,7 @@ package com.ibm.rhapsody.rputilities.doxygen;
 
 import java.lang.reflect.Constructor;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenStruct;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeStruct;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeDefilne;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeEnum;
@@ -24,7 +24,7 @@ public enum TAGTYPE {
     PARAM("param",KEYTYPE.KEY_TAG,"",true,DoxygenTypeParam.class),
     ENUMVAL("enumvalue",KEYTYPE.KEY_TAG,"",true,DoxygenTypeEnumValue.class),
     REF("ref",KEYTYPE.KEY_TAG,"",true,DoxygenTypeRef.class),
-    STRUCT("compounddef",KEYTYPE.KEY_ATTR_KIND,"struct",false,DoxygenStruct.class),
+    STRUCT("compounddef",KEYTYPE.KEY_ATTR_KIND,"struct",false,DoxygenTypeStruct.class),
     UNION("compounddef",KEYTYPE.KEY_ATTR_KIND,"union",false,DoxygenTypeUnion.class),
     FILE("compounddef",KEYTYPE.KEY_ATTR_KIND,"file",false,DoxygenTypeFile.class),
     ;

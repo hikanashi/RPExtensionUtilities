@@ -18,6 +18,8 @@ public class ImportGUI extends ARPObject {
     protected AlwaysOnTopMenuBar menuBar_;
     private JTextField textImportPath_;
     private JFormattedTextField textVersion_;
+    private JButton buttonPath_;
+    private JButton buttonImport_;
 
 
     public ImportGUI(IRPModelElement element) {
@@ -51,48 +53,74 @@ public class ImportGUI extends ARPObject {
         mainFrame_.add(getMainPanel());
     }
 
+    private void setUIEnable(boolean enable) {
+        if(buttonImport_ != null) {
+            buttonImport_.setEnabled(enable);
+        }
+
+        if(buttonPath_ != null) {
+            buttonPath_.setEnabled(enable);
+        }
+
+        if(textImportPath_ != null) {
+            textImportPath_.setEnabled(enable);
+        }
+
+        if(textVersion_ != null) {
+            textVersion_.setEnabled(enable);;
+        }
+    }
+
     private void ImportDoxygen() {
         info("Import Start");
 
+        setUIEnable(false);
         String doxygenPath = textImportPath_.getText();
         String currentVersion = textVersion_.getText();
 
         if(doxygenPath.isEmpty() ) {
+            setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Please select import doxygen xml path");
             return;
         }
 
         if(currentVersion.isEmpty() ) {
+            setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Please input version");
             return;
         }
 
-        // mainFrame_.setVisible(false);
         DoxygenXMLParser xmlparser = new DoxygenXMLParser();
         DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);;
         if( manager == null) {
-            mainFrame_.setVisible(true);
+            setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Import Error(Parse) Path:"+ doxygenPath);
             return;
         }
         
         RPFunctionImporter importer = new RPFunctionImporter();
         boolean result = importer.importModel(rpPackage_, manager, currentVersion);
+        info("Import Fisnish result:" + result);
+        setUIEnable(true);
 
         if(result == true) {
             mainFrame_.setVisible(false);
             JOptionPane.showMessageDialog(mainFrame_, "Import complete");
-            mainFrame_.dispose();
-            info("Import Fisnish");
         } else {
-            mainFrame_.setVisible(true);
             JOptionPane.showMessageDialog(mainFrame_, "Import Error(Model)");
         }
     }
 
     private void selectImportPath() {
+        setUIEnable(false);
+        
         FileSelector file = new FileSelector(textImportPath_.getText());
-        textImportPath_.setText(file.GetOpenDirectoryDialog());
+        String path = file.GetOpenDirectoryDialog();
+        if( path != null) {
+            textImportPath_.setText(path);
+        }
+
+        setUIEnable(true);
     }
 
     private JPanel getMainPanel()
@@ -101,13 +129,13 @@ public class ImportGUI extends ARPObject {
         mainPanel.setLayout(new GridLayout(3, 2));
 
         // import path
-        JButton buttonPath = new JButton("Select Doxygen XML Path");
-        buttonPath.addActionListener(new ActionListener() {
+        buttonPath_ = new JButton("Select Doxygen XML Path");
+        buttonPath_.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 selectImportPath();
             }
         });
-        mainPanel.add(buttonPath);
+        mainPanel.add(buttonPath_);
         textImportPath_ = new JTextField();
         // textImportPath_.setText("E:\\Rhapsody\\Doxygen\\out\\xml");
         mainPanel.add(textImportPath_);
@@ -132,13 +160,13 @@ public class ImportGUI extends ARPObject {
         JLabel labelImport = new JLabel(" ");
         labelImport.setHorizontalAlignment(JLabel.TRAILING);
         mainPanel.add(labelImport);
-        JButton buttonImport = new JButton("Import");
-        buttonImport.addActionListener(new ActionListener() {
+        buttonImport_ = new JButton("Import");
+        buttonImport_.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ImportDoxygen();
             }
         });
-        mainPanel.add(buttonImport);
+        mainPanel.add(buttonImport_);
 
         return mainPanel;
     }

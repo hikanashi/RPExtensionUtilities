@@ -73,7 +73,7 @@ public class RPDefineBridge extends ARPBridge {
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create define:" + getName() + " in package:" + modulePackage.getName());
-        doxygen_.logoutdebug(0);
+        // doxygen_.logoutdebug(0);
         IRPType rpType = modulePackage.addType(getName());
         return rpType;
     }
