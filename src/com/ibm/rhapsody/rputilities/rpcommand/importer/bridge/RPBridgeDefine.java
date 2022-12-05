@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeDefilne;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
-import com.telelogic.rhapsody.core.IRPAttribute;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPUnionBridge extends ARPBridge {
-    protected String name_ = null;
-    protected RPTYPE_KIND kind_ = RPTYPE_KIND.UNION;
+public class RPBridgeDefine extends ARPBridge {
+    protected final String DECLARATION_PREFIX = "#define";
 
-    public RPUnionBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPUnionBridge.class, doxygen, rootPackage);
+    protected String name_ = null;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.LANG;
+
+    public RPBridgeDefine(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeDefine.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 
@@ -26,7 +27,7 @@ public class RPUnionBridge extends ARPBridge {
             return;
         }
 
-        name_ = kind_.getImplicitName(doxygen_.getQualifiedName());
+        name_ = kind_.getImplicitName(doxygen_.getName());
     }
 
     protected String getName() {
@@ -50,9 +51,15 @@ public class RPUnionBridge extends ARPBridge {
             return false;
         }
 
-        if( rpType.isUnion() == 1) {
+        if( rpType.isKindLanguage() != 1) {
+            return false;
+        }
+
+        String declaration = rpType.getDeclaration();
+        if( declaration.startsWith(DECLARATION_PREFIX) == true){
             return true;
         }
+
 
         return false;
     }
@@ -65,9 +72,9 @@ public class RPUnionBridge extends ARPBridge {
 
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        debug("create " + kind_.getString() +":" + getName() + " in package:" + modulePackage.getName());
-        doxygen_.logoutdebug(0);
-        IRPType rpType = modulePackage.addType(getName());   
+        debug("create define:" + getName() + " in package:" + modulePackage.getName());
+        // doxygen_.logoutdebug(0);
+        IRPType rpType = modulePackage.addType(getName());
         return rpType;
     }
 
@@ -79,7 +86,7 @@ public class RPUnionBridge extends ARPBridge {
         }
 
         if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
-            trace("Union change Name "+ rpType.getName() + "->" + getName());
+            trace("define change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
@@ -119,29 +126,14 @@ public class RPUnionBridge extends ARPBridge {
             rpType.setKind(GetKind());
         }
 
-        List<IRPAttribute> attributes = toList(rpType.getAttributes());
-        for(IRPAttribute attribute : attributes) {
-            rpType.deleteAttribute(attribute);
-        }
-
-        List<DoxygenType> variables = doxygen_.getChildlen(TAGTYPE.VARIABLE);
-        for( DoxygenType variable : variables) {
-            IRPAttribute rpAttribute  = rpType.addAttribute(variable.getName());
-            applyStructMember(rpAttribute, variable, currentVersion);
-        }
+        DoxygenTypeDefilne define = getObject(doxygen_);
+        String declaration = String.format("%s\t%s\t%s",
+                                DECLARATION_PREFIX,
+                                getName(),
+                                define.getInitializer());
+        
+        rpType.setDeclaration(declaration);
 
         return;
     }
-
-    protected void applyStructMember(IRPAttribute rpAttribute, DoxygenType value, String currentVersion) {
- 
-        IRPType type = CreateType(value, currentVersion);
-        if( type == null ) {
-            return;
-        }
-
-        rpAttribute.setType(type);
-        return;
-    }
-
 }

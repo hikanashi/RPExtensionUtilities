@@ -14,12 +14,12 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPPin;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPStateChartBridge extends ARPBridge {
+public class RPBridgeStateChart extends ARPBridge {
     protected final String PIN_RETURN_NAME = "RETURN";
     protected final String PIN_RETURN_DIRECTION = "Out";
 
-    public RPStateChartBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPStateChartBridge.class, doxygen, rootPackage);
+    public RPBridgeStateChart(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeStateChart.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 

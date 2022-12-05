@@ -13,11 +13,11 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPEventBridge extends ARPBridge {
+public class RPBridgeEvent extends ARPBridge {
     protected String name_ = null;
 
-    public RPEventBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPEventBridge.class, doxygen, rootPackage);
+    public RPBridgeEvent(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeEvent.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 

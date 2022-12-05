@@ -6,26 +6,26 @@ import javax.swing.*;
 
 public class AlwaysOnTopMenuItem extends JCheckBoxMenuItem {
     private static final long serialVersionUID = 1L;
-    JFrame theForm;
-    JMenu theMenu;
+    protected JFrame theForm_;
+    protected JMenu theMenu_;
     
-    public AlwaysOnTopMenuItem(JFrame frm, JMenu mnu) {
+    public AlwaysOnTopMenuItem(JFrame form, JMenu menu) {
         super("Always on Top");
-        theForm = frm;
-        theMenu = mnu;
+        theForm_ = form;
+        theMenu_ = menu;
         init();
     }
 
     private void init() {
-        theForm.setAlwaysOnTop(true);
+        theForm_.setAlwaysOnTop(true);
         setSelected(true);
-        theMenu.add(this);
+        theMenu_.add(this);
         addItemListener( new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == 2)
-                    theForm.setAlwaysOnTop(false);
+                if(e.getStateChange() == ItemEvent.DESELECTED)
+                    theForm_.setAlwaysOnTop(false);
                 else
-                    theForm.setAlwaysOnTop(true);
+                    theForm_.setAlwaysOnTop(true);
             }
         });
     }

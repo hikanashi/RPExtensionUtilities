@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeDefilne;
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeEnumValue;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
+import com.telelogic.rhapsody.core.IRPEnumerationLiteral;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPDefineBridge extends ARPBridge {
-    protected final String DECLARATION_PREFIX = "#define";
-
+public class RPBridgeEnum extends ARPBridge {
     protected String name_ = null;
-    protected RPTYPE_KIND kind_ = RPTYPE_KIND.LANG;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.ENUM;
 
-    public RPDefineBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPDefineBridge.class, doxygen, rootPackage);
+    public RPBridgeEnum(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeEnum.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 
@@ -27,7 +27,7 @@ public class RPDefineBridge extends ARPBridge {
             return;
         }
 
-        name_ = kind_.getImplicitName(doxygen_.getName());
+        name_ = kind_.getImplicitName(doxygen_.getQualifiedName());
     }
 
     protected String getName() {
@@ -51,15 +51,9 @@ public class RPDefineBridge extends ARPBridge {
             return false;
         }
 
-        if( rpType.isKindLanguage() != 1) {
-            return false;
-        }
-
-        String declaration = rpType.getDeclaration();
-        if( declaration.startsWith(DECLARATION_PREFIX) == true){
+        if( rpType.isKindEnumeration() == 1) {
             return true;
         }
-
 
         return false;
     }
@@ -72,7 +66,7 @@ public class RPDefineBridge extends ARPBridge {
 
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        debug("create define:" + getName() + " in package:" + modulePackage.getName());
+        debug("create " + kind_.getString() +":" + getName() + " in package:" + modulePackage.getName());
         // doxygen_.logoutdebug(0);
         IRPType rpType = modulePackage.addType(getName());
         return rpType;
@@ -86,7 +80,7 @@ public class RPDefineBridge extends ARPBridge {
         }
 
         if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
-            trace("define change Name "+ rpType.getName() + "->" + getName());
+            trace("Enum change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
@@ -126,14 +120,25 @@ public class RPDefineBridge extends ARPBridge {
             rpType.setKind(GetKind());
         }
 
-        DoxygenTypeDefilne define = getObject(doxygen_);
-        String declaration = String.format("%s\t%s\t%s",
-                                DECLARATION_PREFIX,
-                                getName(),
-                                define.getInitializer());
-        
-        rpType.setDeclaration(declaration);
+        List<IRPEnumerationLiteral> literals = toList(rpType.getEnumerationLiterals());
+        for(IRPEnumerationLiteral literal : literals) {
+            rpType.deleteEnumerationLiteral(literal);
+        }
+
+        List<DoxygenType> enumvalues = doxygen_.getChildlen(TAGTYPE.ENUMVAL);
+        for( DoxygenType enumvalue : enumvalues) {
+            applyEnumValue(rpType, enumvalue, currentVersion);
+        }
 
         return;
     }
+
+    protected void applyEnumValue(IRPType rpType, DoxygenType value, String currentVersion) {
+        DoxygenTypeEnumValue enumvalue = getObject(value);
+        
+        IRPEnumerationLiteral literal = rpType.addEnumerationLiteral(value.getName());
+        literal.setValue(enumvalue.getInitializer());
+        return;
+    }
+
 }

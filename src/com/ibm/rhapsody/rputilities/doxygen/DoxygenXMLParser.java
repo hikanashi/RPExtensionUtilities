@@ -74,7 +74,7 @@ public class DoxygenXMLParser extends ARPObject {
 
     protected boolean Transform(String xsltPath, String sourceTreePath, String outputPath) 
     {
-        info("Transform xslt" + xsltPath + " source:" + sourceTreePath + " output:" + outputPath);
+        info("Transform xslt:" + xsltPath + " source:" + sourceTreePath + " output:" + outputPath);
 
         try {
             RPFileSystem filesystem = new RPFileSystem();

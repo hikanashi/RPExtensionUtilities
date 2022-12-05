@@ -1,19 +1,7 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
 import java.lang.reflect.Constructor;
-
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeStruct;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeDefilne;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeEnum;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeEnumValue;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFile;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFunction;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeRef;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeVariable;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeUnion;
+import com.ibm.rhapsody.rputilities.doxygen.type.*;
 
 public enum TAGTYPE {
     DEFINE("memberdef",KEYTYPE.KEY_ATTR_KIND,"define",false,DoxygenTypeDefilne.class),
@@ -26,6 +14,7 @@ public enum TAGTYPE {
     REF("ref",KEYTYPE.KEY_TAG,"",true,DoxygenTypeRef.class),
     STRUCT("compounddef",KEYTYPE.KEY_ATTR_KIND,"struct",false,DoxygenTypeStruct.class),
     UNION("compounddef",KEYTYPE.KEY_ATTR_KIND,"union",false,DoxygenTypeUnion.class),
+    GROUP("compounddef",KEYTYPE.KEY_ATTR_KIND,"group",false,DoxygenTypeGroup.class),
     FILE("compounddef",KEYTYPE.KEY_ATTR_KIND,"file",false,DoxygenTypeFile.class),
     ;
 

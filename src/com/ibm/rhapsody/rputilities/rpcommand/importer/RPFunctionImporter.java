@@ -7,19 +7,19 @@ import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.ARPBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPDefineBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPEnumBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPEventBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPStateChartBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPStructBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPTypedefBridge;
-import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPUnionBridge;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeDefine;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeEnum;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeEvent;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeStateChart;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeStruct;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeTypedef;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeUnion;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
 public class RPFunctionImporter extends ARPObject {
-    protected final int ELEMENT_IMPORT_LIMIT = 10000;
+    protected final int ELEMENT_IMPORT_LIMIT = 1000;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);
@@ -140,41 +140,41 @@ public class RPFunctionImporter extends ARPObject {
         ARPBridge bridge = null;
 
         if( tagtype == TAGTYPE.FUNCTION ) {
-            bridge = new RPStateChartBridge(doxygen,rootPackage);
+            bridge = new RPBridgeStateChart(doxygen,rootPackage);
             return bridge;
         }
 
         if( tagtype == TAGTYPE.ENUM ) {
-            bridge = new RPEnumBridge(doxygen,rootPackage);
+            bridge = new RPBridgeEnum(doxygen,rootPackage);
             return bridge;
         }
 
         if( tagtype == TAGTYPE.DEFINE ) {
-            bridge = new RPDefineBridge(doxygen,rootPackage);
+            bridge = new RPBridgeDefine(doxygen,rootPackage);
             return bridge;
         }
 
         if( tagtype == TAGTYPE.STRUCT ) {
-            bridge = new RPStructBridge(doxygen,rootPackage);
+            bridge = new RPBridgeStruct(doxygen,rootPackage);
             return bridge;
         }
 
 
         if( tagtype == TAGTYPE.UNION ) {
-            bridge = new RPUnionBridge(doxygen,rootPackage);
+            bridge = new RPBridgeUnion(doxygen,rootPackage);
             return bridge;
         }
 
         if( tagtype == TAGTYPE.TYPEDEF ) {
             DoxygenTypeTypedef typedef = getObject(doxygen);
             if(typedef == null) {
-                bridge = new RPEventBridge(doxygen, rootPackage);
+                bridge = new RPBridgeEvent(doxygen, rootPackage);
             }
             // If it contains "(", it is a callback.
             else if(typedef.isCallback() == true) {
-                bridge = new RPEventBridge(doxygen, rootPackage);
+                bridge = new RPBridgeEvent(doxygen, rootPackage);
             } else {
-                bridge = new RPTypedefBridge(doxygen, rootPackage);
+                bridge = new RPBridgeTypedef(doxygen, rootPackage);
             }
 
             return bridge;

@@ -8,7 +8,7 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPParamTypeBridge extends ARPBridge {
+public class RPBridgeParamType extends ARPBridge {
     protected String full_type_ = "";
     protected String type_ = "";
     protected String base_type_ = "";
@@ -16,8 +16,8 @@ public class RPParamTypeBridge extends ARPBridge {
     protected int isConstant_ = 0;
     protected int isReference_ = 0;
 
-    public RPParamTypeBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPParamTypeBridge.class, doxygen, rootPackage);
+    public RPBridgeParamType(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeParamType.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 

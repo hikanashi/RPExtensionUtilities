@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFile;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeGroup;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
@@ -66,6 +67,9 @@ public abstract class ARPBridge extends ARPObject {
 
         IRPPackage versionPackage = createVersionPackage(currentVersion);
         IRPPackage modulePackage = createModulePackage(versionPackage);
+        if(modulePackage == null) {
+            return null;
+        }
 
         if( current_element != null ) {
             apply(current_element, modulePackage, currentVersion);
@@ -113,7 +117,7 @@ public abstract class ARPBridge extends ARPObject {
 
         Set<IRPModelElement> list = getElements(rootPackage_, currentVersion);
 
-        debug(String.format("replaceOldElement:%s version:%s target:%d",
+        info(String.format("replaceOldElement:%s version:%s target:%d",
                 getClass().getSimpleName(),
                 currentVersion,
                 list.size()));
@@ -196,18 +200,33 @@ public abstract class ARPBridge extends ARPObject {
 
     protected IRPModelElement createElement(IRPPackage versionPackage) {
         IRPPackage targetPackage = createModulePackage(versionPackage);
-        IRPModelElement element = createElementByType(targetPackage); 
+        if( targetPackage == null) {
+            return null;
+        }
+
+        IRPModelElement element  = null;
+        try {
+            element = createElementByType(targetPackage); 
+        } catch (Exception e) {
+            error("createElementByType Error:", e);
+            element = null;
+        }
+
         return element;
     }
 
     protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
-        if(element instanceof IRPType) {
-            setStereoType(element, STEREOTYPE_VALUETYPE);
+        try {
+            if(element instanceof IRPType) {
+                setStereoType(element, STEREOTYPE_VALUETYPE);
+            }
+    
+            updateOwner(element,modulePackage);
+            setApplicableVersion(element, currentVersion);
+            applyByType(element, currentVersion);
+        } catch (Exception e) {
+            error("apply Error:", e);
         }
-
-        updateOwner(element,modulePackage);
-        setApplicableVersion(element, currentVersion);
-        applyByType(element, currentVersion);
     }
 
     protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement) {
@@ -231,7 +250,7 @@ public abstract class ARPBridge extends ARPObject {
 
     protected IRPType CreateType(DoxygenType param, String currentVersion) {
         IRPType type = null;
-        RPParamTypeBridge parambridge = new RPParamTypeBridge(param, rootPackage_);
+        RPBridgeParamType parambridge = new RPBridgeParamType(param, rootPackage_);
         type = getObject(parambridge.importElement(currentVersion));
         return type;
     }
@@ -443,7 +462,8 @@ public abstract class ARPBridge extends ARPObject {
             moduleType != null;
             moduleType = moduleType.getParent())  {
 
-            if(! (moduleType instanceof DoxygenTypeFile)) {
+            if(!(moduleType instanceof DoxygenTypeGroup) &&
+               !(moduleType instanceof DoxygenTypeFile)) {
                 continue;
             }
 
@@ -452,12 +472,21 @@ public abstract class ARPBridge extends ARPObject {
             IRPModelElement element = parentPackage.findAllByName(packageName, "Package");
             if( element == null ) {
                 debug(parentPackage.getName() + " is not found, Create Package:"+ packageName);
-                element = parentPackage.addNestedPackage(packageName);
+                try {
+                    element = parentPackage.addNestedPackage(packageName);
+                } catch (Exception e) {
+                    error("addNestedPackage Error:", e);
+                    element = null;
+                }
+
             } else {
                 trace(parentPackage.getName() + " is found "+ packageName); 
             }
 
             parentPackage = getObject(element);
+            if( parentPackage == null) {
+                break;
+            }
         }
         
         return parentPackage;

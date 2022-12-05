@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
+import com.telelogic.rhapsody.core.IRPAttribute;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPTypedefBridge extends ARPBridge {
-    protected final String DECLARATION_PREFIX = "typedef";
-
+public class RPBridgeStruct extends ARPBridge {
     protected String name_ = null;
-    protected RPTYPE_KIND kind_ = RPTYPE_KIND.TYPEDEF;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.STRUCT;
 
-    public RPTypedefBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPTypedefBridge.class, doxygen, rootPackage);
+    public RPBridgeStruct(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeStruct.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 
@@ -50,8 +50,8 @@ public class RPTypedefBridge extends ARPBridge {
             return false;
         }
 
-        if( rpType.isKindTypedef() != 1) {
-            return false;
+        if( rpType.isStruct() == 1) {
+            return true;
         }
 
         return false;
@@ -79,7 +79,7 @@ public class RPTypedefBridge extends ARPBridge {
         }
 
         if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
-            trace(kind_.getString() +" change Name "+ rpType.getName() + "->" + getName());
+            trace("Struct change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
@@ -119,11 +119,52 @@ public class RPTypedefBridge extends ARPBridge {
             rpType.setKind(GetKind());
         }
 
-        IRPType baseType = CreateType(doxygen_, currentVersion);
-        if( baseType != null ) {
-            rpType.setTypedefBaseType(baseType);
-        }        
+        List<IRPAttribute> attributes = toList(rpType.getAttributes());
+        for(IRPAttribute attribute : attributes) {
+            rpType.deleteAttribute(attribute);
+        }
 
+        List<DoxygenType> variables = doxygen_.getChildlen(TAGTYPE.VARIABLE);
+        for( DoxygenType variable : variables) {
+            IRPAttribute rpAttribute = createAttribute(rpType, variable);
+            applyStructMember(rpAttribute, variable, currentVersion);
+        }
+
+        return;
+    }
+
+    protected IRPAttribute createAttribute(IRPType rpType, DoxygenType value) {
+ 
+        String attributeName = null;
+        IRPAttribute rpAttribute = null;
+
+
+        for(int index = 0; ;index++) {
+            if(index == 0) {
+                attributeName = value.getName();
+            }
+            else {
+                attributeName = value.getName()+ Integer.toString(index);
+            }
+
+            rpAttribute = rpType.findAttribute(attributeName);
+            if(rpAttribute == null) {
+                break;
+            }
+        }
+
+        rpAttribute = rpType.addAttribute(attributeName);
+        return rpAttribute;
+    }
+
+    protected void applyStructMember(IRPAttribute rpAttribute, DoxygenType value, String currentVersion) {
+ 
+        IRPType type = CreateType(value, currentVersion);
+        if( type == null ) {
+            return;
+        }
+
+        rpAttribute.setType(type);
         return;
     }
 }

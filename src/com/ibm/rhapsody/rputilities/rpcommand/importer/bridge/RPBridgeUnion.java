@@ -11,12 +11,12 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
-public class RPStructBridge extends ARPBridge {
+public class RPBridgeUnion extends ARPBridge {
     protected String name_ = null;
-    protected RPTYPE_KIND kind_ = RPTYPE_KIND.STRUCT;
+    protected RPTYPE_KIND kind_ = RPTYPE_KIND.UNION;
 
-    public RPStructBridge(DoxygenType doxygen, IRPPackage rootPackage) {
-        super(RPStructBridge.class, doxygen, rootPackage);
+    public RPBridgeUnion(DoxygenType doxygen, IRPPackage rootPackage) {
+        super(RPBridgeUnion.class, doxygen, rootPackage);
         initialize(doxygen);
     }
 
@@ -26,7 +26,7 @@ public class RPStructBridge extends ARPBridge {
             return;
         }
 
-        name_ = kind_.getImplicitName(doxygen_.getName());
+        name_ = kind_.getImplicitName(doxygen_.getQualifiedName());
     }
 
     protected String getName() {
@@ -50,7 +50,7 @@ public class RPStructBridge extends ARPBridge {
             return false;
         }
 
-        if( rpType.isStruct() == 1) {
+        if( rpType.isUnion() == 1) {
             return true;
         }
 
@@ -79,7 +79,7 @@ public class RPStructBridge extends ARPBridge {
         }
 
         if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
-            trace("Struct change Name "+ rpType.getName() + "->" + getName());
+            trace("Union change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
@@ -126,35 +126,11 @@ public class RPStructBridge extends ARPBridge {
 
         List<DoxygenType> variables = doxygen_.getChildlen(TAGTYPE.VARIABLE);
         for( DoxygenType variable : variables) {
-            IRPAttribute rpAttribute = createAttribute(rpType, variable);
+            IRPAttribute rpAttribute  = rpType.addAttribute(variable.getName());
             applyStructMember(rpAttribute, variable, currentVersion);
         }
 
         return;
-    }
-
-    protected IRPAttribute createAttribute(IRPType rpType, DoxygenType value) {
- 
-        String attributeName = null;
-        IRPAttribute rpAttribute = null;
-
-
-        for(int index = 0; ;index++) {
-            if(index == 0) {
-                attributeName = value.getName();
-            }
-            else {
-                attributeName = value.getName()+ Integer.toString(index);
-            }
-
-            rpAttribute = rpType.findAttribute(attributeName);
-            if(rpAttribute == null) {
-                break;
-            }
-        }
-
-        rpAttribute = rpType.addAttribute(attributeName);
-        return rpAttribute;
     }
 
     protected void applyStructMember(IRPAttribute rpAttribute, DoxygenType value, String currentVersion) {
@@ -167,4 +143,5 @@ public class RPStructBridge extends ARPBridge {
         rpAttribute.setType(type);
         return;
     }
+
 }

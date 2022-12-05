@@ -90,16 +90,22 @@ public class ImportGUI extends ARPObject {
             return;
         }
 
-        DoxygenXMLParser xmlparser = new DoxygenXMLParser();
-        DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);;
-        if( manager == null) {
-            setUIEnable(true);
-            JOptionPane.showMessageDialog(mainFrame_, "Import Error(Parse) Path:"+ doxygenPath);
-            return;
+        boolean result = false;
+        try {
+            DoxygenXMLParser xmlparser = new DoxygenXMLParser();
+            DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);;
+            if( manager == null) {
+                setUIEnable(true);
+                JOptionPane.showMessageDialog(mainFrame_, "Import Error(Parse) Path:"+ doxygenPath);
+                return;
+            }
+            
+            RPFunctionImporter importer = new RPFunctionImporter();
+            result = importer.importModel(rpPackage_, manager, currentVersion);
+        } catch (Exception e) {
+            error("Import Error:", e);
         }
-        
-        RPFunctionImporter importer = new RPFunctionImporter();
-        boolean result = importer.importModel(rpPackage_, manager, currentVersion);
+
         info("Import Fisnish result:" + result);
         setUIEnable(true);
 
