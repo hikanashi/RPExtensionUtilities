@@ -14,16 +14,17 @@ public class DoxygenTypeRef extends DoxygenType {
     protected void createElementInternal(XMLStreamReader reader, String tag) {
         trace("createElementInternal");
 
-        id_ = reader.getAttributeValue(null, "refid");
-        kindref_ = reader.getAttributeValue(null, "kindref");
+        id_.setLength(0);
+        id_.append(reader.getAttributeValue(null, "refid"));
+        kindref_ = new String(reader.getAttributeValue(null, "kindref"));
 
         return;
     }
 
-    public void linkObject() {
+    protected void linkObjectInternal() {
 
         if(manager_ != null) {
-            refobj = manager_.getObject(kindref_ + "def", id_);
+            refobj = manager_.getObject(kindref_ + "def", id_.toString());
         }
 
         // debug("ref index:"+ getIndent() + " parent:"+ getParent().getIndent());

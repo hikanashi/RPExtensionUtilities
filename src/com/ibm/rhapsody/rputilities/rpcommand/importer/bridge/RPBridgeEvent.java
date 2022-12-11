@@ -26,7 +26,7 @@ public class RPBridgeEvent extends ARPBridge {
             return;
         }
 
-        name_ = doxygen.getName();
+        name_ = convertAvailableName(doxygen.getName());
     }
 
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
@@ -49,7 +49,13 @@ public class RPBridgeEvent extends ARPBridge {
         }
 
         debug("create Event:" + name_ + " in package:" + modulePackage.getName());
-        IRPEvent rpEvent = modulePackage.addEvent(name_); 
+        IRPEvent rpEvent = null;
+        try {
+            rpEvent = modulePackage.addEvent(name_); 
+        } catch (Exception e) {
+            error("createElementByType Error name:" + name_, e);
+            doxygen_.logoutdebug(0);
+        }
         return rpEvent;
     }
 

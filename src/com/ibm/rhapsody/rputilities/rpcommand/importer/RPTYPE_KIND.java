@@ -23,7 +23,8 @@ public enum RPTYPE_KIND {
     }
 
     public String getImplicitName(String name) {
-        String implictname = name.replaceAll(INPLICIT_MARK, INPLICIT_PREFIX + getString());
+        String implictname = new String(name);
+        implictname = implictname.replaceAll(INPLICIT_MARK, INPLICIT_PREFIX + getString());
         implictname = implictname.replaceAll(QUALIFIED_DELIMITER, "__");
         return implictname;
     }

@@ -25,7 +25,7 @@ public class RPBridgeOperation extends ARPBridge {
             return;
         }
         
-        name_ = doxygen.getName();
+        name_ = convertAvailableName(doxygen.getName());
     }
 
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
@@ -41,7 +41,13 @@ public class RPBridgeOperation extends ARPBridge {
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create Operation:" + name_ + " in package:" + modulePackage.getName());
 
-        IRPOperation rpOperation = modulePackage.addGlobalFunction(name_); 
+        IRPOperation rpOperation = null;
+        try {
+            rpOperation = modulePackage.addGlobalFunction(name_); 
+        } catch (Exception e) {
+            error("createElementByType Error name:" + name_, e);
+            doxygen_.logoutdebug(0);
+        }
         return rpOperation;
     }
 
@@ -226,6 +232,10 @@ public class RPBridgeOperation extends ARPBridge {
         if( type != null ) {
             rpArgment.setType(type);
         }
+        return;
+    }
+
+    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement) {
         return;
     }
 

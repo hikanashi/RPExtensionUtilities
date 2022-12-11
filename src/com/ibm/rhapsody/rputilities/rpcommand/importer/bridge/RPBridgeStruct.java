@@ -26,7 +26,7 @@ public class RPBridgeStruct extends ARPBridge {
             return;
         }
 
-        name_ = kind_.getImplicitName(doxygen_.getName());
+        name_ = convertAvailableName(kind_.getImplicitName(doxygen_.getName()));
     }
 
     protected String getName() {
@@ -60,14 +60,20 @@ public class RPBridgeStruct extends ARPBridge {
     public IRPModelElement findElementByType(IRPPackage rppackage) {
         IRPModelElement element = null;
         element = rppackage.findType(getName());
+        // info("findElementByType:" + getName() + " in "+ rppackage.getName());
         return element;
     }
 
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create " + kind_.getString() +":" + getName() + " in package:" + modulePackage.getName());
-        doxygen_.logoutdebug(0);
-        IRPType rpType = modulePackage.addType(getName());   
+        IRPType rpType = null;
+        try {
+            rpType = modulePackage.addType(getName()); 
+        } catch (Exception e) {
+            error("createElementByType Error name:" + getName(), e);
+            doxygen_.logoutdebug(0);
+        }
         return rpType;
     }
 

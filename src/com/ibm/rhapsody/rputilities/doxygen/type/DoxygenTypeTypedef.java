@@ -30,12 +30,20 @@ public class DoxygenTypeTypedef extends DoxygenType {
         if(type.equals(TAGTYPE.PARAM) == true) {
             return true;
         }
+        
+        if(type.equals(TAGTYPE.DETAILPARAM) == true) {
+            return true;
+        }
+
+        if(type.equals(TAGTYPE.DETAILRETVAL) == true) {
+            return true;
+        }
 
         if(type.equals(TAGTYPE.REF) != true) {
             return false;
         }
 
-        if(option.getBeforetTag().equals("type") == true) {
+        if(option.getBeforeTagWithoutPara().equals("type") == true) {
             return true;
         }
         

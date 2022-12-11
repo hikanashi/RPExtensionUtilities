@@ -1,6 +1,5 @@
 package com.ibm.rhapsody.rputilities.doxygen;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
@@ -207,7 +206,7 @@ public class DoxygenXMLParser extends ARPObject {
             if(target != null) {
                 target = target.endElement(option);
             }
-            option.endElement();
+            option.endElement(option.reader.getName().getLocalPart());
             break;
         case XMLStreamConstants.END_DOCUMENT:
             debug("End Document");
@@ -258,7 +257,6 @@ public class DoxygenXMLParser extends ARPObject {
             return typeobj;
         }
 
-        typeobj.setIndent(option.getIndent());
         typeobj.setManager(manager_);
         typeobj.setParent(option.parent);
 

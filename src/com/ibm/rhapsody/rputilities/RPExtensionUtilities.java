@@ -1,7 +1,3 @@
-/**
- * Simple Plug-in sample
- * (c) Copyright IBM 2008
- */
 package com.ibm.rhapsody.rputilities;
 
 import com.ibm.rhapsody.rputilities.rpcommand.RPCommandRunner;
@@ -10,7 +6,7 @@ import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.telelogic.rhapsody.core.*;
 
 public class RPExtensionUtilities extends RPUserPlugin {
-	protected static RPLog slog_ = new RPLog(RPExtensionUtilities.class);
+	// protected static RPLog slog_ = new RPLog(RPExtensionUtilities.class);
 	protected static IRPApplication rpApplication_ = null;
 
 
@@ -38,7 +34,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 			}
 		}
 
-		slog_.info("Plugin Load:"+ this.getClass().toString());
+		// slog_.info("Plugin Load:"+ this.getClass().toString());
 	}
 
 	
@@ -47,7 +43,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 	 * @see com.telelogic.rhapsody.core.RPUserPlugin#RhpPluginInvokeItem()
 	 */
 	public void RhpPluginInvokeItem() {
-		slog_.debug("Tools command");
+		// slog_.debug("Tools command");
 	}
 
 	/* 
@@ -67,7 +63,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 	public void OnTrigger(String trigger) {
 		//show the trigger string
 		//JOptionPane.showMessageDialog(null, "Hello world from SimplePlugin.OnTrigger " + trigger);
-		slog_.debug("OnTrigger " + trigger);
+		// slog_.debug("OnTrigger " + trigger);
 	}
 
 	/* called when the project is closed 
@@ -75,7 +71,7 @@ public class RPExtensionUtilities extends RPUserPlugin {
 	 * @see com.telelogic.rhapsody.core.RPUserPlugin#RhpPluginCleanup()
 	 */
 	public boolean RhpPluginCleanup() {
-		slog_.info("Plugin cleanup:"+ this.getClass().toString());
+		// slog_.info("Plugin cleanup:"+ this.getClass().toString());
 		//cleanup
 		RPLog.Finalize();
 		rpApplication_ = null;

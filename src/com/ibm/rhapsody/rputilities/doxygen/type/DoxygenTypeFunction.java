@@ -13,11 +13,19 @@ public class DoxygenTypeFunction extends DoxygenType {
             return true;
         }
 
+        if(type.equals(TAGTYPE.DETAILPARAM) == true) {
+            return true;
+        }
+
+        if(type.equals(TAGTYPE.DETAILRETVAL) == true) {
+            return true;
+        }
+
         if(type.equals(TAGTYPE.REF) != true) {
             return false;
         }
 
-        if(option.getBeforetTag().equals("type") == true) {
+        if(option.getBeforeTagWithoutPara().equals("type") == true) {
             return true;
         }
  
@@ -26,9 +34,13 @@ public class DoxygenTypeFunction extends DoxygenType {
                             getId(),
                             type.toString(),
                             option.getCurrentTag(),
-                            option.getBeforetTag()));
+                            option.getBeforeTagWithoutPara()));
         
         return false;
     }
-    
+ 
+    protected void linkObjectInternal() {
+        logoutdebug(0);
+        return;
+    }
 }

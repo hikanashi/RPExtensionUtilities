@@ -46,7 +46,7 @@ public class RPBridgeParamType extends ARPBridge {
             return;
         }
         
-        full_type_ = doxygen.getType().trim();
+        full_type_ = new String(doxygen.getType().trim());
         type_ = new String(full_type_);
 
         if(type_ .contains("struct ")) {
@@ -67,7 +67,7 @@ public class RPBridgeParamType extends ARPBridge {
         String patternVariableArgument = "\\.\\.\\.";
         if(type_ .matches(patternVariableArgument)) {
             kind_ = RPTYPE_KIND.LANG;
-            type_  = type_ .replaceAll(patternVariableArgument, "VariableArgument");
+            type_  = type_ .replaceAll(patternVariableArgument, "VariableArgument").trim();
         }
 
         type_ = kind_.getImplicitName(type_);
@@ -93,6 +93,9 @@ public class RPBridgeParamType extends ARPBridge {
         String patternIllegalCharcter = " |,|:|\\(|\\)";
         base_type_  = base_type_ .trim().replaceAll(patternIllegalCharcter, "_");
         type_  = type_ .trim().replaceAll(patternIllegalCharcter, "_");
+
+        base_type_  = base_type_ .replaceAll("_*$", "");
+        type_  = type_ .replaceAll("_*$", "");
     }
     
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
@@ -118,6 +121,9 @@ public class RPBridgeParamType extends ARPBridge {
     }
 
     public IRPType searchBaseType(IRPPackage rppackage) {
+        if(rppackage == null) {
+            return null;
+        }
 
         if(getType().equals(getBaseType()) == true) {
             return null;
@@ -144,8 +150,16 @@ public class RPBridgeParamType extends ARPBridge {
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create Type:" + getType() + " in package:" + modulePackage.getName());
-        IRPType rpType = modulePackage.addType(getType());
+
+        IRPType rpType = null;
+        try {
+            rpType = modulePackage.addType(getType());
+        } catch (Exception e) {
+            error("createElementByType Error name:" + getType(), e);
+            doxygen_.logoutdebug(0);
+        }
         return rpType;
+
     }
 
     public IRPType createBaseType(IRPPackage modulePackage, String version) {
@@ -153,9 +167,17 @@ public class RPBridgeParamType extends ARPBridge {
             return null;
         }
         debug("create BaseType:" + getBaseType() + " in package:" + modulePackage.getName());
-        IRPType rpBaseType = modulePackage.addType(getBaseType());   
-        setApplicableVersion(rpBaseType, version);  
-        setStereoType(rpBaseType, STEREOTYPE_VALUETYPE);
+
+        IRPType rpBaseType = null;
+        try {
+            rpBaseType = modulePackage.addType(getBaseType());
+            setApplicableVersion(rpBaseType, version);  
+            setStereoType(rpBaseType, STEREOTYPE_VALUETYPE);
+        } catch (Exception e) {
+            error("createBaseType Error name:" + getBaseType(), e);
+            doxygen_.logoutdebug(0);
+        }
+
         return rpBaseType;
     }
 
@@ -230,8 +252,8 @@ public class RPBridgeParamType extends ARPBridge {
         IRPType rpbasetype = null;
 
         if(getType().equals(getBaseType()) != true) {
-            IRPPackage versionPackage = GetBaseVersionPackage(rpType);
-            rpbasetype = searchBaseType(versionPackage);
+            // IRPPackage versionPackage = GetBaseVersionPackage(rpType);
+            rpbasetype = searchBaseType(rootPackage_);
 
             if( rpbasetype == null ) { 
                 IRPPackage modulePackage = getPackage(rpType);

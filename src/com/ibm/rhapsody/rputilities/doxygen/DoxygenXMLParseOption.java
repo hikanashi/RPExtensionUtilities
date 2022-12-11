@@ -19,20 +19,41 @@ public class DoxygenXMLParseOption extends ARPObject {
     }
 
     public String getCurrentTag() {
-        if(taglist_.size() > 0) {
-            return taglist_.get(taglist_.size()-1).toString();
+        for(int index = taglist_.size()-1; index > 0; index--) {
+            String tag = taglist_.get(index).toString();
+            return tag;
         }
 
         return "";
     }
 
-    public String getBeforetTag() {
-        if(taglist_.size() > 1) {
-            return taglist_.get(taglist_.size()-2).toString();
+    public String getCurrentTagWithoutPara() {
+        for(int index = taglist_.size()-1; index > 0; index--) {
+            String tag = taglist_.get(index).toString();
+            if(tag.equals("para") == true) {
+                continue;
+            }
+            return tag;
         }
-
         return "";
-        
+    }
+
+    public String getBeforeTagWithoutPara() {
+        String currentTag = null;
+        for(int index = taglist_.size()-1; index > 0; index--) {
+            String tag = taglist_.get(index).toString();
+            if(tag.equals("para") == true) {
+                continue;
+            }
+
+            if( currentTag == null ) {
+                currentTag = tag;
+                continue;
+            }
+
+            return tag;
+        }
+        return "";
     }
 
     public int getIndent() {
@@ -41,12 +62,26 @@ public class DoxygenXMLParseOption extends ARPObject {
 
 
     public void startElement( String tag ) {
-        taglist_.add(new StringBuffer(tag));
+        String starttag = "";
+        if( tag != null) {
+            starttag = tag;
+        }
+        trace("startElement:"+ starttag + " indent:"+ taglist_.size());
+        taglist_.add(new StringBuffer(starttag));
     }
 
-    public void endElement() {
-        if(taglist_.size() > 0 ) { 
-            taglist_.remove(taglist_.size()-1);
+    public void endElement(String tag) {
+        String endtag = "";
+        if( tag != null) {
+            endtag = tag;
+        }
+
+        trace("endElement:"+ endtag + " indent:"+ taglist_.size());
+        while(taglist_.size() > 0) {
+            StringBuffer deltag = taglist_.remove( taglist_.size()-1 );
+            if(endtag.equals(deltag.toString()) == true)  {
+                break;
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParser;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.window.AlwaysOnTopMenuBar;
 import com.ibm.rhapsody.rputilities.window.FileSelector;
@@ -71,7 +71,7 @@ public class ImportGUI extends ARPObject {
         }
     }
 
-    private void ImportDoxygen() {
+    synchronized private void ImportDoxygen() {
         info("Import Start");
 
         setUIEnable(false);
@@ -110,14 +110,15 @@ public class ImportGUI extends ARPObject {
         setUIEnable(true);
 
         if(result == true) {
-            mainFrame_.setVisible(false);
+            // mainFrame_.setVisible(false);
             JOptionPane.showMessageDialog(mainFrame_, "Import complete");
         } else {
             JOptionPane.showMessageDialog(mainFrame_, "Import Error(Model)");
         }
+
     }
 
-    private void selectImportPath() {
+    synchronized private void selectImportPath() {
         setUIEnable(false);
         
         FileSelector file = new FileSelector(textImportPath_.getText());
@@ -143,7 +144,7 @@ public class ImportGUI extends ARPObject {
         });
         mainPanel.add(buttonPath_);
         textImportPath_ = new JTextField();
-        // textImportPath_.setText("E:\\Rhapsody\\Doxygen\\out\\xml");
+        textImportPath_.setText("E:\\Rhapsody\\Doxygen\\out\\xml");
         mainPanel.add(textImportPath_);
 
         // input version 

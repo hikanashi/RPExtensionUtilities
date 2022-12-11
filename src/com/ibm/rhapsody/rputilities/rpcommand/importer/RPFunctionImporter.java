@@ -3,13 +3,14 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.ARPBridge;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeDefine;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeEnum;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeEvent;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeOperation;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeStateChart;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeStruct;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeTypedef;
@@ -19,7 +20,7 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
 public class RPFunctionImporter extends ARPObject {
-    protected final int ELEMENT_IMPORT_LIMIT = 1000;
+    protected final int IMPORT_SAVE_CYCLE = 5;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);
@@ -29,7 +30,7 @@ public class RPFunctionImporter extends ARPObject {
         boolean result = false;
 
         // debugMemory("Start Define");
-        // result = importModel(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
+        // result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
         // if(result != true ) {
         //     return result;
         // }
@@ -93,13 +94,15 @@ public class RPFunctionImporter extends ARPObject {
                 list.size()));
 
         int index = 0;
+        int save_count = 0;
         for(DoxygenType obj : list) {
-            debug(String.format("importModel tag:%s/%s(%s) type:%s name:%s",
+            info(String.format("importModel tag:%s/%s(%s) type:%s name:%s %d/%d",
                     tagtype.getTag(),
                     tagtype.getAttrName(),
                     tagtype.getAttrValue(),
                     obj.getType(),
-                    obj.getName()));
+                    obj.getName(),
+                    index+1, list.size()));
 
             ARPBridge bridge = newBridgeInstance(obj, rootPackage, tagtype);
             if(bridge == null) {
@@ -111,16 +114,12 @@ public class RPFunctionImporter extends ARPObject {
                 return false;
             }
 
-            if(++index >= ELEMENT_IMPORT_LIMIT) {
-                warn(String.format("importModel tag:%s/%s(%s) is over the maximum number of imports(%d)",
-                            tagtype.getTag(),
-                            tagtype.getAttrName(),
-                            tagtype.getAttrValue(),
-                            ELEMENT_IMPORT_LIMIT));
-                warn("Therefore, data beyond the maximum number will not be imported count:"
-                    + (list.size() - ELEMENT_IMPORT_LIMIT));
-                break;
+            if(++save_count > IMPORT_SAVE_CYCLE ) {
+                rootPackage.save(1);
+                save_count = 0;
             }
+
+            index++;
         }
 
         ARPBridge bridge = newBridgeInstance(null, rootPackage, tagtype);        
@@ -133,6 +132,9 @@ public class RPFunctionImporter extends ARPObject {
             bridge.replaceOldElement(currentVersion);
         }
 
+        
+        rootPackage.save(1);
+
         return true;
     }
 
@@ -141,6 +143,7 @@ public class RPFunctionImporter extends ARPObject {
 
         if( tagtype == TAGTYPE.FUNCTION ) {
             bridge = new RPBridgeStateChart(doxygen,rootPackage);
+            // bridge = new RPBridgeOperation(doxygen, rootPackage);
             return bridge;
         }
 

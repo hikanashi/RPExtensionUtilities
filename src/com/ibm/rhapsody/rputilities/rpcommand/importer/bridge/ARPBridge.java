@@ -56,6 +56,7 @@ public abstract class ARPBridge extends ARPObject {
 
         if( update == true && compareResult < 0) {
             unavailable_element = current_element;
+            changedElement(unavailable_element, currentVersion);
             current_element = null;
         }
 
@@ -76,14 +77,12 @@ public abstract class ARPBridge extends ARPObject {
             return current_element;
         }
         
-        current_element = createElementByType(modulePackage);
+        current_element = createElement(modulePackage);
         if(current_element == null) {
             return null;
         }
 
         apply(current_element, modulePackage, currentVersion);
-
-        changedElement(unavailable_element, current_element, currentVersion);
 
         return current_element;
     }
@@ -127,7 +126,7 @@ public abstract class ARPBridge extends ARPObject {
                 continue;
             }
 
-            deletedElement(element, null, currentVersion);
+            deletedElement(element, currentVersion);
         }
 
         return;
@@ -198,19 +197,9 @@ public abstract class ARPBridge extends ARPObject {
         return true;
     }
 
-    protected IRPModelElement createElement(IRPPackage versionPackage) {
-        IRPPackage targetPackage = createModulePackage(versionPackage);
-        if( targetPackage == null) {
-            return null;
-        }
-
+    protected IRPModelElement createElement(IRPPackage targetPackage) {
         IRPModelElement element  = null;
-        try {
-            element = createElementByType(targetPackage); 
-        } catch (Exception e) {
-            error("createElementByType Error:", e);
-            element = null;
-        }
+        element = createElementByType(targetPackage); 
 
         return element;
     }
@@ -218,7 +207,10 @@ public abstract class ARPBridge extends ARPObject {
     protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
         try {
             if(element instanceof IRPType) {
-                setStereoType(element, STEREOTYPE_VALUETYPE);
+                IRPType rpType = getObject(element);
+                if( rpType.getIsPredefined() == 0) {
+                    setStereoType(element, STEREOTYPE_VALUETYPE);
+                }
             }
     
             updateOwner(element,modulePackage);
@@ -263,15 +255,15 @@ public abstract class ARPBridge extends ARPObject {
         return setTagOnlyOnce(rpelement,TAG_VERSION_UNAVAILABLE,version);
     }
 
-    protected void deletedElement(IRPModelElement unavailable, IRPModelElement current, String currentVersion) {
-        unavailableElement(unavailable, current, ELEMENT_NAME_DELETE_PREFIX, currentVersion);
+    protected void deletedElement(IRPModelElement unavailable, String currentVersion) {
+        unavailableElement(unavailable, ELEMENT_NAME_DELETE_PREFIX, currentVersion);
     }
 
-    protected void changedElement(IRPModelElement unavailable, IRPModelElement current, String currentVersion) {
-        unavailableElement(unavailable, current, ELEMENT_NAME_CHANGE_PREFIX, currentVersion);
+    protected void changedElement(IRPModelElement unavailable, String currentVersion) {
+        unavailableElement(unavailable, ELEMENT_NAME_CHANGE_PREFIX, currentVersion);
     }
 
-    protected void unavailableElement(IRPModelElement unavailable, IRPModelElement current, String prefix, String currentVersion) {
+    protected void unavailableElement(IRPModelElement unavailable, String prefix, String currentVersion) {
         if( unavailable == null ) {
             return;
         }
@@ -285,10 +277,6 @@ public abstract class ARPBridge extends ARPObject {
         debug(String.format("change unavailable %s->%s",
                     unavailable.getName(), change_name ));
         unavailable.setName(change_name);
-
-        if( current == null ) {
-            return;
-        }
     }
 
     protected boolean setTagOnlyOnce(IRPModelElement rpelement, String tagname, String tagvalue) {
@@ -313,19 +301,30 @@ public abstract class ARPBridge extends ARPObject {
             return;
         }
 
-        IRPStereotype stereo = findStereoType(rpelement, stereotypeName);
-        if( stereo != null ) {
-            return;
-        }
+        return;
 
-        stereo = findProjectStereoType(rpelement, stereotypeName);
-        if( stereo == null ) {
-            warn(String.format("Stereotype:%s is not found. so Element:%s can't set.",
-                    stereotypeName, rpelement.getName()));
-            return;
-        }
+        // IRPStereotype stereo = findStereoType(rpelement, stereotypeName);
+        // if( stereo != null ) {
+        //     return;
+        // }
 
-        rpelement.addSpecificStereotype(stereo);
+        // stereo = findProjectStereoType(rpelement, stereotypeName);
+        // if( stereo == null ) {
+        //     warn(String.format("Stereotype:%s is not found. so Element:%s can't set.",
+        //             stereotypeName, rpelement.getName()));
+        //     return;
+        // }
+
+        
+        // try {
+        //     rpelement.addSpecificStereotype(stereo);
+        // } catch (Exception e) {
+        //     error(String.format("addSpecificStereotype Error Name:%s stereotype:%s(%s)",
+        //         rpelement.getName(),
+        //         stereotypeName,
+        //         (stereo != null ? stereo.getName() : "null")), e);
+        // }
+
     }
 
     protected IRPStereotype findStereoType(IRPModelElement rpelement, String stereotypeName) {
@@ -473,7 +472,9 @@ public abstract class ARPBridge extends ARPObject {
             if( element == null ) {
                 debug(parentPackage.getName() + " is not found, Create Package:"+ packageName);
                 try {
-                    element = parentPackage.addNestedPackage(packageName);
+                    IRPPackage createPackage = parentPackage.addNestedPackage(packageName);
+                    createPackage.setSeparateSaveUnit(0);
+                    element = createPackage;
                 } catch (Exception e) {
                     error("addNestedPackage Error:", e);
                     element = null;
@@ -494,7 +495,8 @@ public abstract class ARPBridge extends ARPObject {
 
 
     protected String convertAvailableName( String name ) {
-        return name.replaceAll("\\.|-", "_");
+        String oldname = new String(name);
+        return oldname.trim().replaceAll("\\.|-|\\$", "_").trim();
     }
 
 }

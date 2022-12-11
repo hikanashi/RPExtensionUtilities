@@ -9,6 +9,8 @@ import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
 import com.telelogic.rhapsody.core.IRPActivityDiagram;
 import com.telelogic.rhapsody.core.IRPClassifier;
 import com.telelogic.rhapsody.core.IRPFlowchart;
+import com.telelogic.rhapsody.core.IRPGraphElement;
+import com.telelogic.rhapsody.core.IRPGraphicalProperty;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPPin;
@@ -17,6 +19,8 @@ import com.telelogic.rhapsody.core.IRPType;
 public class RPBridgeStateChart extends ARPBridge {
     protected final String PIN_RETURN_NAME = "RETURN";
     protected final String PIN_RETURN_DIRECTION = "Out";
+
+    protected String name_ = null;
 
     public RPBridgeStateChart(DoxygenType doxygen, IRPPackage rootPackage) {
         super(RPBridgeStateChart.class, doxygen, rootPackage);
@@ -28,7 +32,7 @@ public class RPBridgeStateChart extends ARPBridge {
             return;
         }
 
-        // doxygen.debugout(0);
+        name_ = convertAvailableName(doxygen_.getName());
     }
 
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
@@ -39,29 +43,40 @@ public class RPBridgeStateChart extends ARPBridge {
 
 
     public IRPModelElement findElementByType(IRPPackage rppackage) {
-        // trace("find ActivityDiagram key:" + doxygen_.getName() + " package:"+ rppackage.getName());
-        IRPModelElement rpelement = rppackage.findNestedElementRecursive(doxygen_.getName(),"ActivityDiagram");
+        // trace("find ActivityDiagram key:" + name_ + " package:"+ rppackage.getName());
+        IRPModelElement rpelement = rppackage.findNestedElementRecursive(name_,"ActivityDiagram");
         return rpelement;
     }
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
-        IRPFlowchart rpFlowchart = modulePackage.addActivityDiagram();
-        debug("create " + rpFlowchart.getDisplayName() 
-            + " name:" + doxygen_.getName() 
-            + " meta:"+ rpFlowchart.getMetaClass());
-        if(doxygen_.getName().length() > 0) {
-            rpFlowchart.setName(doxygen_.getName());
+        IRPFlowchart rpFlowchart = null;
+
+        try {
+            rpFlowchart = modulePackage.addActivityDiagram();
+            debug("create " + rpFlowchart.getDisplayName() 
+                + " name:" + name_ 
+                + " meta:"+ rpFlowchart.getMetaClass());
+            
+            if(name_.length() > 0) {
+                rpFlowchart.setName(name_);
+            }
+
+            rpFlowchart.createGraphics();
+            rpFlowchart.setShowDiagramFrame(1);
+            
+            
+        } catch (Exception e) {
+            error("createElementByType Error name:" + name_, e);
+            doxygen_.logoutdebug(0);
         }
-        IRPActivityDiagram diagram = rpFlowchart.getFlowchartDiagram();
-        diagram.createGraphics();
         return rpFlowchart;
     }
 
     public boolean isUpdate(IRPModelElement element) {
         IRPFlowchart rpActivity = getObject(element);
 
-        if(doxygen_.getName().equals(rpActivity.getName()) != true) {
-            trace("Activity Name is change "+ rpActivity.getName() + "->" + doxygen_.getName());
+        if(name_.equals(rpActivity.getName()) != true) {
+            trace("Activity Name is change "+ rpActivity.getName() + "->" + name_);
             return true;
         }
 
@@ -69,7 +84,7 @@ public class RPBridgeStateChart extends ARPBridge {
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
 
         if(pins.size() != params.size() + 1) {
-            trace("Activity:" + doxygen_.getName() 
+            trace("Activity:" + name_ 
                 + " Argment count is change "+ pins.size() + "->" + params.size()+1);
             return true;
         }
@@ -78,13 +93,13 @@ public class RPBridgeStateChart extends ARPBridge {
             IRPPin rpPin = pins.get(index);
             DoxygenType param = params.get(index);
 
-            if(isUpdateActivityPin(doxygen_.getName(), rpPin, param) == true ) {
+            if(isUpdateActivityPin(name_, rpPin, param) == true ) {
                 return true;
             }
         }
 
         IRPPin rpReturnPin = pins.get(params.size());
-        if( isUpdateReturnPin(doxygen_.getName(), rpReturnPin, doxygen_ ) == true ) { 
+        if( isUpdateReturnPin(name_, rpReturnPin, doxygen_ ) == true ) { 
             return true;
         }
 
@@ -146,13 +161,16 @@ public class RPBridgeStateChart extends ARPBridge {
     public void applyByType(IRPModelElement element, String currentVersion) {
         IRPFlowchart rpActivity = getObject(element);
 
-        if(doxygen_.getName().equals(rpActivity.getName()) != true) {
+        if(name_.equals(rpActivity.getName()) != true) {
             trace("Activity Name is apply "+ rpActivity.getName() + "->" + doxygen_.getName());
-            rpActivity.setName(doxygen_.getName());
+            rpActivity.setName(name_);
         }
 
         List<IRPPin> pins = getActivityParameters(rpActivity);
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
+        doxygen_.logoutdebug(0);
+
+        int index = 0;
         for(DoxygenType value : params ) {
             DoxygenTypeParam param = getObject(value);
             String argmentName = param.getName();
@@ -161,20 +179,20 @@ public class RPBridgeStateChart extends ARPBridge {
             IRPPin rpPin = null;
             // pin is already exist
             if( find_index >= 0) {
-                rpPin =  pins.get(find_index);
-                pins.remove(find_index);
-                trace(String.format("Activity:%s pin:%s is exist(index:%d)",
+                rpPin = pins.remove(find_index);
+                debug(String.format("Activity:%s pin:%s is exist(index:%d)",
                         rpActivity.getDisplayName() , 
                         rpPin.getName(),
                         find_index));
             } 
             else {
-                trace(String.format("Activity:%s pin:%s is create",
+                debug(String.format("Activity:%s pin:%s is create",
                         rpActivity.getDisplayName() , argmentName));
                 rpPin = rpActivity.addActivityParameter(argmentName);
             }
 
-            applyPin(doxygen_.getName(), rpPin, param, currentVersion);
+            applyPin(rpActivity, rpPin, param, currentVersion, index);
+            index++;
         }
 
         IRPPin rpReturnPin = null;
@@ -185,7 +203,7 @@ public class RPBridgeStateChart extends ARPBridge {
             rpReturnPin = pins.get(return_index);
         }
 
-        applyReturnPin(doxygen_.getName(), rpReturnPin, doxygen_, currentVersion);
+        applyReturnPin(rpActivity, rpReturnPin, doxygen_, currentVersion, index);
 
         deletePins(pins);
 
@@ -212,20 +230,22 @@ public class RPBridgeStateChart extends ARPBridge {
         return;
     }
 
-    protected void applyPin(String activityName, IRPPin rpPin, DoxygenTypeParam param, String currentVersion) {
+    protected void applyPin(IRPFlowchart flowchart, IRPPin rpPin, DoxygenTypeParam param, String currentVersion, int index) {
         if( rpPin == null || param == null ){
             return;
         }
 
         if(param.getName().length() > 0 && rpPin.getName().equals(param.getName()) != true) {
-            trace(activityName + " Pin Name is apply "+ rpPin.getName() + "->" + param.getName());
+            trace(flowchart.getName() + " Pin Name is apply "+ rpPin.getName() + "->" + param.getName());
             rpPin.setName(param.getName());
         }
 
         if(rpPin.getPinDirection().equals(param.getDirection()) != true) {
-            trace(activityName + " Direction is apply "+ rpPin.getPinDirection() + "->" + param.getDirection());
+            trace(flowchart.getName() + " Direction is apply "+ rpPin.getPinDirection() + "->" + param.getDirection());
             rpPin.setPinDirection(param.getDirection());
         }
+
+        setPosition(flowchart, rpPin, 0, (index+1) * 50);
 
         IRPType type = CreateType(param, currentVersion);
         if( type != null ) {
@@ -234,16 +254,22 @@ public class RPBridgeStateChart extends ARPBridge {
         return;
     }
 
-    protected void applyReturnPin(String activityName, IRPPin rpPin, DoxygenType param, String currentVersion) {
+    protected void applyReturnPin(IRPFlowchart flowchart, IRPPin rpPin, DoxygenType param, String currentVersion, int index) {
+        if(rpPin == null) {
+            return;
+        }
+
         if(rpPin.getName().equals(PIN_RETURN_NAME) != true) {
-            trace(activityName + " Pin Name is apply "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
+            trace(flowchart.getName() + " Pin Name is apply "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
             rpPin.setName(PIN_RETURN_NAME);
         }
 
         if(rpPin.getPinDirection().equals(PIN_RETURN_DIRECTION) != true) {
-            trace(activityName + " Direction is apply "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
+            trace(flowchart.getName() + " Direction is apply "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
             rpPin.setPinDirection(PIN_RETURN_DIRECTION);
         }
+
+        setPosition(flowchart, rpPin, 0, (index+1) * 50);
 
         IRPType type = CreateType(param, currentVersion);
         if( type != null ) {
@@ -267,5 +293,32 @@ public class RPBridgeStateChart extends ARPBridge {
 
         return activitypins;
     }
+
+    public void setPosition(IRPFlowchart flowchart, IRPModelElement element, Integer x, Integer y) {
+
+        IRPGraphElement graphElement = null;
+        graphElement = getGraphElement(flowchart, element);
+        if (graphElement != null) {
+            graphElement.setGraphicalProperty("Position", x + ", " + y);
+            trace(element.getName() + " position at "+ graphElement.getGraphicalProperty("Position").getValue());
+        }
+    }
+
+    public IRPGraphElement getGraphElement(IRPFlowchart fc, IRPModelElement element) {        
+        List<IRPGraphElement> graphList = toList(fc.getGraphicalElements());
+        if (!graphList.isEmpty()) {
+            for (IRPGraphElement graphElement : graphList) {
+                if (graphElement.getModelObject() != null) {
+                    if(graphElement.getModelObject().getGUID().equals(element.getGUID())) {
+                        return graphElement;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+
 
 }

@@ -5,6 +5,7 @@ import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 
 public class DoxygenTypeParam extends DoxygenType {
     protected String direction_ = "In";
+    protected DoxygenTypeParamItem detail_ = null;
 
     public DoxygenTypeParam() {
         super(DoxygenTypeParam.class);
@@ -14,12 +15,28 @@ public class DoxygenTypeParam extends DoxygenType {
         return direction_;
     }
 
+    public void setDirection(String direction) {
+        if(direction == null) {
+            return;
+        }
+
+        direction_ = new String(direction);
+    }
+
+    public void setDescription(String description) {
+        if(description == null) {
+            return;
+        }
+
+        briefdescription_.append(description);
+    }
+
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if(type.equals(TAGTYPE.REF) != true) {
             return false;
         }
 
-        if(option.getBeforetTag().equals("type") == true) {
+        if(option.getBeforeTagWithoutPara().equals("type") == true) {
             return true;
         }
         

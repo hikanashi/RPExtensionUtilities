@@ -22,6 +22,14 @@ public class DoxygenTypeStruct extends DoxygenType {
             return true;
         }
 
+        if(type.equals(TAGTYPE.DETAILPARAM) == true) {
+            return true;
+        }
+
+        if(type.equals(TAGTYPE.DETAILRETVAL) == true) {
+            return true;
+        }
+
         return false;
     }
 }

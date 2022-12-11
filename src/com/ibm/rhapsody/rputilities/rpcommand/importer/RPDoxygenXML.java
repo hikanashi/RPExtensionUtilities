@@ -22,17 +22,20 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
     public boolean command(String[] argment) {
         // RPLog.setLevel(RPLogLevel.DEBUG);
 
-        warn("If Rhapsody is terminated, please increase the following items in rhapsody.ini.\n"
-            + "\t* MaxHeap=-Xmx\n"
-            + "\t* MaxStack=-Xss\n"        
-            + "rhapsody.ini is located in C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64");
+        // warn("If Rhapsody is terminated, please increase the following items in rhapsody.ini.\n"
+        //     + "\t* MaxHeap=-Xmx\n"
+        //     + "\t* MaxStack=-Xss\n"        
+        //     + "rhapsody.ini is located in C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64");
 
         ImportGUI ui = new ImportGUI(getElement());
+        // synchronized(ui) {    
+        //     try {
+        //         ui.wait();
+        //     } catch (InterruptedException e) {
+        //         warn("interrupt", e);
+        //     }  
+        // }
 
         return true;
     }
-
-
-
-
 }

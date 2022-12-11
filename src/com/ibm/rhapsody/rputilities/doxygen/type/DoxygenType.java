@@ -4,6 +4,7 @@ package com.ibm.rhapsody.rputilities.doxygen.type;
 import java.util.List;
 import java.util.ArrayList;
 
+import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
@@ -12,9 +13,9 @@ public abstract class DoxygenType extends ARPObject {
     protected DoxygenObjectManager manager_ = null;
     protected DoxygenType parent_ = null;
     protected List<DoxygenType> children_ = new ArrayList<DoxygenType>();
-    protected String id_ = null;
-    protected String kind_ = null;
-    protected String tag_ = null;
+    protected StringBuffer id_ = new StringBuffer();
+    protected StringBuffer kind_ = new StringBuffer();
+    protected StringBuffer tag_ = new StringBuffer();
     protected StringBuffer type_ = new StringBuffer(); 
     protected StringBuffer name_ = new StringBuffer(); 
     protected StringBuffer qualifiedname_ = new StringBuffer(); 
@@ -22,19 +23,10 @@ public abstract class DoxygenType extends ARPObject {
     protected StringBuffer briefdescription_ = new StringBuffer(); 
     protected StringBuffer detaileddescription_ = new StringBuffer();
     protected StringBuffer inbodydescription_ = new StringBuffer();
-    protected int indent_ = 0;
 
     
     protected DoxygenType(Class<?> clazz) {
         super(clazz);
-    }
-
-    public void setIndent(int indent) {
-        indent_ = indent;
-    }
-    
-    public int getIndent() {
-        return indent_;
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
@@ -75,35 +67,23 @@ public abstract class DoxygenType extends ARPObject {
     }
 
     public String getId() {
-        if( id_ != null) {
-            return id_;
-        } else {
-            return "";
-        }
+        return id_.toString();
     }
     
     public String getKind() {
-        if( kind_ != null) {
-            return kind_;
-        } else {
-            return "";
-        }
+        return kind_.toString();
     }
 
     public void setKind(String kind) {
-        kind_ = kind;
+        kind_.append(kind);
     }
 
     public String getTag() {
-        if( tag_ != null) {
-            return tag_;
-        } else {
-            return "";
-        }
+        return tag_.toString();
     }
 
     public void setTag(String tag) {
-        tag_ = tag;
+        tag_.append(tag);
     }
 
     public String getText() {
@@ -155,19 +135,15 @@ public abstract class DoxygenType extends ARPObject {
  
     public DoxygenType createElement(DoxygenXMLParseOption option) {
         DoxygenType target = this;
+        tag_.setLength(0);
+        tag_.append(option.getCurrentTag());
+        id_.setLength(0);
+        id_.append(option.reader.getAttributeValue(null, "id"));
+        kind_.setLength(0);
+        kind_.append(option.reader.getAttributeValue(null, "kind"));
 
-        // trace("\tEvent:START_ELEMENT"  + " Name:"+ reader.getLocalName() );
-        // for(int index = 0; index < reader.getAttributeCount(); index++ ) {
-        //     trace("\t\t Name:" + reader.getAttributeName(index) 
-        //         + " Type:"+ reader.getAttributeType(index) 
-        //         + " Value:" + reader.getAttributeValue(index));
-        // }
-
-        tag_ = option.getCurrentTag();
-
-        id_ = option.reader.getAttributeValue(null, "id");
-        kind_ = option.reader.getAttributeValue(null, "kind");
         createElementInternal(option);
+        trace("createElement tag:"+ getTag());        
         return target;
     }
 
@@ -196,17 +172,16 @@ public abstract class DoxygenType extends ARPObject {
     public DoxygenType characters(DoxygenXMLParseOption option) {
         DoxygenType target = this;
         // trace("\tEvent:CHARACTERS"  + " Tag:" + tag + " Text:"+ reader.getText() );
-        String tag = option.getCurrentTag();
-        String text = new String(option.reader.getText()).trim();
-
-        if(tag == null) {        
+        String tag = new String(option.getCurrentTagWithoutPara());
+        if(tag.isEmpty()) {        
             return target;
         }
+        String text = new String(option.reader.getText()).trim();
 
         if(tag.equals(getTag())) {
             text_.append(text);
         }
-        else if(option.getBeforetTag().equals(getTag())) {
+        else if(option.getBeforeTagWithoutPara().equals(getTag())) {
             if(tag.equals("name")) {
                 append(name_,text);
             }
@@ -232,19 +207,30 @@ public abstract class DoxygenType extends ARPObject {
                 charactersSubInternal(tag, text);
             }
         }
+        else {
+            charactersChildInternal(tag, text);
+        }
         
         return target;
     }
 
+
+
+
     protected void charactersSubInternal(String tag, String text) {
+        return;
+    }
+
+    protected void charactersChildInternal(String tag, String text) {
         return;
     }
 
     public DoxygenType endElement(DoxygenXMLParseOption option) {
         // trace("\tEvent:END_ELEMENT"  + " Name:"+ reader.getLocalName() );
         DoxygenType target = this;
-        String tag = option.reader.getName().getLocalPart();
-        
+        String tag = new String(option.reader.getName().getLocalPart());
+
+        trace("endElement tag:" + tag + " this:"+ getTag());        
         if(tag.equals(getTag()) != true) {
             endSubElementInternal(tag);
             return target;
@@ -265,6 +251,18 @@ public abstract class DoxygenType extends ARPObject {
     }
 
     public void linkObject() {
+        for(DoxygenType child : getChildlen()) {
+            if(child.getId().length() < 1) {
+                child.linkObject();
+            }
+        }
+
+        linkObjectInternal();
+
+        return;
+    }
+
+    protected void linkObjectInternal() {
         return;
     }
 
@@ -284,7 +282,7 @@ public abstract class DoxygenType extends ARPObject {
             + ",Inbody:" + getInbodydescription() );
 
         debugoutInternal(logbuffer);
-        debug(logbuffer.toString());
+        info(logbuffer.toString());
         
         for(DoxygenType child : getChildlen()) {
             child.logoutdebug(index+1);
