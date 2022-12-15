@@ -23,7 +23,7 @@ public class RPFileSystem extends ARPObject {
      * @param directryPath
      * @return
      */
-    public boolean IsReadable(String path) {
+    public static boolean IsReadable(String path) {
         Path pathobj = Paths.get(path);
         return Files.isReadable(pathobj);
     }
@@ -32,19 +32,28 @@ public class RPFileSystem extends ARPObject {
      * @param directryPath
      * @return
      */
-    public boolean IsWritable(String path) {
+    public static boolean IsWritable(String path) {
         Path pathobj = Paths.get(path);
         return Files.isWritable(pathobj);
     }
 
 
     /**
-     * @param directryPath
+     * @param path
      * @return
      */
-    public boolean isExists(String path) {
+    public static boolean isExists(String path) {
         Path pathobj = Paths.get(path);
         return Files.exists(pathobj);
+    }
+
+    /**
+     * @param path
+     * @return
+     */
+    public static boolean isDirectory(String path) {
+        Path pathobj = Paths.get(path);
+        return Files.isDirectory(pathobj);
     }
 
 

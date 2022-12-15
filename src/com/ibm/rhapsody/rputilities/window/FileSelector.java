@@ -26,7 +26,7 @@ public class FileSelector {
         else {
             filechooser = new JFileChooser();
         }
-        filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        filechooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int selected = filechooser.showOpenDialog(null);
 
         if (selected == JFileChooser.APPROVE_OPTION) {

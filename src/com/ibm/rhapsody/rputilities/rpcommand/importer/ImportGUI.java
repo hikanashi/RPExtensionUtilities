@@ -13,6 +13,12 @@ import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 
 public class ImportGUI extends ARPObject {
+    protected final String PROPERTY_NAME_PATH = "defaultPath";
+    protected final String PROPERTY_NAME_VERSION = "defaultVersion";
+
+    protected RPDoxygenXML command_;
+    protected String defaultPath_;
+    protected String defaultVersion_;
     protected IRPPackage rpPackage_;
     protected JFrame mainFrame_;
     protected AlwaysOnTopMenuBar menuBar_;
@@ -22,18 +28,21 @@ public class ImportGUI extends ARPObject {
     private JButton buttonImport_;
 
 
-    public ImportGUI(IRPModelElement element) {
+    public ImportGUI(RPDoxygenXML command) {
         super(ImportGUI.class);
-        rpPackage_ = getObject(element);
+        command_ = command;
+        rpPackage_ = command_.getElement();
+        defaultPath_ = command_.getProperty(PROPERTY_NAME_PATH);
+        defaultVersion_ = command_.getProperty(PROPERTY_NAME_VERSION);
 
+        
         buildGui();
         if(rpPackage_ != null) {
             rpPackage_.highLightElement();
         }
     }
 
-    private void buildGui()
-    {
+    private void buildGui() {
         mainFrame_ = new JFrame("Import API Specification");
 
         if(rpPackage_ == null) {
@@ -92,6 +101,10 @@ public class ImportGUI extends ARPObject {
 
         boolean result = false;
         try {
+            command_.setProperty(PROPERTY_NAME_PATH, doxygenPath);
+            command_.setProperty(PROPERTY_NAME_VERSION, currentVersion);
+            command_.saveProperties();
+
             DoxygenXMLParser xmlparser = new DoxygenXMLParser();
             DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);;
             if( manager == null) {
@@ -130,8 +143,7 @@ public class ImportGUI extends ARPObject {
         setUIEnable(true);
     }
 
-    private JPanel getMainPanel()
-    {
+    private JPanel getMainPanel() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(3, 2));
 
@@ -144,7 +156,9 @@ public class ImportGUI extends ARPObject {
         });
         mainPanel.add(buttonPath_);
         textImportPath_ = new JTextField();
-        textImportPath_.setText("E:\\Rhapsody\\Doxygen\\out\\xml");
+        if(defaultPath_ != null) {
+            textImportPath_.setText(defaultPath_);
+        }
         mainPanel.add(textImportPath_);
 
         // input version 
@@ -157,7 +171,12 @@ public class ImportGUI extends ARPObject {
             versionFormat.setPlaceholderCharacter('_');
             textVersion_ = new JFormattedTextField(versionFormat);
             textVersion_.setColumns(9);
-            textVersion_.setText("v00.00.00");
+            if(defaultVersion_ != null) {
+                textVersion_.setText(defaultVersion_);
+            } else {
+                textVersion_.setText("v00.00.00");
+            }
+
             mainPanel.add(textVersion_);   
         } catch (Exception e) {
             error("MaskFormatter error:", e);

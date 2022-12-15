@@ -99,7 +99,7 @@ public class RPCommandRunner extends ARPObject {
                 slog_.error("className:" + className + " is newInstance fail");
                 return false;
             }
-
+            rpcommnad.loadProperties();
             return rpcommnad.command(commandargs);
         } catch (Exception e) {
             slog_.error("CommandError:" + className, e);

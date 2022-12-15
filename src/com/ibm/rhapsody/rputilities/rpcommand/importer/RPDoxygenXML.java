@@ -27,7 +27,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         //     + "\t* MaxStack=-Xss\n"        
         //     + "rhapsody.ini is located in C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64");
 
-        ImportGUI ui = new ImportGUI(getElement());
+        ImportGUI ui = new ImportGUI(this);
         // synchronized(ui) {    
         //     try {
         //         ui.wait();

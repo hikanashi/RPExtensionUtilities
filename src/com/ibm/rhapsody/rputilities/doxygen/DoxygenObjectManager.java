@@ -11,9 +11,18 @@ import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 public class DoxygenObjectManager extends ARPObject {
     private class TagMap extends HashMap<String, DoxygenType> {}
     protected Map<String, TagMap> objectMap_ = new HashMap<String, TagMap>();
+    protected boolean fullimport_ = false;
 
     public DoxygenObjectManager() {
         super(DoxygenObjectManager.class);
+    }
+
+    public boolean isFullImport() {
+        return fullimport_;
+    }
+
+    public void setFullImport(boolean value) {
+        fullimport_ = value;
     }
 
     public void append(DoxygenType type) {
@@ -25,15 +34,15 @@ public class DoxygenObjectManager extends ARPObject {
             return;
         }
 
-        trace("Create Node Type:" + type.getClass().getSimpleName() + " id:" + type.getId());
-
         TagMap map = objectMap_.getOrDefault(type.getTag(), null);
         if(map == null) {
             map = new TagMap();
+            objectMap_.put(type.getTag(), map);
         }
 
+        trace("add " + type.getClass().getSimpleName() + " name:" + type.getName() + " id:" + type.getId());
         map.put(type.getId(),type);
-        objectMap_.put(type.getTag(), map);
+
     }
 
     public int size() {
@@ -49,6 +58,7 @@ public class DoxygenObjectManager extends ARPObject {
 
         for(TagMap map:  objectMap_.values()) {
             for(DoxygenType child : map.values()) {
+                trace("doxygen " + child.getClass().getSimpleName() + " name:" + child.getName() + " id:" + child.getId());
                 list.add(child);
             }  
         }

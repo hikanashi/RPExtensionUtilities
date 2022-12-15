@@ -122,6 +122,8 @@ public class RPBridgeEvent extends ARPBridge {
             rpevent.setName(doxygen_.getName());
         }
 
+        rpevent.setDescription(doxygen_.getBriefdescription());
+
         List<IRPArgument> args = toList(rpevent.getArguments());
 
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
@@ -197,6 +199,7 @@ public class RPBridgeEvent extends ARPBridge {
 
     protected void applyArgment(IRPArgument rpArgment, DoxygenTypeParam param, String currentVersion) {
         rpArgment.setArgumentDirection(param.getDirection());
+        rpArgment.setDescription(param.getBriefdescription());
 
         IRPType type = CreateType(param, currentVersion);
         if( type != null ) {

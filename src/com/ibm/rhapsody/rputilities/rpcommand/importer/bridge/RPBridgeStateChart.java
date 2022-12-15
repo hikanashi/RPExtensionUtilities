@@ -21,6 +21,7 @@ public class RPBridgeStateChart extends ARPBridge {
     protected final String PIN_RETURN_DIRECTION = "Out";
 
     protected String name_ = null;
+    protected String type = null;
 
     public RPBridgeStateChart(DoxygenType doxygen, IRPPackage rootPackage) {
         super(RPBridgeStateChart.class, doxygen, rootPackage);
@@ -43,8 +44,8 @@ public class RPBridgeStateChart extends ARPBridge {
 
 
     public IRPModelElement findElementByType(IRPPackage rppackage) {
-        // trace("find ActivityDiagram key:" + name_ + " package:"+ rppackage.getName());
-        IRPModelElement rpelement = rppackage.findNestedElementRecursive(name_,"ActivityDiagram");
+        trace("find ActivityDiagram key:" + name_ + " package:"+ rppackage.getName());
+        IRPModelElement rpelement = findNestedElementRecursive(rppackage,name_,"ActivityDiagram");
         return rpelement;
     }
 
@@ -165,10 +166,12 @@ public class RPBridgeStateChart extends ARPBridge {
             trace("Activity Name is apply "+ rpActivity.getName() + "->" + doxygen_.getName());
             rpActivity.setName(name_);
         }
+        
+        rpActivity.setDescription(doxygen_.getBriefdescription());
 
         List<IRPPin> pins = getActivityParameters(rpActivity);
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
-        doxygen_.logoutdebug(0);
+        // doxygen_.logoutdebug(0);
 
         int index = 0;
         for(DoxygenType value : params ) {
@@ -240,10 +243,12 @@ public class RPBridgeStateChart extends ARPBridge {
             rpPin.setName(param.getName());
         }
 
-        if(rpPin.getPinDirection().equals(param.getDirection()) != true) {
+        if(param.getDirection().length() > 0 && rpPin.getPinDirection().equals(param.getDirection()) != true) {
             trace(flowchart.getName() + " Direction is apply "+ rpPin.getPinDirection() + "->" + param.getDirection());
             rpPin.setPinDirection(param.getDirection());
         }
+
+        rpPin.setDescription(param.getBriefdescription());
 
         setPosition(flowchart, rpPin, 0, (index+1) * 50);
 

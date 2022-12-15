@@ -43,48 +43,65 @@ public class DoxygenTypeParamItem extends DoxygenType {
     }
 
     protected void linkObjectInternal() {
-        info("linkObjectInternal:"+ getName());
+        trace("linkObjectInternal:"+ getName());
 
-        DoxygenTypeParam param = GetRelateParam();
-        if(param == null) {
+        DoxygenType parent = getParent();
+        if(parent == null) {
             return;
         }
 
-        info( getName() + " set bref:"+ briefdescription_.toString());
-        param.setDirection(direction_);
-        param.setDescription(briefdescription_.toString());
+        DoxygenType relatedtype = GetRelateParam();
+        if(relatedtype == null) {
+            return;
+        }
+
+        if(relatedtype instanceof DoxygenTypeFunction) {
+            DoxygenTypeFunction function = getObject(relatedtype);
+            function.setReturnDescription(briefdescription_.toString());
+        }
+
+        if(relatedtype instanceof DoxygenTypeParam) {
+            DoxygenTypeParam param = getObject(relatedtype);
+            param.setDirection(direction_);
+            param.setDescription(briefdescription_.toString());
+        }
+
         return;
     }
 
-
-
-
-    protected DoxygenTypeParam GetRelateParam() {
+    protected DoxygenType GetRelateParam() {
         DoxygenType parent = getParent();
         if( parent == null) {
             warn(getName() +":first parent");
             return null;
         }
 
-        parent = parent.getParent();
-        if( parent == null) {
+        DoxygenType pparent = parent.getParent();
+        if( pparent == null) {
             warn(getName() +":2nd parent");
             return null;
         }
         
-        List<DoxygenType> params = parent.getChildlen(TAGTYPE.PARAM);
+
+        if( parent instanceof DoxygenTypeDetailRetval) {
+            if(pparent instanceof DoxygenTypeFunction) {
+                return pparent;
+            }
+        }
+        
+        List<DoxygenType> params = pparent.getChildlen(TAGTYPE.PARAM);
         for(DoxygenType param : params) {
             if(param.getName().equals(getName()) == true) {
                 return getObject(param);
             }
         }
-        warn(getName() +" not found:" + parent.getName());
+        warn(getName() +" not found:" + pparent.getName());
 
         return null;
     }
 
     protected void debugoutInternal(StringBuffer logbuffer) {
-        logbuffer.append(",direction:"+ ( direction_ != null ? direction_ : "none")); 
+        logbuffer.append(",direction:"+  direction_ ); 
         return;
     }
 }

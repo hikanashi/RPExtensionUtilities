@@ -122,6 +122,11 @@ public class RPFunctionImporter extends ARPObject {
             index++;
         }
 
+        if(manager.isFullImport() != true) {
+            rootPackage.save(1);
+            return true;
+        }
+
         ARPBridge bridge = newBridgeInstance(null, rootPackage, tagtype);        
         bridge.replaceOldElement(currentVersion);
 
@@ -131,7 +136,6 @@ public class RPFunctionImporter extends ARPObject {
             bridge = newBridgeInstance(typedef, rootPackage, tagtype);        
             bridge.replaceOldElement(currentVersion);
         }
-
         
         rootPackage.save(1);
 

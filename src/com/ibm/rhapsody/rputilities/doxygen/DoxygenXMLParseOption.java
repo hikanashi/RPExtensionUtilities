@@ -19,11 +19,12 @@ public class DoxygenXMLParseOption extends ARPObject {
     }
 
     public String getCurrentTag() {
-        for(int index = taglist_.size()-1; index > 0; index--) {
+        int index = taglist_.size()-1;
+        if(index > 0) {
             String tag = taglist_.get(index).toString();
             return tag;
         }
-
+        
         return "";
     }
 
@@ -66,6 +67,7 @@ public class DoxygenXMLParseOption extends ARPObject {
         if( tag != null) {
             starttag = tag;
         }
+        
         trace("startElement:"+ starttag + " indent:"+ taglist_.size());
         taglist_.add(new StringBuffer(starttag));
     }

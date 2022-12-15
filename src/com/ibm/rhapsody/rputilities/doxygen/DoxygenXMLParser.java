@@ -30,13 +30,19 @@ public class DoxygenXMLParser extends ARPObject {
     public DoxygenObjectManager Parse(String doxygenPath) {
         debugMemory("Start Parse");
  
-        String xsltPhath = doxygenPath + "\\combine.xslt";
-        String sourcePath = doxygenPath+ "\\index.xml";
+        if(doxygenPath == null) {
+            return null;
+        }
 
-        String formatNowDate = RPFileSystem.CreateDateTimeString(null);
-        String resultPath = RPFileSystem.getActiveProjectPath() + "\\result_" + formatNowDate + ".xml";
+        boolean result = false;
+        if(RPFileSystem.isDirectory(doxygenPath) == true) {
+            manager_.setFullImport(true);
+            result = TransformParse(doxygenPath);
+        } else {
+            manager_.setFullImport(false);
+            result = ParseInternal(doxygenPath);
+        }
 
-        boolean result = ParseInternal(xsltPhath, sourcePath, resultPath);
         if(result != true) {
             return null;
         }
@@ -46,27 +52,51 @@ public class DoxygenXMLParser extends ARPObject {
         return getManager();
     }
 
-    protected boolean ParseInternal(String xsltPath, String sourceTreePath, String outputPath) {
+    protected boolean TransformParse(String doxygenPath) {
+        String xsltPhath = doxygenPath + "\\combine.xslt";
+        String sourcePath = doxygenPath + "\\index.xml";
+
+        String formatNowDate = RPFileSystem.CreateDateTimeString(null);
+        String resultPath = RPFileSystem.getActiveProjectPath() + "\\result_" + formatNowDate + ".xml";
+
         boolean result = false;
 
 		try {
-            result = Transform(xsltPath, sourceTreePath, outputPath); 
+            result = Transform(xsltPhath, sourcePath, resultPath); 
             if( result != true ) {
                 return false;
             }
     
-            result = XmlParse(outputPath);
+            result = ParseInternal(resultPath);
             if(result != true) {
                 return false;
             }
         } 
         catch(Exception e) {
-            error("Parse Error" + sourceTreePath , e);
+            error("Parse Error" + doxygenPath , e);
             result = false;
 		} finally {
             RPFileSystem fileSystem = new RPFileSystem();
-            result = fileSystem.Delete(outputPath);
+            result = fileSystem.Delete(resultPath);
 		}
+
+        return result;
+    }
+
+    
+    protected boolean ParseInternal(String xmlPath) {
+        boolean result = false;
+
+		try {
+            result = XmlParse(xmlPath);
+            if(result != true) {
+                return false;
+            }
+        } 
+        catch(Exception e) {
+            error("Parse Error" + xmlPath , e);
+            result = false;
+		} 
 
         return result;
     }
@@ -75,20 +105,18 @@ public class DoxygenXMLParser extends ARPObject {
     {
         info("Transform xslt:" + xsltPath + " source:" + sourceTreePath + " output:" + outputPath);
 
-        try {
-            RPFileSystem filesystem = new RPFileSystem();
-            
-            if(filesystem.IsReadable(xsltPath) != true) {
+        try {          
+            if(RPFileSystem.IsReadable(xsltPath) != true) {
                 error("Path[" + xsltPath + "] can't read. so check permission.");
                 return false;
             }
 
-            if(filesystem.IsReadable(sourceTreePath) != true) {
+            if(RPFileSystem.IsReadable(sourceTreePath) != true) {
                 error("Path[" + sourceTreePath + "] can't read. so check permission.");
                 return false;
             }
 
-            if(filesystem.isExists(outputPath) == true) {
+            if(RPFileSystem.isExists(outputPath) == true) {
                 error("Path[" + outputPath + "] is exist. so delete file.");
                 return false;
             }
@@ -121,11 +149,8 @@ public class DoxygenXMLParser extends ARPObject {
         return true;
     }
 
-    protected boolean XmlParse(String xmlPath) 
-    {
-        RPFileSystem filesystem = new RPFileSystem();
-            
-        if(filesystem.IsReadable(xmlPath) != true) {
+    protected boolean XmlParse(String xmlPath) {
+        if(RPFileSystem.IsReadable(xmlPath) != true) {
             error("Path[" + xmlPath + "] can't read. so check permission.");
             return false;
         }
@@ -209,7 +234,6 @@ public class DoxygenXMLParser extends ARPObject {
             option.endElement(option.reader.getName().getLocalPart());
             break;
         case XMLStreamConstants.END_DOCUMENT:
-            debug("End Document");
             option.endDocument();
             break;
         default:

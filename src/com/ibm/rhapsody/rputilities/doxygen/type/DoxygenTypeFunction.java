@@ -4,8 +4,18 @@ import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 
 public class DoxygenTypeFunction extends DoxygenType {
+    protected StringBuffer returndescription_ = new StringBuffer(); 
+
     public DoxygenTypeFunction() {
         super(DoxygenTypeFunction.class);
+    }
+
+    public void setReturnDescription(String description) {
+        if(description == null) {
+            return;
+        }
+
+        returndescription_.append(description);
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
@@ -40,7 +50,7 @@ public class DoxygenTypeFunction extends DoxygenType {
     }
  
     protected void linkObjectInternal() {
-        logoutdebug(0);
+        // logoutdebug(0);
         return;
     }
 }

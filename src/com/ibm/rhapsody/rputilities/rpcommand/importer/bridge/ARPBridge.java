@@ -359,6 +359,45 @@ public abstract class ARPBridge extends ARPObject {
         return null;
     }
 
+    protected IRPModelElement findNestedElementRecursive(IRPPackage rppackage, String name, String metaClass) {
+        if(rppackage == null || name == null || metaClass == null) {
+            return null;
+        }
+
+        // return rppackage.findNestedElementRecursive(name, metaClass);
+
+        IRPModelElement element = null;
+        List<IRPModelElement> childlen = null;
+        childlen = toList(rppackage.getNestedElementsRecursive());        
+        for(IRPModelElement child : childlen) {
+            if(child.getMetaClass().equals(metaClass) != true) {
+                continue;
+            }
+        
+            if(child.getName().equals(name) != true) {
+                continue;
+            }
+        
+            element = child;
+            break;
+        }
+        
+        if(element != null){
+            return element;
+        }
+        
+        List<IRPPackage> childpackages = toList(rppackage.getPackages());       
+        for(IRPPackage childpackage : childpackages) {
+            element = findNestedElementRecursive(childpackage, name, metaClass);
+            if( element != null) {
+                return element;
+            }
+        }
+        
+        return null;
+    }
+
+
     protected int compareVersion(String srcVersion, String destVersion) {
         int compare = srcVersion.compareTo(destVersion);
         trace("srcVersion:"+ srcVersion + " dstVersion:" + destVersion + " result:" + compare);
@@ -418,10 +457,11 @@ public abstract class ARPBridge extends ARPObject {
             return null;
         }
 
-        String modelname = convertAvailableName(version);
+        String modelname = rootPackage_.getName() + "_" + convertAvailableName(version);
+        trace("createVersionPackage:" + modelname);
 
         IRPPackage versionPackage = null;
-        IRPModelElement checkElement = rootPackage_.findNestedElementRecursive(modelname,"Package");
+        IRPModelElement checkElement = findNestedElementRecursive(rootPackage_,modelname,"Package");
         if(checkElement == null) {
             debug("create version package:"+ modelname + "(" + version + ")");
             versionPackage = rootPackage_.addNestedPackage(modelname);
@@ -476,7 +516,7 @@ public abstract class ARPBridge extends ARPObject {
                     createPackage.setSeparateSaveUnit(0);
                     element = createPackage;
                 } catch (Exception e) {
-                    error("addNestedPackage Error:", e);
+                    error("addNestedPackage Error name:"+ packageName, e);
                     element = null;
                 }
 

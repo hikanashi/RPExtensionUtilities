@@ -135,12 +135,24 @@ public abstract class DoxygenType extends ARPObject {
  
     public DoxygenType createElement(DoxygenXMLParseOption option) {
         DoxygenType target = this;
-        tag_.setLength(0);
-        tag_.append(option.getCurrentTag());
-        id_.setLength(0);
-        id_.append(option.reader.getAttributeValue(null, "id"));
-        kind_.setLength(0);
-        kind_.append(option.reader.getAttributeValue(null, "kind"));
+
+        String tag = option.getCurrentTag();
+        if(tag != null) {
+            tag_.setLength(0);
+            tag_.append(tag);
+        }
+
+        String id = option.reader.getAttributeValue(null, "id");
+        if(id != null) {
+            id_.setLength(0);
+            id_.append(id);
+        }
+
+        String kind = option.reader.getAttributeValue(null, "kind");
+        if(kind != null) {
+            kind_.setLength(0);
+            kind_.append(kind);    
+        }
 
         createElementInternal(option);
         trace("createElement tag:"+ getTag());        
