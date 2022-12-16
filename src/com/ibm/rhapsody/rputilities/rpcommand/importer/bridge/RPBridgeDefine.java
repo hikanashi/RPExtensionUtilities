@@ -90,12 +90,12 @@ public class RPBridgeDefine extends ARPBridge {
             return false;
         }
 
-        if(getName().length() > 0 && getName().equals(rpType.getName()) != true) {
+        if(checkUpdate(getName(),rpType.getName()) != true) {
             trace("define change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
-        if(GetKind().equals(rpType.getKind()) != true ) {
+        if(checkUpdate(GetKind(),rpType.getKind()) != true ) {
             trace(getName() + " change Kind "+ rpType.getKind() + "->" + GetKind());
             return true;
         }
@@ -116,17 +116,17 @@ public class RPBridgeDefine extends ARPBridge {
     public void applyByType(IRPModelElement element, String currentVersion) {
         IRPType rpType = getObject(element);
 
-        if(getName().equals(rpType.getDisplayName()) != true) {
+        if(checkUpdate(getName(),rpType.getDisplayName()) != true) {
             trace(getName() + " apply DisplayName "+ rpType.getDisplayName() + "->" + getName());
             rpType.setDisplayName(getName());
         }
 
-        if(getName().equals(rpType.getName()) != true && getName().length() > 0) {
+        if(checkUpdate(getName(),rpType.getName()) != true) {
             trace(getName() + " apply Name "+ rpType.getName() + "->" + getName());
             rpType.setName(getName());
         }
 
-        if(GetKind().equals(rpType.getKind()) != true ) {
+        if(checkUpdate(GetKind(),rpType.getKind()) != true ) {
             trace(getName() + " change Kind "+ rpType.getKind() + "->" + GetKind());
             rpType.setKind(GetKind());
         }

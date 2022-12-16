@@ -4,7 +4,7 @@ import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 
 public class DoxygenTypeParam extends DoxygenType {
-    protected String direction_ = "In";
+    protected String direction_ = "";
 
     public DoxygenTypeParam() {
         super(DoxygenTypeParam.class);

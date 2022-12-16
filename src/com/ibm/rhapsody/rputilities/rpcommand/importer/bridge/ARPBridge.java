@@ -23,6 +23,9 @@ public abstract class ARPBridge extends ARPObject {
     protected final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
     protected final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
     protected final String STEREOTYPE_VALUETYPE = "ValueType";
+    protected final String ARGUMENT_DIRECTION_IN = "In";
+    protected final String ARGUMENT_DIRECTION_OUT = "Out";
+    protected final String ARGUMENT_DIRECTION_INOUT = "InOut";
 
     DoxygenType doxygen_ = null;
     IRPPackage rootPackage_ = null;
@@ -533,10 +536,61 @@ public abstract class ARPBridge extends ARPObject {
         return parentPackage;
     }
 
+    protected boolean checkUpdate(String typevalue, String rpvalue) {
+        if(typevalue.length() < 1) {
+            return false;
+        }
+
+        if(typevalue.equals(rpvalue) == true) {
+            return false;
+        }
+
+        return true;
+    }
 
     protected String convertAvailableName( String name ) {
         String oldname = new String(name);
         return oldname.trim().replaceAll("\\.|-|\\$", "_").trim();
+    }
+
+    protected String convertDirection(String direction, String type) {
+        String defaultDirection = ARGUMENT_DIRECTION_IN;
+        if(isOutputType(type) == true) {
+            defaultDirection = ARGUMENT_DIRECTION_OUT;
+        }
+
+        if(direction.isEmpty() == true) {
+            return defaultDirection;
+        }
+
+        if( direction.equalsIgnoreCase(ARGUMENT_DIRECTION_IN) == true) {
+            return ARGUMENT_DIRECTION_IN;
+        } else if( direction.equalsIgnoreCase(ARGUMENT_DIRECTION_OUT) == true) {
+            return ARGUMENT_DIRECTION_OUT;
+        } else if( direction.equalsIgnoreCase(ARGUMENT_DIRECTION_INOUT) == true) {
+            return ARGUMENT_DIRECTION_INOUT;
+        }
+
+        return defaultDirection;
+    }
+
+    protected boolean isOutputType(String type) {
+        if(type.isEmpty() == true) {
+            return false;
+        }
+
+        int count = 0;
+        for(char x: type.toCharArray()){
+            if(x == '*'){
+                count++;
+            }
+        }
+
+        if(count > 1) {
+            return true;
+        }
+
+        return false;
     }
 
 }
