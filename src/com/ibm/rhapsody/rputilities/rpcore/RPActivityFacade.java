@@ -11,12 +11,18 @@ import java.util.Set;
 
 public class RPActivityFacade extends ARPObject {
 
-    public RPActivityFacade() 
-    {
+    /**
+     * 
+     */
+    public RPActivityFacade() {
         super(RPActivityFacade.class);
     }
 
-
+    /**
+     * @param rppackage
+     * @param recursive
+     * @return
+     */
     public List<IRPFlowchart> CollectActivity(IRPPackage rppackage,int recursive)
     {
         Set<IRPFlowchart> activitylist = new LinkedHashSet<IRPFlowchart>();
@@ -48,6 +54,10 @@ public class RPActivityFacade extends ARPObject {
     }
 
 
+    /**
+     * @param set
+     * @param obj
+     */
     private void append(Set<IRPFlowchart> set, IRPFlowchart obj)
     {
         trace("append :" + obj.getDisplayName()
@@ -60,6 +70,10 @@ public class RPActivityFacade extends ARPObject {
         }
     }
 
+    /**
+     * @param set
+     * @return
+     */
     private List<IRPFlowchart> toList(Set<IRPFlowchart> set)
     {
         List<IRPFlowchart> list = new ArrayList<IRPFlowchart>(set);

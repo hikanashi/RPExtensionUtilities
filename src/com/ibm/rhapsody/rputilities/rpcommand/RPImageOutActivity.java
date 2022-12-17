@@ -1,7 +1,5 @@
 package com.ibm.rhapsody.rputilities.rpcommand;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
@@ -13,26 +11,24 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPProject;
 import com.telelogic.rhapsody.core.IRPStatechart;
 
-class RPActivityImageOut extends IRPUtilityCommmand {
-    
-    protected String   m_ImageDirectory = null;
-    protected final String IMAGEOUTDIRECTRY_PREFIX = "ActivityImage"; 
-    protected final String IMAGEOUTFILE_PREFIX = "act"; 
-    protected final String IMAGEOUT_DEFAULT_FORMAT = "JPG"; 
-    protected final int NEED_IMAGEMAP = 0; 
+public class RPImageOutActivity extends IRPUtilityCommmand {
+    protected static final String IMAGEOUTDIRECTRY_PREFIX = "ActivityImage"; 
+    protected static final String IMAGEOUTFILE_PREFIX = "act"; 
+    protected static final String IMAGEOUT_DEFAULT_FORMAT = "JPG"; 
+    protected static final int NEED_IMAGEMAP = 0; 
 
+    protected String   imageDirectory_ = null;
     /**
-     * アクティビティ図画像出力クラス
-     * @param element 右クリック時に選択された要素
+     * Activity Diagram Image Output Class
+     * @param element Elements selected when right-clicked
      */
-    public RPActivityImageOut(IRPModelElement element) 
+    public RPImageOutActivity(IRPModelElement element) 
     {
-        super(RPActivityImageOut.class,element);
+        super(RPImageOutActivity.class,element);
     }
 
-
     /* 
-     * 選択されたパッケージのアクティビティ画像を出力する
+     * Outputs an activity image for the selected package
      * @see com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
     public boolean command(String[] argment) 
@@ -73,7 +69,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         }
 
         info("Activitiy Image Out End:" 
-            + (m_ImageDirectory != null ? m_ImageDirectory : "--None--"));
+            + (imageDirectory_ != null ? imageDirectory_ : "--None--"));
 
         if(result != true) {
             DeleteImageDirectory();
@@ -121,12 +117,11 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         return true;
     }
 
-
-
     /**
-     * 選択されたパッケージ以下のアクティビティ図の画像を出力する
-     * @param rppackage 選択されたパッケージ
-     * @return 画像出力結果
+     * Outputs an image of the activity diagram below the selected package
+     * @param rppackage selected package
+     * @param imageFormat Output image format
+     * @return Image output result(true:success false:failure)
      */
     protected boolean ImageOutActivity(IRPPackage rppackage, String imageFormat) 
     {
@@ -150,6 +145,12 @@ class RPActivityImageOut extends IRPUtilityCommmand {
     }
 
 
+    /**
+     * Outputs an image of the specified activity diagram
+     * @param chart Activity diagram for output target
+     * @param imageFormat Output image format
+     * @return Image output result(true:success false:failure)
+     */
     protected boolean ImageOutStateChart(IRPStatechart chart, String imageFormat) 
     {
         if(chart == null )
@@ -157,7 +158,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
             return false;
         }
 
-        if( m_ImageDirectory == null )
+        if( imageDirectory_ == null )
         {
             boolean result = CreateImageDirectory(chart);
             if(result != true)
@@ -183,6 +184,11 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         return true;
     }
 
+    /**
+     * Generate a directory to output images to
+     * @param chart Activity diagram for output target
+     * @return Result of directory generation(true:success false:failure)
+     */
     protected boolean CreateImageDirectory(IRPStatechart chart) 
     {
         if( chart == null )
@@ -191,18 +197,14 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         }
 
         IRPProject rpProject = chart.getProject();
-        
-        LocalDateTime nowDate = LocalDateTime.now();
-        DateTimeFormatter dateformatter =
-            DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String formatNowDate = dateformatter.format(nowDate);
+        RPFileSystem filesystem = new RPFileSystem();
+        String formatNowDate = RPFileSystem.CreateDateTimeString(null);
         
         String directryPath = rpProject.getCurrentDirectory()
             + "/" + IMAGEOUTDIRECTRY_PREFIX + "_" + formatNowDate;
 
-        RPFileSystem filesystem = new RPFileSystem();
         if( filesystem.CreateDirectory(directryPath) ) {
-            m_ImageDirectory = directryPath;
+            imageDirectory_ = directryPath;
             return true;
         } 
         else {
@@ -211,17 +213,27 @@ class RPActivityImageOut extends IRPUtilityCommmand {
         }
     }
 
+    /**
+     * Delete directory
+     * If directory is empty, delete the generated directory.
+     */
     protected void DeleteImageDirectory() 
     {
-        if( m_ImageDirectory == null )
+        if( imageDirectory_ == null )
         {
             return;
         }
 
         RPFileSystem filesystem = new RPFileSystem();
-        filesystem.Delete(m_ImageDirectory);
+        filesystem.Delete(imageDirectory_);
     }
 
+    /**
+     * Get the absolute path of the output image of the specified activity diagram.
+     * @param chart Activity diagram for output target
+     * @param imageFormat Output image format
+     * @return Result of getting absolute path(true:success false:failure)
+     */
     protected String GetImageFilePath(IRPStatechart chart, String imageFormat) 
     {
         if( chart == null )
@@ -229,7 +241,7 @@ class RPActivityImageOut extends IRPUtilityCommmand {
             return "";
         }
 
-        String filePath = m_ImageDirectory + "/" + IMAGEOUTFILE_PREFIX + "_" 
+        String filePath = imageDirectory_ + "/" + IMAGEOUTFILE_PREFIX + "_" 
                             + getPathToProject(chart,"_") + "." + imageFormat.toLowerCase();
 
         return filePath;

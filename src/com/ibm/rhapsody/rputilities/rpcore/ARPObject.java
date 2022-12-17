@@ -10,16 +10,18 @@ import com.telelogic.rhapsody.core.IRPProject;
 
 public abstract class ARPObject {
 	protected RPLog log_ = null;
+	protected Class<?> clazz_ = null;
 
     protected ARPObject(Class<?> clazz) {
+		clazz_ = clazz;
         log_ = new RPLog(clazz);
     }
 
     /**
-     * Objectを指定の型に変換する
-     * @param <T> 指定のデータ型
-     * @param obj 変換対象オブジェクト
-     * @return 指定の型に変換されたオブジェクト(変換失敗時はnull)
+     * Convert an Object to a specified type
+     * @param <T> Specified data type
+     * @param obj object being converted
+     * @return Object converted to specified type (null if conversion fails)
      */
     @SuppressWarnings("unchecked")
     public <T> T getObject(Object obj) {
@@ -31,6 +33,12 @@ public abstract class ARPObject {
         }
     }
 
+    /**
+	 * Convert a collection to a list of a specified type
+     * @param <T> Specified data type
+     * @param collection　Collection to be converted
+     * @return List converted to specified type
+     */
     @SuppressWarnings("unchecked")
     public <T> List<T> toList(IRPCollection collection) {
         try {
@@ -39,6 +47,107 @@ public abstract class ARPObject {
             error("toList Cast Error", e);
             return null;            
         }
+    }
+
+
+
+    /**
+	 * Get the package to which the element belongs
+     * @param element　Target Element
+     * @return Package Object
+     */
+    protected IRPPackage getPackage(IRPModelElement element)
+    {
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
+        {
+            if( checkelement instanceof IRPPackage) {
+				IRPPackage rpPackage = getObject(checkelement);
+				return rpPackage;
+			}
+        }
+
+        return null;
+    }
+
+    /**
+	 * Obtains the name of the package to which the element belongs.
+	 * If the packages belonging to the element are nested, the package names under the project are combined with delimiter.
+     * @param element　Target Element
+     * @param delimiter delimiter when concatenating package names
+     * @return Package Name
+     */
+    protected static String getPackagePath(IRPModelElement element, String delimiter)
+    {
+        String packageName = "";
+
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
+        {
+            if( checkelement instanceof IRPProject) {
+				break;
+			}
+
+            if( !(checkelement instanceof IRPPackage) ) {
+				continue;
+			}
+
+            if(packageName.length() > 0)
+            {
+                packageName = checkelement.getDisplayName() + delimiter + packageName;
+            }
+            else
+            {
+                packageName = checkelement.getDisplayName();
+            }
+        }
+
+        return packageName;
+    }
+
+	/**
+	 * Get the path from the project to the target element.
+	 * Excluding TopLevel classes.
+	 * @param element Target Element
+	 * @param delimiter delimiter when concatenating element names
+	 * @return path name 
+	 */
+	protected String getPathToProject(IRPModelElement element, String delimiter)
+    {
+        String elementPath = "";
+
+        for(IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner())
+        {
+			if( checkelement instanceof IRPClass) {
+				if(checkelement.getName().equals("TopLevel"))
+				{
+					continue;
+				}
+            }
+
+            if( checkelement instanceof IRPProject) {
+                break;
+            }
+
+			trace("element:"+ checkelement.getDisplayName()
+				+ " MetaClass:" + checkelement.getMetaClass()
+				+ " ClassName:" + checkelement.getClass().getName());
+
+            if(checkelement != element)
+            {
+                elementPath = checkelement.getDisplayName() + delimiter + elementPath;
+            }
+            else
+            {
+                elementPath = checkelement.getDisplayName();
+            }
+        }
+
+        return elementPath;
     }
 
 	/**
@@ -132,69 +241,13 @@ public abstract class ARPObject {
 		log_.trace( message, exception);
 	}
 
-    protected static String getPackageName(IRPModelElement element, String delimiter)
-    {
-        String packageName = "";
-
-        for(IRPModelElement checkelement = element;
-			checkelement != null;
-			checkelement = checkelement.getOwner())
-        {
-            if( checkelement instanceof IRPProject) {
-				break;
-			}
-
-            if( !(checkelement instanceof IRPPackage) ) {
-				continue;
-			}
-
-            if(packageName.length() > 0)
-            {
-                packageName = checkelement.getDisplayName() + delimiter + packageName;
-            }
-            else
-            {
-                packageName = checkelement.getDisplayName();
-            }
-        }
-
-        return packageName;
+    public void debugMemory(String title) {
+        // System.gc();
+        Runtime runtime = Runtime.getRuntime();
+        info(String.format("%s total:%d free:%d use:%d", 
+            title,
+            runtime.totalMemory(),
+            runtime.freeMemory(),
+            runtime.totalMemory() - runtime.freeMemory() ));
     }
-
-	protected String getPathToProject(IRPModelElement element, String delimiter)
-    {
-        String elementPath = "";
-
-        for(IRPModelElement checkelement = element;
-			checkelement != null;
-			checkelement = checkelement.getOwner())
-        {
-			if( checkelement instanceof IRPClass) {
-				if(checkelement.getName().equals("TopLevel"))
-				{
-					continue;
-				}
-            }
-
-            if( checkelement instanceof IRPProject) {
-                break;
-            }
-
-			trace("element:"+ checkelement.getDisplayName()
-				+ " MetaClass:" + checkelement.getMetaClass()
-				+ " ClassName:" + checkelement.getClass().getName());
-
-            if(checkelement != element)
-            {
-                elementPath = checkelement.getDisplayName() + delimiter + elementPath;
-            }
-            else
-            {
-                elementPath = checkelement.getDisplayName();
-            }
-        }
-
-        return elementPath;
-    } 
-
 }

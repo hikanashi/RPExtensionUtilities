@@ -8,26 +8,35 @@ public class RPLogLevel {
     private static final int DEBUG_INT = 10000;
     private static final int TRACE_INT = 0;
 
+    public final static RPLogLevel OFF = new RPLogLevel(ERROR_INT, "OFF");
+    public final static RPLogLevel ERROR = new RPLogLevel(OFF_INT, "ERR");
+    public final static RPLogLevel WARN = new RPLogLevel(WARN_INT, "WRN");
+    public final static RPLogLevel INFO = new RPLogLevel(INFO_INT, "INF");
+    public final static RPLogLevel DEBUG = new RPLogLevel(DEBUG_INT, "DBG");
+    public final static RPLogLevel TRACE = new RPLogLevel(TRACE_INT, "TRC");
 
     private final int levelInt;
     private final String levelStr;
-
-    final static public RPLogLevel OFF = new RPLogLevel(ERROR_INT, "OFF");
-    final static public RPLogLevel ERROR = new RPLogLevel(OFF_INT, "ERR");
-    final static public RPLogLevel WARN = new RPLogLevel(WARN_INT, "WRN");
-    final static public RPLogLevel INFO = new RPLogLevel(INFO_INT, "INF");
-    final static public RPLogLevel DEBUG = new RPLogLevel(DEBUG_INT, "DBG");
-    final static public RPLogLevel TRACE = new RPLogLevel(TRACE_INT, "TRC");
-
+    /**
+     * @param i
+     * @param s
+     */
     RPLogLevel(int i, String s) {
         levelInt = i;
         levelStr = s;
     }
 
+    /**
+     * @return
+     */
     public int toInt() {
         return levelInt;
     }
 
+    /**
+     * @param levelInt
+     * @return
+     */
     public static RPLogLevel intToLevel(int levelInt) {
         switch (levelInt) {
         case (TRACE_INT):

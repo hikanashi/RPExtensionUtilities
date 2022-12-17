@@ -5,9 +5,9 @@ import java.util.Map;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public class ActiounCounter extends ARPObject {
-    final protected String NONE_NAME = "-None-";
-    final protected String FLOWINAL_NAME = "-flowfinal-";
-    final protected String ACTIVITYINAL_NAME = "-activityfinal-"; 
+    protected static final  String NONE_NAME = "-None-";
+    protected static final  String FLOWINAL_NAME = "-flowfinal-";
+    protected static final  String ACTIVITYINAL_NAME = "-activityfinal-"; 
 
     protected String packageName_ = "";
     protected String activityName_ = "";

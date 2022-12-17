@@ -1,6 +1,6 @@
-package com.ibm.rhapsody.rputilities.rpcommand.activitycount;
+package com.ibm.rhapsody.rputilities.rpcommand;
 
-import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
+import com.ibm.rhapsody.rputilities.rpcommand.activitycount.ActiounCounter;
 import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 import com.telelogic.rhapsody.core.IRPConnector;
 import com.telelogic.rhapsody.core.IRPFlowchart;
@@ -8,7 +8,6 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPState;
 import com.telelogic.rhapsody.core.IRPStateVertex;
-import com.telelogic.rhapsody.core.IRPStatechart;
 import com.telelogic.rhapsody.core.IRPSwimlane;
 
 import java.util.ArrayList;
@@ -16,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RPActivityCount extends IRPUtilityCommmand {
+public class RPCountActivity extends IRPUtilityCommmand {
      /**
      * アクティビティ図のアクションカウントクラス
      * @param element 右クリック時に選択された要素
      */
-    public RPActivityCount(IRPModelElement element) 
+    public RPCountActivity(IRPModelElement element) 
     {
-        super(RPActivityCount.class,element);
+        super(RPCountActivity.class,element);
     }
 
     /* 
@@ -33,8 +32,7 @@ public class RPActivityCount extends IRPUtilityCommmand {
     public boolean command(String[] argment) 
     {
         IRPModelElement element = getElement();
-        if(element == null)
-        {
+        if(element == null) {
             error("name[" + argment[0] + "] is need select element.\n"
                 + "Please select one Element.");
             return false;
@@ -104,7 +102,7 @@ public class RPActivityCount extends IRPUtilityCommmand {
         debug("Count StateChart:" + chart.getDisplayName());
 
         List<Object> flowElements = toList(chart.getElementsInDiagram());
-        ActiounCounter counter = new ActiounCounter( getPackageName(chart,"/"), chart.getDisplayName());
+        ActiounCounter counter = new ActiounCounter( getPackagePath(chart,"/"), chart.getDisplayName());
         List<IRPSwimlane> swimlanes = toList(chart.getSwimlanes());
         for(IRPSwimlane swimlane : swimlanes) {
             counter.InitAction(swimlane.getDisplayName());
