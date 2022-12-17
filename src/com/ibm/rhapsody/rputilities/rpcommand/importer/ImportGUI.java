@@ -2,6 +2,7 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
 import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParser;
+import com.ibm.rhapsody.rputilities.rpcommand.RPDoxygenXML;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.window.AlwaysOnTopMenuBar;
 import com.ibm.rhapsody.rputilities.window.FileSelector;
@@ -13,13 +14,12 @@ import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 
 public class ImportGUI extends ARPObject {
-    protected final String PROPERTY_NAME_PATH = "defaultPath";
-    protected final String PROPERTY_NAME_VERSION = "defaultVersion";
+    protected static final String PROPERTY_NAME_PATH = "defaultPath";
+    protected static final String PROPERTY_NAME_VERSION = "defaultVersion";
 
     protected RPDoxygenXML command_;
     protected String defaultPath_;
     protected String defaultVersion_;
-    protected IRPPackage rpPackage_;
     protected JFrame mainFrame_;
     protected AlwaysOnTopMenuBar menuBar_;
     private JTextField textImportPath_;
@@ -31,30 +31,35 @@ public class ImportGUI extends ARPObject {
     public ImportGUI(RPDoxygenXML command) {
         super(ImportGUI.class);
         command_ = command;
-        rpPackage_ = command_.getElement();
         defaultPath_ = command_.getProperty(PROPERTY_NAME_PATH);
         defaultVersion_ = command_.getProperty(PROPERTY_NAME_VERSION);
 
-        
         buildGui();
-        if(rpPackage_ != null) {
-            rpPackage_.highLightElement();
+    }
+
+    public void setVisible(boolean value) {
+        if(value == true ) {
+            IRPPackage rppackage = command_.getElement();
+            if(RPFunctionImporter.isImportTarget(rppackage) != true) {
+                JOptionPane.showMessageDialog(mainFrame_, "Please select the one package that will be the base point for the import");
+                return;
+            }
+
+            mainFrame_.setTitle("Import API Specification to " + rppackage.getName());
         }
+
+        setUIEnable(value);
+        mainFrame_.setVisible(value);
     }
 
     private void buildGui() {
-        mainFrame_ = new JFrame("Import API Specification");
-
-        if(rpPackage_ == null) {
-            JOptionPane.showMessageDialog(mainFrame_, "Please select one package element to import");
-            return;
-        }
+        mainFrame_ = new JFrame();
 
         mainFrame_.setSize(600, 200);
         menuBar_ = new AlwaysOnTopMenuBar(mainFrame_);
         mainFrame_.setJMenuBar(menuBar_);
         buildMainUI();
-        mainFrame_.setVisible(true);
+        mainFrame_.setVisible(false);
     }
 
     private void buildMainUI() {
@@ -78,6 +83,7 @@ public class ImportGUI extends ARPObject {
         if(textVersion_ != null) {
             textVersion_.setEnabled(enable);;
         }
+
     }
 
     synchronized private void ImportDoxygen() {
@@ -113,20 +119,23 @@ public class ImportGUI extends ARPObject {
                 return;
             }
             
+            IRPPackage rppackage = command_.getElement();
             RPFunctionImporter importer = new RPFunctionImporter();
-            result = importer.importModel(rpPackage_, manager, currentVersion);
+            result = importer.importModel(rppackage, manager, currentVersion);
         } catch (Exception e) {
             error("Import Error:", e);
         }
 
-        info("Import Fisnish result:" + result);
+        info("Import Fisnish result:" + (result == true ? "Success" : "Fail"));
         setUIEnable(true);
 
         if(result == true) {
             mainFrame_.setVisible(false);
+            setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Import complete");
         } else {
             mainFrame_.setVisible(false);
+            setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Import Error(Model)");
         }
 

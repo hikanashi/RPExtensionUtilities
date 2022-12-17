@@ -21,7 +21,7 @@ applicableToProfile1=RPExtensionUtilities
 DLLServerCompatible2=1
 
 #REM: Count Activity
-name3=activitycount.RPActivityCount
+name3=RPCountActivity
 isPluginCommand3=1
 command3=RPExtensionUtilities
 applicableTo3=Package,ActivityDiagram
@@ -29,7 +29,7 @@ isVisible3=1
 DLLServerCompatible3=1
 
 #REM: Image Out Activity. format is EMF, BMP, JPEG, JPG, TIFF.
-name4=imageout.RPActivityImageOut\JPG
+name4=RPImageOutActivity\JPG
 isPluginCommand4=1
 command4=RPExtensionUtilities
 applicableTo4=Package,ActivityDiagram
@@ -37,7 +37,7 @@ isVisible4=1
 DLLServerCompatible4=1
 
 #REM: Doxygen Import
-name5=importer.RPDoxygenXML
+name5=RPDoxygenXML\Import
 isPluginCommand5=1
 command5=RPExtensionUtilities
 applicableTo5=Package

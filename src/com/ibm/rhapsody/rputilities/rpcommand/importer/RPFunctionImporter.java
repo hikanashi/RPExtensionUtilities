@@ -12,10 +12,35 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
 public class RPFunctionImporter extends ARPObject {
-    protected final int IMPORT_SAVE_CYCLE = 20;
+    protected static final int IMPORT_SAVE_CYCLE = 20;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);
+    }
+
+
+    public static boolean isImportTarget(IRPModelElement rpelement) {
+        if( rpelement == null ) {
+            return false;
+        }
+
+        for(IRPModelElement checkElement = rpelement;
+            checkElement != null;
+            checkElement = checkElement.getOwner())  {
+
+            if(!(checkElement instanceof IRPPackage)) {
+                continue;
+            }
+
+            IRPModelElement versiontag = checkElement.getTag(ARPBridge.TAG_VERSION_PACKAGE);
+            if(versiontag == null ) {
+                continue;
+            }
+
+            return false;
+        }
+        
+        return true;
     }
 
     public boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion) {

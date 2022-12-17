@@ -11,7 +11,7 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
 public class RPBridgeDefine extends ARPBridge {
-    protected final String DECLARATION_PREFIX = "#define";
+    protected static final String DECLARATION_PREFIX = "#define";
 
     protected String name_ = null;
     protected RPTYPE_KIND kind_ = RPTYPE_KIND.LANG;

@@ -10,7 +10,7 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
 
 public class RPBridgeTypedef extends ARPBridge {
-    protected final String DECLARATION_PREFIX = "typedef";
+    protected static final String DECLARATION_PREFIX = "typedef";
 
     protected String name_ = null;
     protected RPTYPE_KIND kind_ = RPTYPE_KIND.TYPEDEF;

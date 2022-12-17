@@ -1,6 +1,6 @@
-package com.ibm.rhapsody.rputilities.rpcommand.activitycount;
+package com.ibm.rhapsody.rputilities.rpcommand;
 
-import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
+import com.ibm.rhapsody.rputilities.rpcommand.activitycount.ActiounCounter;
 import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 import com.telelogic.rhapsody.core.IRPConnector;
 import com.telelogic.rhapsody.core.IRPFlowchart;
@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RPActivityCount extends IRPUtilityCommmand {
+public class RPCountActivity extends IRPUtilityCommmand {
      /**
      * アクティビティ図のアクションカウントクラス
      * @param element 右クリック時に選択された要素
      */
-    public RPActivityCount(IRPModelElement element) 
+    public RPCountActivity(IRPModelElement element) 
     {
-        super(RPActivityCount.class,element);
+        super(RPCountActivity.class,element);
     }
 
     /* 

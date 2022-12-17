@@ -15,11 +15,11 @@ import com.telelogic.rhapsody.core.IRPPin;
 import com.telelogic.rhapsody.core.IRPType;
 
 public class RPBridgeStateChart extends ARPBridge {
-    protected final String PIN_RETURN_NAME = "RETURN";
-    protected final String PIN_RETURN_DIRECTION = "Out";
-    protected final int PIN_SPACE_AXIS_Y = 70;
-    protected final int PIN_SPACE_AXIS_X_IN = 0;
-    protected final int PIN_SPACE_AXIS_X_OUT = 0;
+    protected static final String PIN_RETURN_NAME = "RETURN";
+    protected static final String PIN_RETURN_DIRECTION = "Out";
+    protected static final int PIN_SPACE_AXIS_Y = 70;
+    protected static final int PIN_SPACE_AXIS_X_IN = 0;
+    protected static final int PIN_SPACE_AXIS_X_OUT = 0;
 
     protected String name_ = null;
     protected String type = null;

@@ -1,5 +1,6 @@
-package com.ibm.rhapsody.rputilities.rpcommand;
+package com.ibm.rhapsody.rputilities.rpcommand.common;
 
+import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
@@ -99,7 +100,7 @@ public class RPCommandRunner extends ARPObject {
                 slog_.error("className:" + className + " is newInstance fail");
                 return false;
             }
-            rpcommnad.loadProperties();
+
             return rpcommnad.command(commandargs);
         } catch (Exception e) {
             slog_.error("CommandError:" + className, e);

@@ -1,12 +1,12 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
 import com.telelogic.rhapsody.core.IRPArgument;
-import com.telelogic.rhapsody.core.IRPClassifier;
 import com.telelogic.rhapsody.core.IRPOperation;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
@@ -51,44 +51,6 @@ public class RPBridgeOperation extends ARPBridge {
         return rpOperation;
     }
 
-    protected void updateOwner(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
-        List<Object> functions = toList(modulePackage.getGlobalFunctions());
-
-        // TODO: Fixed problem with package not being replaced
-        IRPOperation rpTmpOperation = null;
-        IRPModelElement rpOwner = null;
-        if( functions.size() < 1) {
-            rpTmpOperation = modulePackage.addGlobalFunction("tmp_____");
-            rpOwner = rpTmpOperation.getOwner();
-        } else {
-            IRPModelElement rpCurrent = getObject(functions.get(0));
-            rpOwner = rpCurrent.getOwner();
-        }
-
-        super.updateOwner(element, rpOwner, currentVersion, isupdate);
-
-        // IRPPackage ownerPackage = getPackage(element);
-        // String ownerID = "";
-        // String ownerName = "";
-        // if(getPackage(element) != null) {
-        //     ownerID = ownerPackage.getGUID();
-        //     ownerName = ownerPackage.getName();
-        // }
-        // if( ownerID.equals(modulePackage.getGUID()) != true ) {
-        //     debug(String.format("element:%s's owner %s(%s)->%s(%s)",
-        //             element.getName(),
-        //             ownerName,
-        //             ownerID,
-        //             modulePackage.getName(),
-        //             modulePackage.getGUID()));
-        //     element.setOwner(modulePackage);
-        // }
-
-        if( rpTmpOperation != null ) {
-            rpTmpOperation.deleteFromProject();
-        }
-    }
-
     public boolean isUpdate(IRPModelElement element) {
         IRPOperation rpOperation = getObject(element);
 
@@ -131,15 +93,15 @@ public class RPBridgeOperation extends ARPBridge {
             return true;
         }
 
-        IRPClassifier rpType = rpArgment.getType();
-        String rpTypeName = "";
-        if( rpType != null) {
-            rpTypeName = rpType.getDisplayName();
-        }
+        // IRPClassifier rpType = rpArgment.getType();
+        // String rpTypeName = "";
+        // if( rpType != null) {
+        //     rpTypeName = rpType.getDisplayName();
+        // }
 
-        if(rpTypeName.equals(param.getType()) != true ) {
-            return true;
-        }
+        // if(rpTypeName.equals(param.getType()) != true ) {
+        //     return true;
+        // }
 
         return false;
     }
@@ -152,36 +114,37 @@ public class RPBridgeOperation extends ARPBridge {
             rpOperation.setName(name_);
         }
 
-        List<IRPArgument> args = toList(rpOperation.getArguments());
+        rpOperation.setDescription(doxygen_.getBriefdescription());
+
+        List<IRPArgument> args = getArguments(rpOperation);
 
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
         int argument_index = 0;
-        int delete_count = 0;
         for(DoxygenType value : params ) {
             DoxygenTypeParam param = getObject(value);
             String argmentName = param.getName();
-            int	find_index = findArgment(args, argument_index, argmentName);
+            int	find_index = findArgument(args, 0, argmentName);
 
             IRPArgument rpArgment = null;
             // argument is already exist
             if( find_index >= 0) {
-                delete_count = find_index - argument_index - 1;
-                deleteArgment(args, argument_index, delete_count);
-                rpArgment =  args.get(argument_index);
-                debug(String.format("Operation:%s argment:%s delete(from:%d, to:%d)",
+                rpArgment =  args.remove(find_index);
+                deleteArgument(args, find_index);
+                debug(String.format("Event:%s argment:%s delete(count:%d)",
                         rpOperation.getDisplayName() , 
                         rpArgment.getName(),
-                        argument_index, delete_count));
+                        find_index));
             } 
-            else if( argument_index < args.size()  ) {
-                debug(String.format("Operation:%s add(%s, %d)",
-                        rpOperation.getDisplayName() , argmentName, argument_index + 1));
-                rpArgment = rpOperation.addArgumentBeforePosition(argmentName, argument_index + 1);
-            }
             else {
-                debug(String.format("Operation:%s add(%s, last)",
-                        rpOperation.getDisplayName() , argmentName));
-                rpArgment = rpOperation.addArgument(argmentName);
+                if(args.size() > 0) {
+                    trace(String.format("Event:%s add(%s, %d)",
+                                rpOperation.getDisplayName() , argmentName, argument_index + 1));
+                    rpArgment = rpOperation.addArgumentBeforePosition(argmentName, argument_index + 1);
+                } else {
+                    trace(String.format("Event:%s add(%s, last)",
+                                rpOperation.getDisplayName() , argmentName));
+                    rpArgment = rpOperation.addArgument(argmentName);
+                }
             }
 
             applyArgment(rpArgment, param, currentVersion);
@@ -189,17 +152,24 @@ public class RPBridgeOperation extends ARPBridge {
             argument_index++;
         }
 
-        delete_count = args.size() - argument_index;
-        debug(String.format("Operation:%s delete(from:%d, to:%d)",
-                rpOperation.getDisplayName() , 
-                argument_index, delete_count));
-        deleteArgment(args, argument_index, args.size() - argument_index);
+        deleteArgument(args, args.size());
 
         return;
     }
 
-    protected int findArgment(List<IRPArgument> args, int startindex, String key) {
-        debug(String.format("\targs:%d start:%d key:%s", 
+    protected List<IRPArgument> getArguments(IRPOperation rpevent) {
+        List<IRPArgument> org_args = toList(rpevent.getArguments());
+        List<IRPArgument> ret_args = new ArrayList<IRPArgument>(); 
+
+        for(IRPArgument arg : org_args) {
+            ret_args.add(arg);
+        }
+
+        return ret_args;
+    }
+
+    protected int findArgument(List<IRPArgument> args, int startindex, String key) {
+        trace(String.format("\targs:%d start:%d key:%s", 
                 args.size(), startindex, key));
 
         for(int index = startindex; index < args.size(); index++){
@@ -211,15 +181,15 @@ public class RPBridgeOperation extends ARPBridge {
         return -1;
     }
 
-    protected void deleteArgment(List<IRPArgument> args, int startindex, int deletenumber ) {
+    protected void deleteArgument(List<IRPArgument> args, int deletenumber ) {
         if(deletenumber <= 0) {
             return;
         }
 
-        for(int index = startindex; index < deletenumber; index++){
-            IRPArgument rpArgment = args.get(startindex);
-            debug("\tdelete argment:"+ rpArgment.getName());
-            rpArgment.deleteFromProject();
+        for(int count = 0; count < deletenumber; count++){
+            IRPArgument rpArgument = args.remove(0);
+            debug("\tdelete argument:"+ rpArgument.getName());
+            rpArgument.deleteFromProject();
         }
         
         return;
@@ -228,6 +198,7 @@ public class RPBridgeOperation extends ARPBridge {
     protected void applyArgment(IRPArgument rpArgment, DoxygenTypeParam param, String currentVersion) {
         String convDirection = convertDirection(param.getDirection(), param.getType());
         rpArgment.setArgumentDirection(convDirection);
+        rpArgment.setDescription(param.getBriefdescription());
 
         IRPType type = CreateType(param, currentVersion);
         if( type != null ) {

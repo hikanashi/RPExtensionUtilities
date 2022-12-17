@@ -16,17 +16,17 @@ import com.telelogic.rhapsody.core.IRPTag;
 import com.telelogic.rhapsody.core.IRPType;
 
 public abstract class ARPBridge extends ARPObject {
-    protected final String TAG_VERSION_PACKAGE = "Version";
-    protected final String TAG_VERSION_APPLICABLE = "FirstApplicableVersion";
-    protected final String TAG_VERSION_UNAVAILABLE = "UnavailableStartVersion";
-    protected final String TAG_EXCLUDED_ELEMENT = "Excluded";
-    protected final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
-    protected final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
-    protected final String STEREOTYPE_DATATYPE = "DataType";
-    protected final String STEREOTYPE_VALUETYPE = "ValueType";
-    protected final String ARGUMENT_DIRECTION_IN = "In";
-    protected final String ARGUMENT_DIRECTION_OUT = "Out";
-    protected final String ARGUMENT_DIRECTION_INOUT = "InOut";
+    public static final String TAG_VERSION_PACKAGE = "Version";
+    protected static final String TAG_VERSION_APPLICABLE = "FirstApplicableVersion";
+    protected static final String TAG_VERSION_UNAVAILABLE = "UnavailableStartVersion";
+    protected static final String TAG_EXCLUDED_ELEMENT = "Excluded";
+    protected static final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
+    protected static final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
+    protected static final String STEREOTYPE_DATATYPE = "DataType";
+    protected static final String STEREOTYPE_VALUETYPE = "ValueType";
+    protected static final String ARGUMENT_DIRECTION_IN = "In";
+    protected static final String ARGUMENT_DIRECTION_OUT = "Out";
+    protected static final String ARGUMENT_DIRECTION_INOUT = "InOut";
 
     DoxygenType doxygen_ = null;
     IRPPackage rootPackage_ = null;

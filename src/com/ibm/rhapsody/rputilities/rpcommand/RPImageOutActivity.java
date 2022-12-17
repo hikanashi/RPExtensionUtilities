@@ -1,8 +1,7 @@
-package com.ibm.rhapsody.rputilities.rpcommand.imageout;
+package com.ibm.rhapsody.rputilities.rpcommand;
 
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
 import com.telelogic.rhapsody.core.IRPCollection;
@@ -12,21 +11,20 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPProject;
 import com.telelogic.rhapsody.core.IRPStatechart;
 
-public class RPActivityImageOut extends IRPUtilityCommmand {
-    
-    protected String   m_ImageDirectory = null;
-    protected final String IMAGEOUTDIRECTRY_PREFIX = "ActivityImage"; 
-    protected final String IMAGEOUTFILE_PREFIX = "act"; 
-    protected final String IMAGEOUT_DEFAULT_FORMAT = "JPG"; 
-    protected final int NEED_IMAGEMAP = 0; 
+public class RPImageOutActivity extends IRPUtilityCommmand {
+    protected static final String IMAGEOUTDIRECTRY_PREFIX = "ActivityImage"; 
+    protected static final String IMAGEOUTFILE_PREFIX = "act"; 
+    protected static final String IMAGEOUT_DEFAULT_FORMAT = "JPG"; 
+    protected static final int NEED_IMAGEMAP = 0; 
 
+    protected String   imageDirectory_ = null;
     /**
      * Activity Diagram Image Output Class
      * @param element Elements selected when right-clicked
      */
-    public RPActivityImageOut(IRPModelElement element) 
+    public RPImageOutActivity(IRPModelElement element) 
     {
-        super(RPActivityImageOut.class,element);
+        super(RPImageOutActivity.class,element);
     }
 
     /* 
@@ -71,7 +69,7 @@ public class RPActivityImageOut extends IRPUtilityCommmand {
         }
 
         info("Activitiy Image Out End:" 
-            + (m_ImageDirectory != null ? m_ImageDirectory : "--None--"));
+            + (imageDirectory_ != null ? imageDirectory_ : "--None--"));
 
         if(result != true) {
             DeleteImageDirectory();
@@ -160,7 +158,7 @@ public class RPActivityImageOut extends IRPUtilityCommmand {
             return false;
         }
 
-        if( m_ImageDirectory == null )
+        if( imageDirectory_ == null )
         {
             boolean result = CreateImageDirectory(chart);
             if(result != true)
@@ -206,7 +204,7 @@ public class RPActivityImageOut extends IRPUtilityCommmand {
             + "/" + IMAGEOUTDIRECTRY_PREFIX + "_" + formatNowDate;
 
         if( filesystem.CreateDirectory(directryPath) ) {
-            m_ImageDirectory = directryPath;
+            imageDirectory_ = directryPath;
             return true;
         } 
         else {
@@ -221,13 +219,13 @@ public class RPActivityImageOut extends IRPUtilityCommmand {
      */
     protected void DeleteImageDirectory() 
     {
-        if( m_ImageDirectory == null )
+        if( imageDirectory_ == null )
         {
             return;
         }
 
         RPFileSystem filesystem = new RPFileSystem();
-        filesystem.Delete(m_ImageDirectory);
+        filesystem.Delete(imageDirectory_);
     }
 
     /**
@@ -243,7 +241,7 @@ public class RPActivityImageOut extends IRPUtilityCommmand {
             return "";
         }
 
-        String filePath = m_ImageDirectory + "/" + IMAGEOUTFILE_PREFIX + "_" 
+        String filePath = imageDirectory_ + "/" + IMAGEOUTFILE_PREFIX + "_" 
                             + getPathToProject(chart,"_") + "." + imageFormat.toLowerCase();
 
         return filePath;

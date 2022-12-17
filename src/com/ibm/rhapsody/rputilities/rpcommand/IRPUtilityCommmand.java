@@ -21,6 +21,7 @@ public abstract class IRPUtilityCommmand extends ARPObject {
     protected IRPUtilityCommmand(Class<?> clazz,IRPModelElement element) {
         super(clazz);
         element_ = element;
+        loadProperties();
     }
 
     /**
@@ -28,7 +29,7 @@ public abstract class IRPUtilityCommmand extends ARPObject {
      * @param argment Menu selected when right-clicked (array of names in hep file divided by delimiters)
      * @return Result of command execution (true: success false: failure)
      */
-    protected abstract boolean command(String[] argment);
+    public abstract boolean command(String[] argment);
  
     /**
      * Get elements selected when right-clicked

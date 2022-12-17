@@ -1,6 +1,6 @@
 package com.ibm.rhapsody.rputilities;
 
-import com.ibm.rhapsody.rputilities.rpcommand.RPCommandRunner;
+import com.ibm.rhapsody.rputilities.rpcommand.common.RPCommandRunner;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
 import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.telelogic.rhapsody.core.*;
