@@ -1,8 +1,8 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
-import com.ibm.rhapsody.rputilities.rpcore.RPLog;
-import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
+// import com.ibm.rhapsody.rputilities.rpcore.RPLog;
+// import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
 import com.telelogic.rhapsody.core.IRPModelElement;
 
 public class RPDoxygenXML extends IRPUtilityCommmand {
@@ -27,7 +27,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
         //     + "\t* MaxStack=-Xss\n"        
         //     + "rhapsody.ini is located in C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64");
 
-        ImportGUI ui = new ImportGUI(this);
+        new ImportGUI(this);
         // synchronized(ui) {    
         //     try {
         //         ui.wait();

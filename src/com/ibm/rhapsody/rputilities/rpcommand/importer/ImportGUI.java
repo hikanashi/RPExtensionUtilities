@@ -123,9 +123,10 @@ public class ImportGUI extends ARPObject {
         setUIEnable(true);
 
         if(result == true) {
-            // mainFrame_.setVisible(false);
+            mainFrame_.setVisible(false);
             JOptionPane.showMessageDialog(mainFrame_, "Import complete");
         } else {
+            mainFrame_.setVisible(false);
             JOptionPane.showMessageDialog(mainFrame_, "Import Error(Model)");
         }
 

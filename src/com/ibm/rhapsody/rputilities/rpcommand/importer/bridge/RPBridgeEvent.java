@@ -8,7 +8,6 @@ import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
 import com.telelogic.rhapsody.core.IRPArgument;
-import com.telelogic.rhapsody.core.IRPClassifier;
 import com.telelogic.rhapsody.core.IRPEvent;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
