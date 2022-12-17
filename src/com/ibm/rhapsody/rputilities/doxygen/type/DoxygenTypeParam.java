@@ -27,7 +27,7 @@ public class DoxygenTypeParam extends DoxygenType {
             return;
         }
 
-        briefdescription_.append(description);
+        appendText(briefdescription_,description);
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
@@ -45,7 +45,7 @@ public class DoxygenTypeParam extends DoxygenType {
     protected void charactersSubInternal(String tag, String text) {
 
         if(tag.equals("declname")) {
-            append(name_,text);
+            appendPlane(name_,text);
         }
 
         return;

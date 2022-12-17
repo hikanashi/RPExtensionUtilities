@@ -12,6 +12,7 @@ public enum TAGTYPE {
     PARAM("param",KEYTYPE.KEY_TAG,"",true,DoxygenTypeParam.class),
     DETAILPARAM("parameterlist",KEYTYPE.KEY_ATTR_KIND,"param",true,DoxygenTypeDetailParam.class),
     DETAILRETVAL("parameterlist",KEYTYPE.KEY_ATTR_KIND,"retval",true,DoxygenTypeDetailRetval.class),
+    DETAILRETUEN("simplesect",KEYTYPE.KEY_ATTR_KIND,"return",true,DoxygenTypeDetailRetval.class),
     PARAMITEM("parameteritem",KEYTYPE.KEY_TAG,"",true,DoxygenTypeParamItem.class),
     ENUMVAL("enumvalue",KEYTYPE.KEY_TAG,"",true,DoxygenTypeEnumValue.class),
     REF("ref",KEYTYPE.KEY_TAG,"",true,DoxygenTypeRef.class),

@@ -10,12 +10,16 @@ public class DoxygenTypeFunction extends DoxygenType {
         super(DoxygenTypeFunction.class);
     }
 
+    public String getReturnDescription() {
+        return returndescription_.toString();
+    }
+
     public void setReturnDescription(String description) {
         if(description == null) {
             return;
         }
 
-        returndescription_.append(description);
+        appendText(returndescription_, description);
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
@@ -28,6 +32,10 @@ public class DoxygenTypeFunction extends DoxygenType {
         }
 
         if(type.equals(TAGTYPE.DETAILRETVAL) == true) {
+            return true;
+        }
+
+        if(type.equals(TAGTYPE.DETAILRETUEN) == true) {
             return true;
         }
 
@@ -52,5 +60,9 @@ public class DoxygenTypeFunction extends DoxygenType {
     protected void linkObjectInternal() {
         // logoutdebug(0);
         return;
+    }
+
+    protected void debugoutInternal(StringBuffer logbuffer) {
+        logbuffer.append(",returnDesc:"+ returndescription_.toString());
     }
 }

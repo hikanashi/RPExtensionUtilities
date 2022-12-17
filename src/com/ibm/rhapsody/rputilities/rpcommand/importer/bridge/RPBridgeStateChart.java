@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFunction;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
 import com.telelogic.rhapsody.core.IRPClassifier;
@@ -171,7 +172,8 @@ public class RPBridgeStateChart extends ARPBridge {
             rpActivity.setName(name_);
         }
         
-        rpActivity.setDescription(doxygen_.getBriefdescription());
+        String description = doxygen_.getBriefdescription() + doxygen_.getDetaileddescription();
+        rpActivity.setDescription(description);
 
         List<IRPPin> pins = getActivityParameters(rpActivity);
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
@@ -270,6 +272,7 @@ public class RPBridgeStateChart extends ARPBridge {
     }
 
     protected void applyReturnPin(IRPFlowchart flowchart, IRPPin rpPin, DoxygenType param, String currentVersion, int index) {
+        DoxygenTypeFunction function = getObject(param);
         if(rpPin == null) {
             return;
         }
@@ -283,6 +286,8 @@ public class RPBridgeStateChart extends ARPBridge {
             trace(flowchart.getName() + " Direction is apply "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
             rpPin.setPinDirection(PIN_RETURN_DIRECTION);
         }
+
+        rpPin.setDescription(function.getReturnDescription());
 
         setPosition(flowchart, rpPin, PIN_SPACE_AXIS_X_OUT, (index+1) * PIN_SPACE_AXIS_Y);
 

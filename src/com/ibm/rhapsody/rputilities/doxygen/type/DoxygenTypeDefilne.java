@@ -16,7 +16,7 @@ public class DoxygenTypeDefilne extends DoxygenType {
         trace("charactersInternal");
 
         if(tag.equals("initializer")) {
-            initializer_.append(text);
+            appendText(initializer_, text);
         }
         
         return;

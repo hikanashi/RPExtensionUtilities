@@ -34,6 +34,11 @@ public class DoxygenTypeUnion extends DoxygenType {
             return true;
         }
 
+        if(type.equals(TAGTYPE.DETAILRETUEN) == true) {
+            return true;
+        }
+
+
         return false;
     }
 }

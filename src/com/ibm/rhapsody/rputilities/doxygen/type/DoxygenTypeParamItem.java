@@ -30,10 +30,10 @@ public class DoxygenTypeParamItem extends DoxygenType {
     protected void charactersSubInternal(String tag, String text) {
         if(tag.equals("parametername")) {
             name_.setLength(0);
-            append(name_,text);
+            appendPlane(name_,text);
         }
         else if(tag.equals("parameterdescription")) {
-            briefdescription_.append(text);
+            appendText(briefdescription_, text);
         }
     }
 
@@ -57,7 +57,7 @@ public class DoxygenTypeParamItem extends DoxygenType {
 
         if(relatedtype instanceof DoxygenTypeFunction) {
             DoxygenTypeFunction function = getObject(relatedtype);
-            function.setReturnDescription(briefdescription_.toString());
+            function.setReturnDescription(getName() + " " + briefdescription_.toString());
         }
 
         if(relatedtype instanceof DoxygenTypeParam) {

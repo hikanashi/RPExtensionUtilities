@@ -39,6 +39,10 @@ public class DoxygenTypeTypedef extends DoxygenType {
             return true;
         }
 
+        if(type.equals(TAGTYPE.DETAILRETUEN) == true) {
+            return true;
+        }
+
         if(type.equals(TAGTYPE.REF) != true) {
             return false;
         }
@@ -54,7 +58,7 @@ public class DoxygenTypeTypedef extends DoxygenType {
         trace("charactersSubInternal");
 
         if(tag.equals("argsstring")) {
-            append(argsstring_,text);
+            appendPlane(argsstring_,text);
         }
 
         return;

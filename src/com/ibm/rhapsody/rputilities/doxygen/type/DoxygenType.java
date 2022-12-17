@@ -10,6 +10,7 @@ import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public abstract class DoxygenType extends ARPObject {
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     protected DoxygenObjectManager manager_ = null;
     protected DoxygenType parent_ = null;
     protected List<DoxygenType> children_ = new ArrayList<DoxygenType>();
@@ -75,7 +76,7 @@ public abstract class DoxygenType extends ARPObject {
     }
 
     public void setKind(String kind) {
-        kind_.append(kind);
+        appendPlane(kind_, kind);
     }
 
     public String getTag() {
@@ -83,7 +84,7 @@ public abstract class DoxygenType extends ARPObject {
     }
 
     public void setTag(String tag) {
-        tag_.append(tag);
+        appendPlane(tag_,tag);
     }
 
     public String getText() {
@@ -191,29 +192,29 @@ public abstract class DoxygenType extends ARPObject {
         String text = new String(option.reader.getText()).trim();
 
         if(tag.equals(getTag())) {
-            text_.append(text);
+            appendText(text_,text);
         }
         else if(option.getBeforeTagWithoutPara().equals(getTag())) {
             if(tag.equals("name")) {
-                append(name_,text);
+                appendPlane(name_,text);
             }
             else if(tag.equals("compoundname")) {
-                append(name_,text);
+                appendPlane(name_,text);
             }
             else if(tag.equals("qualifiedname")) {
-                append(qualifiedname_,text);
+                appendPlane(qualifiedname_,text);
             }
             else if(tag.equals("type")) {
-                append(type_,text);
+                appendPlane(type_,text);
             }
             else if(tag.equals("briefdescription")) {
-                briefdescription_.append(text);
+                appendText(briefdescription_,text);
             }
             else if(tag.equals("detaileddescription")) {
-                detaileddescription_.append(text);
+                appendText(detaileddescription_,text);
             }
             else if(tag.equals("inbodydescription")) {
-                inbodydescription_.append(text);
+                appendText(inbodydescription_,text);
             }
             else {
                 charactersSubInternal(tag, text);
@@ -365,10 +366,16 @@ public abstract class DoxygenType extends ARPObject {
     }
 
 
-    protected void append(StringBuffer menber, String text) {
+    protected void appendPlane(StringBuffer menber, String text) {
         String value = text.replaceAll("\\r\\n|\\r|\\n", "");
         menber.append(value);
     }
 
-
+    protected void appendText(StringBuffer menber, String text) {
+        if(menber.length() > 0 ) {
+            menber.append(LINE_SEPARATOR + text);
+        } else {
+            menber.append(text);
+        }
+    }
 }
