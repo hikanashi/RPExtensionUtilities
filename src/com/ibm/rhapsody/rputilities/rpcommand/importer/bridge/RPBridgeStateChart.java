@@ -122,16 +122,16 @@ public class RPBridgeStateChart extends ARPBridge {
             return true;
         }
 
-        IRPClassifier rpType = rpPin.getPinType();
-        String rpTypeName = "";
-        if( rpType != null) {
-            rpTypeName = rpType.getDisplayName();
-        }
+        // IRPClassifier rpType = rpPin.getPinType();
+        // String rpTypeName = "";
+        // if( rpType != null) {
+        //     rpTypeName = rpType.getDisplayName();
+        // }
 
-        if(rpTypeName.equals(param.getType()) != true ) {
-            debug(rpPin.getName() + " Type is change "+ rpTypeName + "->" + param.getType());
-            return true;
-        }
+        // if(rpTypeName.equals(param.getType()) != true ) {
+        //     debug(rpPin.getName() + " Type is change "+ rpTypeName + "->" + param.getType());
+        //     return true;
+        // }
 
         return false;
     }
@@ -148,16 +148,16 @@ public class RPBridgeStateChart extends ARPBridge {
             return true;
         }
 
-        IRPClassifier rpType = rpPin.getPinType();
-        String rpTypeName = "";
-        if( rpType != null) {
-            rpTypeName = rpType.getDisplayName();
-        }
+        // IRPClassifier rpType = rpPin.getPinType();
+        // String rpTypeName = "";
+        // if( rpType != null) {
+        //     rpTypeName = rpType.getDisplayName();
+        // }
 
-        if(rpTypeName.equals(type.getType()) != true ) {
-            debug(rpPin.getName() + " Type is change "+ rpTypeName + "->" + type.getType());
-            return true;
-        }
+        // if(rpTypeName.equals(type.getType()) != true ) {
+        //     debug(rpPin.getName() + " Type is change "+ rpTypeName + "->" + type.getType());
+        //     return true;
+        // }
 
         return false;
     }
@@ -187,7 +187,7 @@ public class RPBridgeStateChart extends ARPBridge {
             // pin is already exist
             if( find_index >= 0) {
                 rpPin = pins.remove(find_index);
-                debug(String.format("Activity:%s pin:%s is exist(index:%d)",
+                trace(String.format("Activity:%s pin:%s is exist(index:%d)",
                         rpActivity.getDisplayName() , 
                         rpPin.getName(),
                         find_index));
@@ -207,7 +207,7 @@ public class RPBridgeStateChart extends ARPBridge {
         if(return_index < 0 ){
             rpReturnPin = rpActivity.addActivityParameter(PIN_RETURN_NAME);
         } else {
-            rpReturnPin = pins.get(return_index);
+            rpReturnPin = pins.remove(return_index);
         }
 
         applyReturnPin(rpActivity, rpReturnPin, doxygen_, currentVersion, index);
@@ -228,9 +228,9 @@ public class RPBridgeStateChart extends ARPBridge {
     }
 
     protected void deletePins(List<IRPPin> args ) {
-        for(int index = args.size() - 1; index > 0; index--){
-            IRPPin rpPin = args.get(index);
-            trace("\tdelete pin:"+ rpPin.getName());
+        while(args.size() > 0){
+            IRPPin rpPin = args.remove(0);
+            debug("\tdelete pin:"+ rpPin.getName());
             rpPin.deleteFromProject();
         }
         

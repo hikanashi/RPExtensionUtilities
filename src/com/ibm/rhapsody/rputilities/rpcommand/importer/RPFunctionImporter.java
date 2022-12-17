@@ -11,6 +11,7 @@ import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeDefine;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeEnum;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeEvent;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeOperation;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeParamType;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeStateChart;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeStruct;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.RPBridgeTypedef;
@@ -136,6 +137,12 @@ public class RPFunctionImporter extends ARPObject {
             bridge = newBridgeInstance(typedef, rootPackage, tagtype);        
             bridge.replaceOldElement(currentVersion);
         }
+
+        // For other Types used in arguments
+        if( tagtype == TAGTYPE.FUNCTION ) {
+            bridge = newBridgeInstance(null, rootPackage, TAGTYPE.PARAM);        
+            bridge.replaceOldElement(currentVersion);
+        }
         
         rootPackage.save(1);
 
@@ -184,6 +191,11 @@ public class RPFunctionImporter extends ARPObject {
                 bridge = new RPBridgeTypedef(doxygen, rootPackage);
             }
 
+            return bridge;
+        }
+
+        if( tagtype == TAGTYPE.PARAM ) {
+            bridge = new RPBridgeParamType(doxygen,rootPackage);
             return bridge;
         }
 

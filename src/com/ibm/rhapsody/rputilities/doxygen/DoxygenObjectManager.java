@@ -92,6 +92,20 @@ public class DoxygenObjectManager extends ARPObject {
         return list;
     }
 
+    public DoxygenType removeList(DoxygenType type) {
+        TagMap map = null;
+        String tag = type.getTag();
+        String id = type.getId();
+
+        map = objectMap_.getOrDefault(tag, null);
+        if(map == null) {
+            return null;
+        }
+
+        DoxygenType obj = map.remove(id);
+        return obj;
+    }
+
     public DoxygenType getObject(String tag, String id) {
         TagMap map = null;
         map = objectMap_.getOrDefault(tag, null);
@@ -102,5 +116,23 @@ public class DoxygenObjectManager extends ARPObject {
         DoxygenType obj = map.getOrDefault(id, null);
 
         return obj;
+    }
+
+    public List<DoxygenType> getObjectByName(String tag, String name) {
+        List<DoxygenType> names = new ArrayList<DoxygenType>();
+
+        TagMap map = null;
+        map = objectMap_.getOrDefault(tag, null);
+        if(map == null) {
+            return names;
+        }
+
+        for(DoxygenType type : map.values()) {
+            if(type.getName().equals(name) == true) {
+                names.add(type);
+            }
+        }
+        
+        return names;
     }
 }

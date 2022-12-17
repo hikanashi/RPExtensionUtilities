@@ -263,6 +263,8 @@ public abstract class DoxygenType extends ARPObject {
     }
 
     public void linkObject() {
+        deleteSameNameObject();
+
         for(DoxygenType child : getChildlen()) {
             if(child.getId().length() < 1) {
                 child.linkObject();
@@ -276,6 +278,63 @@ public abstract class DoxygenType extends ARPObject {
 
     protected void linkObjectInternal() {
         return;
+    }
+
+    protected void deleteSameNameObject() {
+        if(getId().length() < 1 || getTag().length() < 1 ) {
+            return;
+        }
+
+        List<DoxygenType> names = manager_.getObjectByName(getTag(), getName());
+        if( names.size() < 2) {
+            return;
+        }
+        
+        DoxygenType onlyType = null;
+
+        for(int index = 0; index < names.size(); index++) {
+            DoxygenType type = names.get(index);
+            DoxygenType parent = type.getLastParent();
+
+            if(parent instanceof DoxygenTypeGroup) {
+                onlyType = type;
+                break;
+            }
+
+            if(parent instanceof DoxygenTypeFile) {
+                if(type.getName().endsWith(".h") == true) {
+                    onlyType = type;
+                }
+            }
+        }
+
+        if(onlyType != null) {
+            names.remove(onlyType);
+        } else {
+            onlyType = names.remove(0);
+        }
+
+        for(DoxygenType type : names) {
+            debug(type.getName() + "(" + type.getId() + ") is duplicate. so delete remain " 
+                + onlyType.getName() + "(" + onlyType.getId() + ")");
+            manager_.removeList(type);
+        }
+
+        return;
+    }
+
+
+    protected DoxygenType getLastParent() {
+        DoxygenType parent = this;
+        while(parent != null ) {
+            DoxygenType pparent = parent.getParent();
+            if(pparent == null) {
+                break;
+            }
+            parent = pparent;
+        }
+
+        return parent;
     }
 
     public void logoutdebug(int index) {        

@@ -1,5 +1,6 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
@@ -101,15 +102,15 @@ public class RPBridgeEvent extends ARPBridge {
             return true;
         }
 
-        IRPClassifier rpType = rpArgment.getType();
-        String rpTypeName = "";
-        if( rpType != null) {
-            rpTypeName = rpType.getDisplayName();
-        }
+        // IRPClassifier rpType = rpArgment.getType();
+        // String rpTypeName = "";
+        // if( rpType != null) {
+        //     rpTypeName = rpType.getDisplayName();
+        // }
 
-        if(rpTypeName.equals(param.getType()) != true ) {
-            return true;
-        }
+        // if(rpTypeName.equals(param.getType()) != true ) {
+        //     return true;
+        // }
 
         return false;
     }
@@ -124,36 +125,35 @@ public class RPBridgeEvent extends ARPBridge {
 
         rpevent.setDescription(doxygen_.getBriefdescription());
 
-        List<IRPArgument> args = toList(rpevent.getArguments());
+        List<IRPArgument> args = getArguments(rpevent);
 
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
         int argument_index = 0;
-        int delete_count = 0;
         for(DoxygenType value : params ) {
             DoxygenTypeParam param = getObject(value);
             String argmentName = param.getName();
-            int	find_index = findArgment(args, argument_index, argmentName);
+            int	find_index = findArgument(args, 0, argmentName);
 
             IRPArgument rpArgment = null;
             // argument is already exist
             if( find_index >= 0) {
-                delete_count = find_index - argument_index - 1;
-                deleteArgment(args, argument_index, delete_count);
-                rpArgment =  args.get(argument_index);
-                trace(String.format("Event:%s argment:%s delete(from:%d, to:%d)",
+                rpArgment =  args.remove(find_index);
+                deleteArgument(args, find_index);
+                debug(String.format("Event:%s argment:%s delete(count:%d)",
                         rpevent.getDisplayName() , 
                         rpArgment.getName(),
-                        argument_index, delete_count));
+                        find_index));
             } 
-            else if( argument_index < args.size()  ) {
-                trace(String.format("Event:%s add(%s, %d)",
-                        rpevent.getDisplayName() , argmentName, argument_index + 1));
-                rpArgment = rpevent.addArgumentBeforePosition(argmentName, argument_index + 1);
-            }
             else {
-                trace(String.format("Event:%s add(%s, last)",
-                        rpevent.getDisplayName() , argmentName));
-                rpArgment = rpevent.addArgument(argmentName);
+                if(args.size() > 0) {
+                    trace(String.format("Event:%s add(%s, %d)",
+                                rpevent.getDisplayName() , argmentName, argument_index + 1));
+                    rpArgment = rpevent.addArgumentBeforePosition(argmentName, argument_index + 1);
+                } else {
+                    trace(String.format("Event:%s add(%s, last)",
+                                rpevent.getDisplayName() , argmentName));
+                    rpArgment = rpevent.addArgument(argmentName);
+                }
             }
 
             applyArgment(rpArgment, param, currentVersion);
@@ -161,16 +161,23 @@ public class RPBridgeEvent extends ARPBridge {
             argument_index++;
         }
 
-        delete_count = args.size() - argument_index;
-        trace(String.format("Event:%s delete(from:%d, to:%d)",
-                rpevent.getDisplayName() , 
-                argument_index, delete_count));
-        deleteArgment(args, argument_index, args.size() - argument_index);
+        deleteArgument(args, args.size());
 
         return;
     }
 
-    protected int findArgment(List<IRPArgument> args, int startindex, String key) {
+    protected List<IRPArgument> getArguments(IRPEvent rpevent) {
+        List<IRPArgument> org_args = toList(rpevent.getArguments());
+        List<IRPArgument> ret_args = new ArrayList<IRPArgument>(); 
+
+        for(IRPArgument arg : org_args) {
+            ret_args.add(arg);
+        }
+
+        return ret_args;
+    }
+
+    protected int findArgument(List<IRPArgument> args, int startindex, String key) {
         trace(String.format("\targs:%d start:%d key:%s", 
                 args.size(), startindex, key));
 
@@ -183,15 +190,15 @@ public class RPBridgeEvent extends ARPBridge {
         return -1;
     }
 
-    protected void deleteArgment(List<IRPArgument> args, int startindex, int deletenumber ) {
+    protected void deleteArgument(List<IRPArgument> args, int deletenumber ) {
         if(deletenumber <= 0) {
             return;
         }
 
-        for(int index = startindex; index < deletenumber; index++){
-            IRPArgument rpArgment = args.get(startindex);
-            trace("\tdelete argment:"+ rpArgment.getName());
-            rpArgment.deleteFromProject();
+        for(int count = 0; count < deletenumber; count++){
+            IRPArgument rpArgument = args.remove(0);
+            debug("\tdelete argument:"+ rpArgument.getName());
+            rpArgument.deleteFromProject();
         }
         
         return;

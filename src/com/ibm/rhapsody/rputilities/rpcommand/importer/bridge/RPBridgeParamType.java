@@ -117,7 +117,7 @@ public class RPBridgeParamType extends ARPBridge {
             element = rppackage.findType(getType());
         }
 
-        debug(String.format("findElementByType in %s is %s type:%s fulltype:%s basetype:%s reference:%b",
+        trace(String.format("findElementByType in %s is %s type:%s fulltype:%s basetype:%s reference:%b",
                             rppackage.getName(),
                             (element != null ? element.getName() : "-none-"), 
                             getType(), getFullType(), getBaseType(), isReference()));
@@ -153,7 +153,7 @@ public class RPBridgeParamType extends ARPBridge {
             }
         }
         
-        debug(String.format("searchBaseType in %s is none. type:%s basetype:%s",
+        trace(String.format("searchBaseType in %s is none. type:%s basetype:%s",
                 rppackage.getName(),
                 getType(), getBaseType()));
 
