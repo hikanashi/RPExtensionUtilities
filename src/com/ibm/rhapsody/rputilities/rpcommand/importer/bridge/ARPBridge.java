@@ -22,6 +22,7 @@ public abstract class ARPBridge extends ARPObject {
     protected final String TAG_EXCLUDED_ELEMENT = "Excluded";
     protected final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
     protected final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
+    protected final String STEREOTYPE_DATATYPE = "DataType";
     protected final String STEREOTYPE_VALUETYPE = "ValueType";
     protected final String ARGUMENT_DIRECTION_IN = "In";
     protected final String ARGUMENT_DIRECTION_OUT = "Out";
@@ -41,7 +42,7 @@ public abstract class ARPBridge extends ARPObject {
     abstract protected IRPModelElement findElementByType(IRPPackage rpPackage);
     abstract protected IRPModelElement createElementByType(IRPPackage modulPackage);
     abstract protected boolean isUpdate(IRPModelElement element);
-    abstract protected void applyByType(IRPModelElement element, String currentVersion);
+    abstract protected void applyByType(IRPModelElement element, String currentVersion, boolean isupdate);
 
 
     public IRPModelElement importElement(String currentVersion) {
@@ -57,16 +58,16 @@ public abstract class ARPBridge extends ARPObject {
             update = isUpdate(current_element);
         }
 
-        if( update == true && compareResult < 0) {
-            unavailable_element = current_element;
-            changedElement(unavailable_element, currentVersion);
-            current_element = null;
-        }
-
         if(compareResult > 0) {
             warn(String.format("Version %s is older than %s. so can't import.",
                      currentVersion, baseVersion));
             return null;
+        }
+
+        if( update == true && compareResult < 0) {
+            unavailable_element = current_element;
+            changedElement(unavailable_element, currentVersion);
+            current_element = null;
         }
 
         IRPPackage versionPackage = createVersionPackage(currentVersion);
@@ -76,7 +77,7 @@ public abstract class ARPBridge extends ARPObject {
         }
 
         if( current_element != null ) {
-            apply(current_element, modulePackage, currentVersion);
+            apply(current_element, modulePackage, currentVersion,true);
             return current_element;
         }
         
@@ -85,7 +86,7 @@ public abstract class ARPBridge extends ARPObject {
             return null;
         }
 
-        apply(current_element, modulePackage, currentVersion);
+        apply(current_element, modulePackage, currentVersion,false);
 
         return current_element;
     }
@@ -207,28 +208,31 @@ public abstract class ARPBridge extends ARPObject {
         return element;
     }
 
-    protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
-        try {
-            if(element instanceof IRPType) {
-                IRPType rpType = getObject(element);
-                if( rpType.getIsPredefined() == 0) {
-                    setStereoType(element, STEREOTYPE_VALUETYPE);
-                }
-            }
-    
-            updateOwner(element,modulePackage);
-            setApplicableVersion(element, currentVersion);
-            applyByType(element, currentVersion);
+    protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
+        try {    
+            updateOwner(element,modulePackage, currentVersion, isupdate);
+            setApplicableVersion(element, currentVersion, isupdate);
+            applyByType(element, currentVersion, isupdate);
         } catch (Exception e) {
             error("apply Error:", e);
         }
     }
 
-    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement) {
+    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement, String currentVersion, boolean isupdate) {
+        String basetypeVersion = getBaseVersion(currentElement);
+        int basecompare = compareVersion(basetypeVersion, currentVersion);    
+        debug("updateOwner " + currentElement.getName() 
+                    + " base:" + basetypeVersion 
+                    + " current:" + currentVersion 
+                    + " compare:" + basecompare);
+        if( basecompare >= 0) {
+            return;
+        }
+
         IRPPackage ownerPackage = getPackage(currentElement);
         String ownerID = "";
         String ownerName = "";
-        if(getPackage(currentElement) != null) {
+        if(ownerPackage != null) {
             ownerID = ownerPackage.getGUID();
             ownerName = ownerPackage.getName();
         }
@@ -250,7 +254,7 @@ public abstract class ARPBridge extends ARPObject {
         return type;
     }
 
-    protected boolean setApplicableVersion(IRPModelElement rpelement, String version) {
+    protected boolean setApplicableVersion(IRPModelElement rpelement, String version, boolean isupdate) {
         return setTagOnlyOnce(rpelement,TAG_VERSION_APPLICABLE,version);
     }
 
@@ -303,30 +307,28 @@ public abstract class ARPBridge extends ARPObject {
         if(rpelement == null || stereotypeName == null) {
             return;
         }
+        
+        IRPStereotype stereo = findStereoType(rpelement, stereotypeName);
+        if( stereo != null ) {
+            return;
+        }
 
-        return;
-
-        // IRPStereotype stereo = findStereoType(rpelement, stereotypeName);
-        // if( stereo != null ) {
-        //     return;
-        // }
-
-        // stereo = findProjectStereoType(rpelement, stereotypeName);
-        // if( stereo == null ) {
-        //     warn(String.format("Stereotype:%s is not found. so Element:%s can't set.",
-        //             stereotypeName, rpelement.getName()));
-        //     return;
-        // }
+        stereo = findProjectStereoType(rpelement, stereotypeName);
+        if( stereo == null ) {
+            warn(String.format("Stereotype:%s is not found. so Element:%s can't set.",
+                    stereotypeName, rpelement.getName()));
+            return;
+        }
 
         
-        // try {
-        //     rpelement.addSpecificStereotype(stereo);
-        // } catch (Exception e) {
-        //     error(String.format("addSpecificStereotype Error Name:%s stereotype:%s(%s)",
-        //         rpelement.getName(),
-        //         stereotypeName,
-        //         (stereo != null ? stereo.getName() : "null")), e);
-        // }
+        try {
+            rpelement.addSpecificStereotype(stereo);
+        } catch (Exception e) {
+            error(String.format("addSpecificStereotype Error Name:%s stereotype:%s(%s)",
+                rpelement.getName(),
+                stereotypeName,
+                (stereo != null ? stereo.getName() : "null")), e);
+        }
 
     }
 

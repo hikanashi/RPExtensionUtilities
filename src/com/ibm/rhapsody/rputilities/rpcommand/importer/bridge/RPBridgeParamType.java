@@ -117,6 +117,11 @@ public class RPBridgeParamType extends ARPBridge {
             element = rppackage.findType(getType());
         }
 
+        debug(String.format("findElementByType in %s is %s type:%s fulltype:%s basetype:%s reference:%b",
+                            rppackage.getName(),
+                            (element != null ? element.getName() : "-none-"), 
+                            getType(), getFullType(), getBaseType(), isReference()));
+
         return element;
     }
 
@@ -126,6 +131,9 @@ public class RPBridgeParamType extends ARPBridge {
         }
 
         if(getType().equals(getBaseType()) == true) {
+            warn(String.format("searchBaseType in %s is same type type:%s basetype:%s",
+                    rppackage.getName(),
+                    getType(), getBaseType()));
             return null;
         }
 
@@ -144,6 +152,10 @@ public class RPBridgeParamType extends ARPBridge {
                 return basetype;
             }
         }
+        
+        debug(String.format("searchBaseType in %s is none. type:%s basetype:%s",
+                rppackage.getName(),
+                getType(), getBaseType()));
 
         return null;
     }
@@ -154,6 +166,7 @@ public class RPBridgeParamType extends ARPBridge {
         IRPType rpType = null;
         try {
             rpType = modulePackage.addType(getType());
+            setStereoType(rpType);
         } catch (Exception e) {
             error("createElementByType Error name:" + getType(), e);
             doxygen_.logoutdebug(0);
@@ -171,8 +184,8 @@ public class RPBridgeParamType extends ARPBridge {
         IRPType rpBaseType = null;
         try {
             rpBaseType = modulePackage.addType(getBaseType());
-            setApplicableVersion(rpBaseType, version);  
-            setStereoType(rpBaseType, STEREOTYPE_VALUETYPE);
+            setStereoType(rpBaseType);
+            setApplicableVersion(rpBaseType, version, false);  
         } catch (Exception e) {
             error("createBaseType Error name:" + getBaseType(), e);
             doxygen_.logoutdebug(0);
@@ -189,12 +202,12 @@ public class RPBridgeParamType extends ARPBridge {
             return false;
         }
 
-        if(checkUpdate(type_, rpType.getName()) != true) {
+        if(checkUpdate(type_, rpType.getName()) == true) {
             trace(full_type_ + " change Name "+ rpType.getName() + "->" + type_);
             return true;
         }
 
-        if(checkUpdate(GetKind(),rpType.getKind()) != true ) {
+        if(checkUpdate(GetKind(),rpType.getKind()) == true ) {
             trace(full_type_ + " change Kind "+ rpType.getKind() + "->" + GetKind());
             return true;
         }
@@ -202,33 +215,29 @@ public class RPBridgeParamType extends ARPBridge {
         return false;
     }
 
-    public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
+    public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
         if(rpType.getIsPredefined() != 0 ) {
             return;
-        }
+        }        
 
-        super.apply(element, modulePackage, currentVersion);
+        super.apply(element, modulePackage, currentVersion, isupdate);
     }
 
-    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement) {
-        return;
-    }
-
-    public void applyByType(IRPModelElement element, String currentVersion) {
+    public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
 
-        if(checkUpdate(full_type_, rpType.getDisplayName()) != true) {
+        if(checkUpdate(full_type_, rpType.getDisplayName()) == true) {
             trace(full_type_ + " apply DisplayName "+ rpType.getDisplayName() + "->" + full_type_);
             rpType.setDisplayName(full_type_);
         }
 
-        if(checkUpdate(type_, rpType.getName()) != true) {
+        if(isupdate == false && checkUpdate(type_, rpType.getName()) == true) {
             trace(full_type_ + " apply Name "+ rpType.getName() + "->" + type_);
             rpType.setName(type_);
         }
 
-        if(checkUpdate(GetKind(), rpType.getKind()) != true ) {
+        if(isupdate == false && checkUpdate(GetKind(), rpType.getKind()) == true ) {
             trace(full_type_ + " change Kind "+ rpType.getKind() + "->" + GetKind());
             rpType.setKind(GetKind());
         }
@@ -248,6 +257,24 @@ public class RPBridgeParamType extends ARPBridge {
         return;
     }
 
+    protected void setStereoType(IRPType rpType) {
+        switch(kind_) {
+            case ENUM:
+            case LANG:
+            case TYPEDEF:
+                setStereoType(rpType, STEREOTYPE_VALUETYPE);
+                break;
+            case STRUCT:
+            case UNION:
+                setStereoType(rpType, STEREOTYPE_DATATYPE);
+                break;
+            default:
+                break;            
+        }
+
+        return;
+    }
+
     protected void applyTypedef(IRPType rpType, String currentVersion) {
         IRPType rpbasetype = null;
 
@@ -258,6 +285,14 @@ public class RPBridgeParamType extends ARPBridge {
             if( rpbasetype == null ) { 
                 IRPPackage modulePackage = getPackage(rpType);
                 rpbasetype = createBaseType(modulePackage,currentVersion);
+            } 
+            else if(rpbasetype.getIsPredefined() == 0 ) {
+                String basetypeVersion = getBaseVersion(rpbasetype);
+                int basecompare = compareVersion(basetypeVersion, currentVersion);
+                if( basecompare < 0) {
+                    IRPPackage versionPackage = GetBaseVersionPackage(rpType);
+                    updateOwner(rpbasetype, versionPackage, currentVersion, true );
+                }
             }
         }
 

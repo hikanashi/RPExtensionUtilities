@@ -70,6 +70,7 @@ public class RPBridgeEnum extends ARPBridge {
         IRPType rpType = null;
         try {
             rpType = modulePackage.addType(getName());
+            setStereoType(rpType, STEREOTYPE_VALUETYPE);
         } catch (Exception e) {
             error("createElementByType Error name:" + getName(), e);
             doxygen_.logoutdebug(0);
@@ -85,12 +86,12 @@ public class RPBridgeEnum extends ARPBridge {
             return false;
         }
 
-        if(checkUpdate(getName(),rpType.getName()) != true) {
+        if(checkUpdate(getName(),rpType.getName()) == true) {
             trace("Enum change Name "+ rpType.getName() + "->" + getName());
             return true;
         }
 
-        if(checkUpdate(GetKind(),rpType.getKind()) != true ) {
+        if(checkUpdate(GetKind(),rpType.getKind()) == true ) {
             trace(getName() + " change Kind "+ rpType.getKind() + "->" + GetKind());
             return true;
         }
@@ -98,31 +99,31 @@ public class RPBridgeEnum extends ARPBridge {
         return false;
     }
 
-    public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion) {
+    public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
         if(rpType.getIsPredefined() != 0 ) {
             return;
         }
 
-        super.apply(element, modulePackage, currentVersion);
+        super.apply(element, modulePackage, currentVersion, isupdate);
     }
 
 
-    public void applyByType(IRPModelElement element, String currentVersion) {
+    public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
 
-        if(checkUpdate(getName(),rpType.getDisplayName()) != true) {
+        if(checkUpdate(getName(),rpType.getDisplayName()) == true) {
             trace(getName() + " apply DisplayName "+ rpType.getDisplayName() + "->" + getName());
             rpType.setDisplayName(getName());
         }
 
-        if(checkUpdate(getName(),rpType.getName()) != true) {
+        if(checkUpdate(getName(),rpType.getName()) == true) {
             trace(getName() + " apply Name "+ rpType.getName() + "->" + getName());
             rpType.setName(getName());
         }
 
-        if(checkUpdate(GetKind(),rpType.getKind()) != true ) {
-            trace(getName() + " change Kind "+ rpType.getKind() + "->" + GetKind());
+        if(checkUpdate(GetKind(),rpType.getKind()) == true ) {
+            trace(getName() + " apply Kind "+ rpType.getKind() + "->" + GetKind());
             rpType.setKind(GetKind());
         }
 
@@ -141,7 +142,7 @@ public class RPBridgeEnum extends ARPBridge {
 
     protected void applyEnumValue(IRPType rpType, DoxygenType value, String currentVersion) {
         DoxygenTypeEnumValue enumvalue = getObject(value);
-        
+        // info(rpType.getKind() + ":" + GetKind()+ " applyEnumValue:"+value.getName());
         IRPEnumerationLiteral literal = rpType.addEnumerationLiteral(value.getName());
         literal.setValue(enumvalue.getInitializer());
         return;

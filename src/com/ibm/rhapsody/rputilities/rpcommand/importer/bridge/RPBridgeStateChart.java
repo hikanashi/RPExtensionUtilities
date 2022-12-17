@@ -17,6 +17,9 @@ import com.telelogic.rhapsody.core.IRPType;
 public class RPBridgeStateChart extends ARPBridge {
     protected final String PIN_RETURN_NAME = "RETURN";
     protected final String PIN_RETURN_DIRECTION = "Out";
+    protected final int PIN_SPACE_AXIS_Y = 70;
+    protected final int PIN_SPACE_AXIS_X_IN = 0;
+    protected final int PIN_SPACE_AXIS_X_OUT = 0;
 
     protected String name_ = null;
     protected String type = null;
@@ -74,8 +77,8 @@ public class RPBridgeStateChart extends ARPBridge {
     public boolean isUpdate(IRPModelElement element) {
         IRPFlowchart rpActivity = getObject(element);
 
-        if(checkUpdate(name_, rpActivity.getName()) != true) {
-            trace("Activity Name is change "+ rpActivity.getName() + "->" + name_);
+        if(checkUpdate(name_, rpActivity.getName()) == true) {
+            debug("Activity Name is change "+ rpActivity.getName() + "->" + name_);
             return true;
         }
 
@@ -83,7 +86,7 @@ public class RPBridgeStateChart extends ARPBridge {
         List<DoxygenType> params = doxygen_.getChildlen(TAGTYPE.PARAM);
 
         if(pins.size() != params.size() + 1) {
-            trace("Activity:" + name_ 
+            debug("Activity:" + name_ 
                 + " Argment count is change "+ pins.size() + "->" + params.size()+1);
             return true;
         }
@@ -108,14 +111,14 @@ public class RPBridgeStateChart extends ARPBridge {
     protected boolean isUpdateActivityPin(String activityName, IRPPin rpPin, DoxygenType type) {
         DoxygenTypeParam param = getObject(type);
 
-        if(checkUpdate(param.getName(), rpPin.getName()) != true) {
-            trace(activityName + " Pin Name is change "+ rpPin.getName() + "->" + param.getName());
+        if(checkUpdate(param.getName(), rpPin.getName()) == true) {
+            debug(activityName + " Pin Name is change "+ rpPin.getName() + "->" + param.getName());
             return true;
         }
 
         String convDirection = convertDirection(param.getDirection(), param.getType());
-        if(checkUpdate(convDirection, rpPin.getPinDirection()) != true) {
-            trace(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + convDirection);
+        if(checkUpdate(convDirection, rpPin.getPinDirection()) == true) {
+            debug(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + convDirection);
             return true;
         }
 
@@ -126,6 +129,7 @@ public class RPBridgeStateChart extends ARPBridge {
         }
 
         if(rpTypeName.equals(param.getType()) != true ) {
+            debug(rpPin.getName() + " Type is change "+ rpTypeName + "->" + param.getType());
             return true;
         }
 
@@ -135,12 +139,12 @@ public class RPBridgeStateChart extends ARPBridge {
     protected boolean isUpdateReturnPin(String activityName, IRPPin rpPin, DoxygenType type) {
 
         if(rpPin.getName().equals(PIN_RETURN_NAME) != true) {
-            trace(activityName + " Pin Name is change "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
+            debug(activityName + " Pin Name is change "+ rpPin.getName() + "->" + PIN_RETURN_NAME);
             return true;
         }
 
         if(rpPin.getPinDirection().equals(PIN_RETURN_DIRECTION) != true) {
-            trace(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
+            debug(rpPin.getName() + " Direction is change "+ rpPin.getPinDirection() + "->" + PIN_RETURN_DIRECTION);
             return true;
         }
 
@@ -151,6 +155,7 @@ public class RPBridgeStateChart extends ARPBridge {
         }
 
         if(rpTypeName.equals(type.getType()) != true ) {
+            debug(rpPin.getName() + " Type is change "+ rpTypeName + "->" + type.getType());
             return true;
         }
 
@@ -158,10 +163,10 @@ public class RPBridgeStateChart extends ARPBridge {
     }
 
 
-    public void applyByType(IRPModelElement element, String currentVersion) {
+    public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPFlowchart rpActivity = getObject(element);
 
-        if(checkUpdate(name_, rpActivity.getName()) != true) {
+        if(checkUpdate(name_, rpActivity.getName()) == true) {
             trace("Activity Name is apply "+ rpActivity.getName() + "->" + name_);
             rpActivity.setName(name_);
         }
@@ -237,20 +242,25 @@ public class RPBridgeStateChart extends ARPBridge {
             return;
         }
 
-        if(checkUpdate(param.getName(),rpPin.getName()) != true) {
+        if(checkUpdate(param.getName(),rpPin.getName()) == true) {
             trace(flowchart.getName() + " Pin Name is apply "+ rpPin.getName() + "->" + param.getName());
             rpPin.setName(param.getName());
         }
 
         String convDirection = convertDirection(param.getDirection(), param.getType());
-        if(checkUpdate(convDirection, rpPin.getPinDirection()) != true) {
+        if(checkUpdate(convDirection, rpPin.getPinDirection()) == true) {
             trace(flowchart.getName() + " Direction is apply "+ rpPin.getPinDirection() + "->" + convDirection);
             rpPin.setPinDirection(convDirection);
         }
 
         rpPin.setDescription(param.getBriefdescription());
 
-        setPosition(flowchart, rpPin, 0, (index+1) * 70);
+        int position_x = PIN_SPACE_AXIS_X_IN;
+        if( convDirection.equals(ARGUMENT_DIRECTION_OUT) == true ) {
+            position_x = PIN_SPACE_AXIS_X_OUT;
+        }
+
+        setPosition(flowchart, rpPin, position_x, (index+1) * PIN_SPACE_AXIS_Y);
 
         IRPType type = CreateType(param, currentVersion);
         if( type != null ) {
@@ -274,7 +284,7 @@ public class RPBridgeStateChart extends ARPBridge {
             rpPin.setPinDirection(PIN_RETURN_DIRECTION);
         }
 
-        setPosition(flowchart, rpPin, 0, (index+1) * 50);
+        setPosition(flowchart, rpPin, PIN_SPACE_AXIS_X_OUT, (index+1) * PIN_SPACE_AXIS_Y);
 
         IRPType type = CreateType(param, currentVersion);
         if( type != null ) {

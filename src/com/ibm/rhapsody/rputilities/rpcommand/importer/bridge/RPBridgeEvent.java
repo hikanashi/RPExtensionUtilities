@@ -62,7 +62,7 @@ public class RPBridgeEvent extends ARPBridge {
     protected boolean isUpdate(IRPModelElement element) {
         IRPEvent rpevent = getObject(element);
 
-        if(checkUpdate(name_,rpevent.getName()) != true) {
+        if(checkUpdate(name_,rpevent.getName()) == true) {
             trace("Event Name is change "+ rpevent.getName() + "->" + name_);
             return true;
         }
@@ -90,13 +90,13 @@ public class RPBridgeEvent extends ARPBridge {
     protected boolean isUpdateArgment(String eventName, IRPArgument rpArgment, DoxygenType type) {
         DoxygenTypeParam param = getObject(type);
 
-        if(checkUpdate(param.getName(),rpArgment.getName()) != true) {
+        if(checkUpdate(param.getName(),rpArgment.getName()) == true) {
             trace(eventName + " Argment Name is change "+ rpArgment.getName() + "->" + param.getName());
             return true;
         }
 
         String convDirection = convertDirection(param.getDirection(), param.getType());
-        if(checkUpdate(convDirection,rpArgment.getArgumentDirection()) != true) {
+        if(checkUpdate(convDirection,rpArgment.getArgumentDirection()) == true) {
             trace(eventName + " Direction is change "+ rpArgment.getArgumentDirection() + "->" + convDirection);
             return true;
         }
@@ -114,10 +114,10 @@ public class RPBridgeEvent extends ARPBridge {
         return false;
     }
 
-    protected void applyByType(IRPModelElement element, String currentVersion) {
+    protected void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPEvent rpevent = getObject(element);
 
-        if(checkUpdate(name_, rpevent.getName()) != true) {
+        if(checkUpdate(name_, rpevent.getName()) == true) {
             trace("Event Name is apply "+ rpevent.getName() + "->" + doxygen_.getName());
             rpevent.setName(name_);
         }

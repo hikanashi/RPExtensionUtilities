@@ -1,8 +1,8 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
-// import com.ibm.rhapsody.rputilities.rpcore.RPLog;
-// import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
+import com.ibm.rhapsody.rputilities.rpcore.RPLog;
+import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
 import com.telelogic.rhapsody.core.IRPModelElement;
 
 public class RPDoxygenXML extends IRPUtilityCommmand {

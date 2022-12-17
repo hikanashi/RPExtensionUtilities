@@ -20,7 +20,7 @@ import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 
 public class RPFunctionImporter extends ARPObject {
-    protected final int IMPORT_SAVE_CYCLE = 10;
+    protected final int IMPORT_SAVE_CYCLE = 20;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);

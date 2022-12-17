@@ -51,7 +51,7 @@ public class RPBridgeOperation extends ARPBridge {
         return rpOperation;
     }
 
-    protected void updateOwner(IRPModelElement element, IRPPackage modulePackage) {
+    protected void updateOwner(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
         List<Object> functions = toList(modulePackage.getGlobalFunctions());
 
         // TODO: Fixed problem with package not being replaced
@@ -65,7 +65,7 @@ public class RPBridgeOperation extends ARPBridge {
             rpOwner = rpCurrent.getOwner();
         }
 
-        super.updateOwner(element, rpOwner);
+        super.updateOwner(element, rpOwner, currentVersion, isupdate);
 
         // IRPPackage ownerPackage = getPackage(element);
         // String ownerID = "";
@@ -92,7 +92,7 @@ public class RPBridgeOperation extends ARPBridge {
     public boolean isUpdate(IRPModelElement element) {
         IRPOperation rpOperation = getObject(element);
 
-        if(checkUpdate(name_, rpOperation.getName()) != true) {
+        if(checkUpdate(name_, rpOperation.getName()) == true) {
             debug("Operation Name is change "+ rpOperation.getName() + "->" + name_);
             return true;
         }
@@ -120,13 +120,13 @@ public class RPBridgeOperation extends ARPBridge {
     public boolean isUpdateArgment(String operationName, IRPArgument rpArgment, DoxygenType type) {
         DoxygenTypeParam param = getObject(type);
 
-        if(checkUpdate(param.getName(),rpArgment.getName()) != true) {
+        if(checkUpdate(param.getName(),rpArgment.getName()) == true) {
             debug(operationName + " Argment Name is change "+ rpArgment.getName() + "->" + param.getName());
             return true;
         }
 
         String convDirection = convertDirection(param.getDirection(), param.getType());
-        if(checkUpdate(convDirection,rpArgment.getArgumentDirection()) != true) {
+        if(checkUpdate(convDirection,rpArgment.getArgumentDirection()) == true) {
             debug(operationName + " Direction is change "+ rpArgment.getArgumentDirection() + "->" + convDirection);
             return true;
         }
@@ -144,10 +144,10 @@ public class RPBridgeOperation extends ARPBridge {
         return false;
     }
 
-    public void applyByType(IRPModelElement element, String currentVersion) {
+    public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPOperation rpOperation = getObject(element);
 
-        if(checkUpdate(name_, rpOperation.getName()) != true) {
+        if(checkUpdate(name_, rpOperation.getName()) == true) {
             debug("Operation Name is apply "+ rpOperation.getName() + "->" + name_);
             rpOperation.setName(name_);
         }
