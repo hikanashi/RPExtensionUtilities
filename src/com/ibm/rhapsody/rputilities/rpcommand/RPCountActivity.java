@@ -71,7 +71,6 @@ public class RPCountActivity extends IRPUtilityCommmand {
     /**
      * 選択されたパッケージ以下のアクティビティ図のアクションをカウントする。
      * @param rppackage 選択されたパッケージ
-     * @param targetSwimlane    カウント対象のスイムレーン名
      * @return アクションのカウント結果の配列
      */
     protected List<ActiounCounter> CountActivity(IRPPackage rppackage) 

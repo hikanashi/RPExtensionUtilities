@@ -2,7 +2,7 @@ package com.ibm.rhapsody.rputilities.rpcore;
 
 
 import com.telelogic.rhapsody.core.IRPFlowchart;
-import com.telelogic.rhapsody.core.IRPPackage;
+import com.telelogic.rhapsody.core.IRPModelElement;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -23,7 +23,7 @@ public class RPActivityFacade extends ARPObject {
      * @param recursive
      * @return
      */
-    public List<IRPFlowchart> CollectActivity(IRPPackage rppackage,int recursive)
+    public List<IRPFlowchart> CollectActivity(IRPModelElement rppackage, int recursive)
     {
         Set<IRPFlowchart> activitylist = new LinkedHashSet<IRPFlowchart>();
 
