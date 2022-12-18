@@ -9,13 +9,13 @@ public class DoxygenTypeParam extends DoxygenType {
     public DoxygenTypeParam() {
         super(DoxygenTypeParam.class);
     }
-    
+
     public String getDirection() {
         return direction_;
     }
 
     public void setDirection(String direction) {
-        if(direction == null) {
+        if (direction == null) {
             return;
         }
 
@@ -23,32 +23,32 @@ public class DoxygenTypeParam extends DoxygenType {
     }
 
     public void setDescription(String description) {
-        if(description == null) {
+        if (description == null) {
             return;
         }
 
-        appendText(briefdescription_,description);
+        appendText(briefdescription_, description);
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
-        if(type.equals(TAGTYPE.REF) != true) {
+        if (type.equals(TAGTYPE.REF) != true) {
             return false;
         }
 
-        if(option.getBeforeTagWithoutPara().equals("type") == true) {
+        if (option.getBeforeTagWithoutPara().equals("type") == true) {
             return true;
         }
-        
+
         return false;
     }
 
     protected void charactersSubInternal(String tag, String text) {
 
-        if(tag.equals("declname")) {
-            appendPlane(name_,text);
+        if (tag.equals("declname")) {
+            appendPlane(name_, text);
         }
 
         return;
     }
-   
+
 }

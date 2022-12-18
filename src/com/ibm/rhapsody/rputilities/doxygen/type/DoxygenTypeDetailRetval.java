@@ -10,27 +10,26 @@ public class DoxygenTypeDetailRetval extends DoxygenType {
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
-        if(type.equals(TAGTYPE.PARAMITEM)) {
+        if (type.equals(TAGTYPE.PARAMITEM)) {
             return true;
         }
 
         return false;
     }
 
-
     protected void linkObjectInternal() {
-        trace("linkObjectInternal:"+ getName());
+        trace("linkObjectInternal:" + getName());
 
-        if(getText().length() < 1) {
+        if (getText().length() < 1) {
             return;
         }
 
         DoxygenType parent = getParent();
-        if(parent == null) {
+        if (parent == null) {
             return;
         }
 
-        if(parent instanceof DoxygenTypeFunction) {
+        if (parent instanceof DoxygenTypeFunction) {
             DoxygenTypeFunction function = getObject(parent);
             function.setReturnDescription(getText());
         }

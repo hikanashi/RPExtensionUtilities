@@ -39,32 +39,35 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     abstract protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage);
-    abstract protected IRPModelElement findElementByType(IRPPackage rpPackage);
-    abstract protected IRPModelElement createElementByType(IRPPackage modulPackage);
-    abstract protected boolean isUpdate(IRPModelElement element);
-    abstract protected void applyByType(IRPModelElement element, String currentVersion, boolean isupdate);
 
+    abstract protected IRPModelElement findElementByType(IRPPackage rpPackage);
+
+    abstract protected IRPModelElement createElementByType(IRPPackage modulPackage);
+
+    abstract protected boolean isUpdate(IRPModelElement element);
+
+    abstract protected void applyByType(IRPModelElement element, String currentVersion, boolean isupdate);
 
     public IRPModelElement importElement(String currentVersion) {
 
         IRPModelElement current_element = findElement(rootPackage_);
-        IRPModelElement unavailable_element = null; 
+        IRPModelElement unavailable_element = null;
         String baseVersion = getBaseVersion(current_element);
         boolean update = false;
         int compareResult = 0;
 
-        if( current_element != null ) {   
+        if (current_element != null) {
             compareResult = compareVersion(baseVersion, currentVersion);
             update = isUpdate(current_element);
         }
 
-        if(compareResult > 0) {
+        if (compareResult > 0) {
             warn(String.format("Version %s is older than %s. so can't import.",
-                     currentVersion, baseVersion));
+                    currentVersion, baseVersion));
             return null;
         }
 
-        if( update == true && compareResult < 0) {
+        if (update == true && compareResult < 0) {
             unavailable_element = current_element;
             changedElement(unavailable_element, currentVersion);
             current_element = null;
@@ -72,43 +75,41 @@ public abstract class ARPBridge extends ARPObject {
 
         IRPPackage versionPackage = createVersionPackage(currentVersion);
         IRPPackage modulePackage = createModulePackage(versionPackage);
-        if(modulePackage == null) {
+        if (modulePackage == null) {
             return null;
         }
 
-        if( current_element != null ) {
-            apply(current_element, modulePackage, currentVersion,true);
+        if (current_element != null) {
+            apply(current_element, modulePackage, currentVersion, true);
             return current_element;
         }
-        
+
         current_element = createElement(modulePackage);
-        if(current_element == null) {
+        if (current_element == null) {
             return null;
         }
 
-        apply(current_element, modulePackage, currentVersion,false);
+        apply(current_element, modulePackage, currentVersion, false);
 
         return current_element;
     }
 
-
-
     public IRPModelElement findElement(IRPPackage rpPackage) {
-        if(rpPackage == null) { 
+        if (rpPackage == null) {
             return null;
         }
 
         IRPModelElement element = findElementByType(rpPackage);
 
-        if(element != null) {
+        if (element != null) {
             return element;
         }
-        
+
         List<IRPPackage> packages = toList(rpPackage.getPackages());
 
-        for(IRPPackage subPackage :  packages) {
+        for (IRPPackage subPackage : packages) {
             element = findElement(subPackage);
-            if(element != null) {
+            if (element != null) {
                 return element;
             }
         }
@@ -125,8 +126,8 @@ public abstract class ARPBridge extends ARPObject {
                 currentVersion,
                 list.size()));
 
-        for(IRPModelElement element : list) {
-            if( isDeleteTarget(element) != true) {
+        for (IRPModelElement element : list) {
+            if (isDeleteTarget(element) != true) {
                 continue;
             }
 
@@ -138,42 +139,42 @@ public abstract class ARPBridge extends ARPObject {
 
     public Set<IRPModelElement> getElements(IRPPackage rpPackage, String currentVersion) {
         Set<IRPModelElement> elements = new HashSet<IRPModelElement>();
-        if(rpPackage == null) { 
+        if (rpPackage == null) {
             return null;
         }
 
-        if( rpPackage.getGUID().equals(rootPackage_.getGUID()) != true ) {
+        if (rpPackage.getGUID().equals(rootPackage_.getGUID()) != true) {
             String version = getBaseVersion(rpPackage);
             int compareResult = compareVersion(version, currentVersion);
-            if( compareResult >= 0) {
+            if (compareResult >= 0) {
                 debug(String.format("getElements package:%s(version:%s) isn't old current(%s):%d",
-                    rpPackage.getName(),
-                    version,
-                    currentVersion,
-                    compareResult));
+                        rpPackage.getName(),
+                        version,
+                        currentVersion,
+                        compareResult));
                 return null;
             } else {
                 debug(String.format("getElements package:%s(version:%s) is target old current(%s):%d",
-                    rpPackage.getName(),
-                    version,
-                    currentVersion,
-                    compareResult));  
+                        rpPackage.getName(),
+                        version,
+                        currentVersion,
+                        compareResult));
             }
 
             List<IRPModelElement> list = getElementsByType(rpPackage);
-            if(list != null) {
+            if (list != null) {
                 elements.addAll(list);
             }
         }
 
         List<IRPPackage> packages = toList(rpPackage.getPackages());
-        for(IRPPackage subPackage :  packages) {
-            if( isDeleteTarget(subPackage) != true ) {
+        for (IRPPackage subPackage : packages) {
+            if (isDeleteTarget(subPackage) != true) {
                 continue;
             }
 
-            Set<IRPModelElement> sublist =  getElements(subPackage, currentVersion);
-            if( sublist != null) {
+            Set<IRPModelElement> sublist = getElements(subPackage, currentVersion);
+            if (sublist != null) {
                 elements.addAll(sublist);
             }
         }
@@ -182,18 +183,18 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected boolean isDeleteTarget(IRPModelElement element) {
-        if( element == null ) {
+        if (element == null) {
             return false;
         }
 
-        String[] notTargetTag = {TAG_VERSION_UNAVAILABLE,TAG_EXCLUDED_ELEMENT};
+        String[] notTargetTag = { TAG_VERSION_UNAVAILABLE, TAG_EXCLUDED_ELEMENT };
 
-        for(int index=0; index < notTargetTag.length; index++) {
+        for (int index = 0; index < notTargetTag.length; index++) {
             IRPTag rptag = element.getTag(notTargetTag[index]);
-            if( rptag != null ) {
-                debug(String.format("element:%s has tag:%s. so excluded delete.", 
-                            element.getName(),
-                            rptag.getName()));
+            if (rptag != null) {
+                debug(String.format("element:%s has tag:%s. so excluded delete.",
+                        element.getName(),
+                        rptag.getName()));
                 return false;
             }
         }
@@ -202,15 +203,15 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected IRPModelElement createElement(IRPPackage targetPackage) {
-        IRPModelElement element  = null;
-        element = createElementByType(targetPackage); 
+        IRPModelElement element = null;
+        element = createElementByType(targetPackage);
 
         return element;
     }
 
     protected void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
-        try {    
-            updateOwner(element,modulePackage, currentVersion, isupdate);
+        try {
+            updateOwner(element, modulePackage, currentVersion, isupdate);
             setApplicableVersion(element, currentVersion, isupdate);
             applyByType(element, currentVersion, isupdate);
         } catch (Exception e) {
@@ -218,25 +219,26 @@ public abstract class ARPBridge extends ARPObject {
         }
     }
 
-    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement, String currentVersion, boolean isupdate) {
+    protected void updateOwner(IRPModelElement currentElement, IRPModelElement ownerElement, String currentVersion,
+            boolean isupdate) {
         String basetypeVersion = getBaseVersion(currentElement);
-        int basecompare = compareVersion(basetypeVersion, currentVersion);    
-        debug("updateOwner " + currentElement.getName() 
-                    + " base:" + basetypeVersion 
-                    + " current:" + currentVersion 
-                    + " compare:" + basecompare);
-        if( basecompare >= 0) {
+        int basecompare = compareVersion(basetypeVersion, currentVersion);
+        debug("updateOwner " + currentElement.getName()
+                + " base:" + basetypeVersion
+                + " current:" + currentVersion
+                + " compare:" + basecompare);
+        if (basecompare >= 0) {
             return;
         }
 
         IRPPackage ownerPackage = getPackage(currentElement);
         String ownerID = "";
         String ownerName = "";
-        if(ownerPackage != null) {
+        if (ownerPackage != null) {
             ownerID = ownerPackage.getGUID();
             ownerName = ownerPackage.getName();
         }
-        if( ownerID.equals(ownerElement.getGUID()) != true ) {
+        if (ownerID.equals(ownerElement.getGUID()) != true) {
             trace(String.format("element:%s's owner %s(%s)->%s(%s)",
                     currentElement.getName(),
                     ownerName,
@@ -255,11 +257,11 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected boolean setApplicableVersion(IRPModelElement rpelement, String version, boolean isupdate) {
-        return setTagOnlyOnce(rpelement,TAG_VERSION_APPLICABLE,version);
+        return setTagOnlyOnce(rpelement, TAG_VERSION_APPLICABLE, version);
     }
 
     protected boolean setUnabavailableVersion(IRPModelElement rpelement, String version) {
-        return setTagOnlyOnce(rpelement,TAG_VERSION_UNAVAILABLE,version);
+        return setTagOnlyOnce(rpelement, TAG_VERSION_UNAVAILABLE, version);
     }
 
     protected void deletedElement(IRPModelElement unavailable, String currentVersion) {
@@ -271,32 +273,32 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected void unavailableElement(IRPModelElement unavailable, String prefix, String currentVersion) {
-        if( unavailable == null ) {
+        if (unavailable == null) {
             return;
         }
 
-        setUnabavailableVersion(unavailable,currentVersion);
+        setUnabavailableVersion(unavailable, currentVersion);
 
-        String change_name = String.format("%s_%s_%s", 
-                                prefix,
-                                convertAvailableName(currentVersion),
-                                unavailable.getName());
+        String change_name = String.format("%s_%s_%s",
+                prefix,
+                convertAvailableName(currentVersion),
+                unavailable.getName());
         debug(String.format("change unavailable %s->%s",
-                    unavailable.getName(), change_name ));
+                unavailable.getName(), change_name));
         unavailable.setName(change_name);
     }
 
     protected boolean setTagOnlyOnce(IRPModelElement rpelement, String tagname, String tagvalue) {
-        if(rpelement == null || tagname == null || tagvalue == null) {
+        if (rpelement == null || tagname == null || tagvalue == null) {
             return false;
         }
 
         IRPTag versiontag = rpelement.getTag(tagname);
-        if(versiontag != null ) {
+        if (versiontag != null) {
             return false;
         }
 
-        versiontag = getObject(rpelement.addNewAggr("Tag",tagname));
+        versiontag = getObject(rpelement.addNewAggr("Tag", tagname));
         versiontag.setMultiplicity("1");
         rpelement.setTagValue(versiontag, tagvalue);
 
@@ -304,43 +306,42 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected void setStereoType(IRPModelElement rpelement, String stereotypeName) {
-        if(rpelement == null || stereotypeName == null) {
+        if (rpelement == null || stereotypeName == null) {
             return;
         }
-        
+
         IRPStereotype stereo = findStereoType(rpelement, stereotypeName);
-        if( stereo != null ) {
+        if (stereo != null) {
             return;
         }
 
         stereo = findProjectStereoType(rpelement, stereotypeName);
-        if( stereo == null ) {
+        if (stereo == null) {
             warn(String.format("Stereotype:%s is not found. so Element:%s can't set.",
                     stereotypeName, rpelement.getName()));
             return;
         }
 
-        
         try {
             rpelement.addSpecificStereotype(stereo);
         } catch (Exception e) {
             error(String.format("addSpecificStereotype Error Name:%s stereotype:%s(%s)",
-                rpelement.getName(),
-                stereotypeName,
-                (stereo != null ? stereo.getName() : "null")), e);
+                    rpelement.getName(),
+                    stereotypeName,
+                    (stereo != null ? stereo.getName() : "null")), e);
         }
 
     }
 
     protected IRPStereotype findStereoType(IRPModelElement rpelement, String stereotypeName) {
-        if(rpelement == null || stereotypeName == null) {
+        if (rpelement == null || stereotypeName == null) {
             return null;
         }
 
         List<IRPStereotype> stereotypes = toList(rpelement.getStereotypes());
 
-        for(IRPStereotype stereo : stereotypes) {
-            if(stereo.getName().equals(stereotypeName) == true) {
+        for (IRPStereotype stereo : stereotypes) {
+            if (stereo.getName().equals(stereotypeName) == true) {
                 return stereo;
             }
         }
@@ -348,7 +349,7 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected IRPStereotype findProjectStereoType(IRPModelElement rpelement, String stereotypeName) {
-        if(rpelement == null || stereotypeName == null) {
+        if (rpelement == null || stereotypeName == null) {
             return null;
         }
 
@@ -356,8 +357,8 @@ public abstract class ARPBridge extends ARPObject {
 
         List<IRPStereotype> stereotypes = toList(rpProject.getAllStereotypes());
 
-        for(IRPStereotype stereo : stereotypes) {
-            if(stereo.getName().equals(stereotypeName) == true) {
+        for (IRPStereotype stereo : stereotypes) {
+            if (stereo.getName().equals(stereotypeName) == true) {
                 return stereo;
             }
         }
@@ -365,7 +366,7 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected IRPModelElement findNestedElementRecursive(IRPPackage rppackage, String name, String metaClass) {
-        if(rppackage == null || name == null || metaClass == null) {
+        if (rppackage == null || name == null || metaClass == null) {
             return null;
         }
 
@@ -373,92 +374,88 @@ public abstract class ARPBridge extends ARPObject {
 
         IRPModelElement element = null;
         List<IRPModelElement> childlen = null;
-        childlen = toList(rppackage.getNestedElementsRecursive());        
-        for(IRPModelElement child : childlen) {
-            if(child.getMetaClass().equals(metaClass) != true) {
+        childlen = toList(rppackage.getNestedElementsRecursive());
+        for (IRPModelElement child : childlen) {
+            if (child.getMetaClass().equals(metaClass) != true) {
                 continue;
             }
-        
-            if(child.getName().equals(name) != true) {
+
+            if (child.getName().equals(name) != true) {
                 continue;
             }
-        
+
             element = child;
             break;
         }
-        
-        if(element != null){
+
+        if (element != null) {
             return element;
         }
-        
-        List<IRPPackage> childpackages = toList(rppackage.getPackages());       
-        for(IRPPackage childpackage : childpackages) {
+
+        List<IRPPackage> childpackages = toList(rppackage.getPackages());
+        for (IRPPackage childpackage : childpackages) {
             element = findNestedElementRecursive(childpackage, name, metaClass);
-            if( element != null) {
+            if (element != null) {
                 return element;
             }
         }
-        
+
         return null;
     }
 
-
     protected int compareVersion(String srcVersion, String destVersion) {
         int compare = srcVersion.compareTo(destVersion);
-        trace("srcVersion:"+ srcVersion + " dstVersion:" + destVersion + " result:" + compare);
+        trace("srcVersion:" + srcVersion + " dstVersion:" + destVersion + " result:" + compare);
         return compare;
     }
 
     public String getBaseVersion(IRPModelElement rpelement) {
         String baseVersion = "";
-        if(rpelement == null) {
+        if (rpelement == null) {
             return baseVersion;
         }
 
         IRPPackage versionPackage = GetBaseVersionPackage(rpelement);
-        if(versionPackage == null) {
+        if (versionPackage == null) {
             return baseVersion;
         }
 
         IRPTag versiontag = versionPackage.getTag(TAG_VERSION_PACKAGE);
-        if(versiontag == null ) {
+        if (versiontag == null) {
             return baseVersion;
         }
 
         return versiontag.getValue();
     }
 
-
     public IRPPackage GetBaseVersionPackage(IRPModelElement rpelement) {
-        if( rpelement == null ) {
+        if (rpelement == null) {
             return null;
         }
 
-        for(IRPModelElement checkElement = rpelement;
-            checkElement != null;
-            checkElement = checkElement.getOwner())  {
+        for (IRPModelElement checkElement = rpelement; checkElement != null; checkElement = checkElement.getOwner()) {
 
-            if(rootPackage_.getGUID().equals(rpelement.getGUID()) == true) {
+            if (rootPackage_.getGUID().equals(rpelement.getGUID()) == true) {
                 return null;
             }
 
-            if(!(checkElement instanceof IRPPackage)) {
+            if (!(checkElement instanceof IRPPackage)) {
                 continue;
             }
 
             IRPTag versiontag = checkElement.getTag(TAG_VERSION_PACKAGE);
-            if(versiontag == null ) {
+            if (versiontag == null) {
                 continue;
             }
 
-            return getObject(checkElement) ;
+            return getObject(checkElement);
         }
-        
+
         return null;
     }
 
     public IRPPackage createVersionPackage(String version) {
-        if( version == null) {
+        if (version == null) {
             return null;
         }
 
@@ -466,110 +463,106 @@ public abstract class ARPBridge extends ARPObject {
         trace("createVersionPackage:" + modelname);
 
         IRPPackage versionPackage = null;
-        IRPModelElement checkElement = findNestedElementRecursive(rootPackage_,modelname,"Package");
-        if(checkElement == null) {
-            debug("create version package:"+ modelname + "(" + version + ")");
+        IRPModelElement checkElement = findNestedElementRecursive(rootPackage_, modelname, "Package");
+        if (checkElement == null) {
+            debug("create version package:" + modelname + "(" + version + ")");
             versionPackage = rootPackage_.addNestedPackage(modelname);
-        }
-        else {
+        } else {
             versionPackage = getObject(checkElement);
-            trace(version + "is allready exist Package:"+ checkElement.getFullPathName());
+            trace(version + "is allready exist Package:" + checkElement.getFullPathName());
         }
 
-        if(versionPackage == null) {
-            error("Create Package fail. prease check version name:"+ version);
+        if (versionPackage == null) {
+            error("Create Package fail. prease check version name:" + version);
             return null;
         }
 
         IRPTag versiontag = versionPackage.getTag(TAG_VERSION_PACKAGE);
-        if(versiontag == null ) {
-            versiontag = getObject(versionPackage.addNewAggr("Tag",TAG_VERSION_PACKAGE));
-        }
-        else {
-            if( versiontag.getValue().equals(version) == true) {
+        if (versiontag == null) {
+            versiontag = getObject(versionPackage.addNewAggr("Tag", TAG_VERSION_PACKAGE));
+        } else {
+            if (versiontag.getValue().equals(version) == true) {
                 return versionPackage;
             }
         }
 
-        versionPackage.setTagValue(versiontag, version);       
+        versionPackage.setTagValue(versiontag, version);
         return versionPackage;
     }
 
     public IRPPackage createModulePackage(IRPPackage versionPackage) {
-        if(versionPackage == null ) {
+        if (versionPackage == null) {
             return null;
         }
 
         IRPPackage parentPackage = versionPackage;
 
-        for(DoxygenType moduleType = doxygen_.getParent();
-            moduleType != null;
-            moduleType = moduleType.getParent())  {
+        for (DoxygenType moduleType = doxygen_.getParent(); moduleType != null; moduleType = moduleType.getParent()) {
 
-            if(!(moduleType instanceof DoxygenTypeGroup) &&
-               !(moduleType instanceof DoxygenTypeFile)) {
+            if (!(moduleType instanceof DoxygenTypeGroup) &&
+                    !(moduleType instanceof DoxygenTypeFile)) {
                 continue;
             }
 
             String packageName = convertAvailableName(moduleType.getName());
 
             IRPModelElement element = parentPackage.findAllByName(packageName, "Package");
-            if( element == null ) {
-                debug(parentPackage.getName() + " is not found, Create Package:"+ packageName);
+            if (element == null) {
+                debug(parentPackage.getName() + " is not found, Create Package:" + packageName);
                 try {
                     IRPPackage createPackage = parentPackage.addNestedPackage(packageName);
                     createPackage.setSeparateSaveUnit(0);
                     element = createPackage;
                 } catch (Exception e) {
-                    error("addNestedPackage Error name:"+ packageName, e);
+                    error("addNestedPackage Error name:" + packageName, e);
                     element = null;
                 }
 
             } else {
-                trace(parentPackage.getName() + " is found "+ packageName); 
+                trace(parentPackage.getName() + " is found " + packageName);
             }
 
             parentPackage = getObject(element);
-            if( parentPackage == null) {
+            if (parentPackage == null) {
                 break;
             }
         }
-        
+
         return parentPackage;
     }
 
     protected boolean checkUpdate(String typevalue, String rpvalue) {
-        if(typevalue.length() < 1) {
+        if (typevalue.length() < 1) {
             return false;
         }
 
-        if(typevalue.equals(rpvalue) == true) {
+        if (typevalue.equals(rpvalue) == true) {
             return false;
         }
 
         return true;
     }
 
-    protected String convertAvailableName( String name ) {
+    protected String convertAvailableName(String name) {
         String oldname = new String(name);
         return oldname.trim().replaceAll("\\.|-|\\$", "_").trim();
     }
 
     protected String convertDirection(String direction, String type) {
         String defaultDirection = ARGUMENT_DIRECTION_IN;
-        if(isOutputType(type) == true) {
+        if (isOutputType(type) == true) {
             defaultDirection = ARGUMENT_DIRECTION_OUT;
         }
 
-        if(direction.isEmpty() == true) {
+        if (direction.isEmpty() == true) {
             return defaultDirection;
         }
 
-        if( direction.equalsIgnoreCase(ARGUMENT_DIRECTION_IN) == true) {
+        if (direction.equalsIgnoreCase(ARGUMENT_DIRECTION_IN) == true) {
             return ARGUMENT_DIRECTION_IN;
-        } else if( direction.equalsIgnoreCase(ARGUMENT_DIRECTION_OUT) == true) {
+        } else if (direction.equalsIgnoreCase(ARGUMENT_DIRECTION_OUT) == true) {
             return ARGUMENT_DIRECTION_OUT;
-        } else if( direction.equalsIgnoreCase(ARGUMENT_DIRECTION_INOUT) == true) {
+        } else if (direction.equalsIgnoreCase(ARGUMENT_DIRECTION_INOUT) == true) {
             return ARGUMENT_DIRECTION_INOUT;
         }
 
@@ -577,18 +570,18 @@ public abstract class ARPBridge extends ARPObject {
     }
 
     protected boolean isOutputType(String type) {
-        if(type.isEmpty() == true) {
+        if (type.isEmpty() == true) {
             return false;
         }
 
         int count = 0;
-        for(char x: type.toCharArray()){
-            if(x == '*'){
+        for (char x : type.toCharArray()) {
+            if (x == '*') {
                 count++;
             }
         }
 
-        if(count > 1) {
+        if (count > 1) {
             return true;
         }
 

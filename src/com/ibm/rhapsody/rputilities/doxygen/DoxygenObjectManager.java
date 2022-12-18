@@ -9,7 +9,9 @@ import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public class DoxygenObjectManager extends ARPObject {
-    private class TagMap extends HashMap<String, DoxygenType> {}
+    private class TagMap extends HashMap<String, DoxygenType> {
+    }
+
     protected Map<String, TagMap> objectMap_ = new HashMap<String, TagMap>();
     protected boolean fullimport_ = false;
 
@@ -26,28 +28,28 @@ public class DoxygenObjectManager extends ARPObject {
     }
 
     public void append(DoxygenType type) {
-        if( type == null ) {
+        if (type == null) {
             return;
         }
 
-        if(type.getId().length() < 1 || type.getTag().length() < 1 ) {
+        if (type.getId().length() < 1 || type.getTag().length() < 1) {
             return;
         }
 
         TagMap map = objectMap_.getOrDefault(type.getTag(), null);
-        if(map == null) {
+        if (map == null) {
             map = new TagMap();
             objectMap_.put(type.getTag(), map);
         }
 
         trace("add " + type.getClass().getSimpleName() + " name:" + type.getName() + " id:" + type.getId());
-        map.put(type.getId(),type);
+        map.put(type.getId(), type);
 
     }
 
     public int size() {
         int count = 0;
-        for(TagMap value : objectMap_.values()) {
+        for (TagMap value : objectMap_.values()) {
             count += value.size();
         }
         return count;
@@ -56,11 +58,12 @@ public class DoxygenObjectManager extends ARPObject {
     public List<DoxygenType> getAllType() {
         List<DoxygenType> list = new ArrayList<DoxygenType>();
 
-        for(TagMap map:  objectMap_.values()) {
-            for(DoxygenType child : map.values()) {
-                trace("doxygen " + child.getClass().getSimpleName() + " name:" + child.getName() + " id:" + child.getId());
+        for (TagMap map : objectMap_.values()) {
+            for (DoxygenType child : map.values()) {
+                trace("doxygen " + child.getClass().getSimpleName() + " name:" + child.getName() + " id:"
+                        + child.getId());
                 list.add(child);
-            }  
+            }
         }
 
         return list;
@@ -72,20 +75,20 @@ public class DoxygenObjectManager extends ARPObject {
 
     public List<DoxygenType> popList(TAGTYPE type) {
         TagMap map = null;
-    
+
         map = objectMap_.getOrDefault(type.getTag(), null);
-        if(map == null) {
+        if (map == null) {
             return null;
         }
 
         List<DoxygenType> list = new ArrayList<DoxygenType>();
-        for(DoxygenType child : map.values()) {
-            if(child.equals(type)) {
+        for (DoxygenType child : map.values()) {
+            if (child.equals(type)) {
                 list.add(child);
             }
         }
-      
-        for(DoxygenType child : list) {
+
+        for (DoxygenType child : list) {
             map.remove(child.getId());
         }
 
@@ -98,7 +101,7 @@ public class DoxygenObjectManager extends ARPObject {
         String id = type.getId();
 
         map = objectMap_.getOrDefault(tag, null);
-        if(map == null) {
+        if (map == null) {
             return null;
         }
 
@@ -109,7 +112,7 @@ public class DoxygenObjectManager extends ARPObject {
     public DoxygenType getObject(String tag, String id) {
         TagMap map = null;
         map = objectMap_.getOrDefault(tag, null);
-        if(map == null) {
+        if (map == null) {
             return null;
         }
 
@@ -123,16 +126,16 @@ public class DoxygenObjectManager extends ARPObject {
 
         TagMap map = null;
         map = objectMap_.getOrDefault(tag, null);
-        if(map == null) {
+        if (map == null) {
             return names;
         }
 
-        for(DoxygenType type : map.values()) {
-            if(type.getName().equals(name) == true) {
+        for (DoxygenType type : map.values()) {
+            if (type.getName().equals(name) == true) {
                 names.add(type);
             }
         }
-        
+
         return names;
     }
 }

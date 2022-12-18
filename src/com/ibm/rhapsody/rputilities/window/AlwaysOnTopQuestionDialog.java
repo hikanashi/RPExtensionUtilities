@@ -24,8 +24,8 @@ public class AlwaysOnTopQuestionDialog extends JDialog {
         responder_ = r;
         this.title_ = title;
         createDialogMessageLabels();
-        if(type == OK_CANCEL) {
-            createOKCancel();            
+        if (type == OK_CANCEL) {
+            createOKCancel();
         }
         initUI();
     }
@@ -70,7 +70,7 @@ public class AlwaysOnTopQuestionDialog extends JDialog {
         button.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                if(responder_ != null) {
+                if (responder_ != null) {
                     theForm_.setVisible(false);
                     responder_.respondToOK();
                 }
@@ -94,9 +94,9 @@ public class AlwaysOnTopQuestionDialog extends JDialog {
         labels_ = new ArrayList<JLabel>();
         String as[];
         int j = (as = dialogMessages_).length;
-        for(int i = 0; i < j; i++) {
+        for (int i = 0; i < j; i++) {
             String s = as[i];
-            if(s != null) {
+            if (s != null) {
                 JLabel l = new JLabel(s, 0);
                 labels_.add(l);
             }
@@ -106,7 +106,7 @@ public class AlwaysOnTopQuestionDialog extends JDialog {
 
     private void performCancel() {
         theForm_.setVisible(false);
-        if(responder_ != null) {
+        if (responder_ != null) {
             responder_.respondToCancel();
         }
     }
@@ -115,7 +115,7 @@ public class AlwaysOnTopQuestionDialog extends JDialog {
         JPanel pnlText = new JPanel();
         pnlText.setLayout(new GridLayout(labels_.size(), 1));
 
-        for(JLabel lbl : labels_) {
+        for (JLabel lbl : labels_) {
             pnlText.add(lbl);
         }
 

@@ -9,9 +9,21 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPProject;
 
 public abstract class ARPObject {
+	/**
+	 * log output interface
+	 */
 	protected RPLog log_ = null;
+	/**
+	 * Class information of log output source
+	 */
 	protected Class<?> clazz_ = null;
 
+	/**
+	 * Common constructor of Rhapsody processing class
+	 * Initialize log output interface
+	 * 
+	 * @param clazz Class information of log output source
+	 */
 	protected ARPObject(Class<?> clazz) {
 		clazz_ = clazz;
 		log_ = new RPLog(clazz);
@@ -58,7 +70,10 @@ public abstract class ARPObject {
 	 * @return Package Object
 	 */
 	protected IRPPackage getPackage(IRPModelElement element) {
-		for (IRPModelElement checkelement = element; checkelement != null; checkelement = checkelement.getOwner()) {
+		for (IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner()) {
+			
 			if (checkelement instanceof IRPPackage) {
 				IRPPackage rpPackage = getObject(checkelement);
 				return rpPackage;
@@ -80,7 +95,10 @@ public abstract class ARPObject {
 	protected static String getPackagePath(IRPModelElement element, String delimiter) {
 		String packageName = "";
 
-		for (IRPModelElement checkelement = element; checkelement != null; checkelement = checkelement.getOwner()) {
+		for (IRPModelElement checkelement = element;
+			checkelement != null;
+			checkelement = checkelement.getOwner()) {
+			
 			if (checkelement instanceof IRPProject) {
 				break;
 			}
@@ -111,15 +129,17 @@ public abstract class ARPObject {
 		String elementPath = "";
 
 		for (IRPModelElement checkelement = element;
-			checkelement != null; 
+			checkelement != null;
 			checkelement = checkelement.getOwner()) {
-			
+
+			// Exclude "TopLevel" classes that are automatically generated in between
 			if (checkelement instanceof IRPClass) {
 				if (checkelement.getName().equals("TopLevel")) {
 					continue;
 				}
 			}
 
+			// Paths under the project
 			if (checkelement instanceof IRPProject) {
 				break;
 			}
@@ -141,7 +161,7 @@ public abstract class ARPObject {
 	/**
 	 * Log an error message
 	 * 
-	 * @param message, readable info message
+	 * @param message error message to output
 	 */
 	public void error(String message) {
 		log_.error(message);
@@ -150,84 +170,94 @@ public abstract class ARPObject {
 	/**
 	 * Log an error message
 	 * 
-	 * @param message, readable info message
+	 * @param message   error message to output
+	 * @param exception Occurred exception
 	 */
 	public void error(String message, Throwable exception) {
 		log_.error(message, exception);
 	}
 
 	/**
-	 * Log an warning message
+	 * Log a warning message
 	 * 
-	 * @param message, readable info message
+	 * @param message warning message to output
 	 */
 	public void warn(String message) {
 		log_.warn(message);
 	}
 
 	/**
-	 * Log an warning message
+	 * Log a warning message
 	 * 
-	 * @param message, readable info message
+	 * @param message   warning message to output
+	 * @param exception Occurred exception
 	 */
 	public void warn(String message, Throwable exception) {
 		log_.warn(message, exception);
 	}
 
 	/**
-	 * Log an information message
+	 * Log a infomation message
 	 * 
-	 * @param message, readable info message
+	 * @param message infomation message to output
 	 */
 	public void info(String message) {
 		log_.info(message);
 	}
 
 	/**
-	 * Log an information message
+	 * Log a infomation message
 	 * 
-	 * @param message, readable info message
+	 * @param message   infomation message to output
+	 * @param exception Occurred exception
 	 */
 	public void info(String message, Throwable exception) {
 		log_.info(message, exception);
 	}
 
 	/**
-	 * Log an Debug message
+	 * Log a debug message
 	 * 
-	 * @param message, readable debug message
+	 * @param message debug message to output
 	 */
 	public void debug(String message) {
 		log_.debug(message);
 	}
 
 	/**
-	 * Log an Debug message
+	 * Log a debug message
 	 * 
-	 * @param message, readable debug message
+	 * @param message   debug message to output
+	 * @param exception Occurred exception
 	 */
 	public void debug(String message, Throwable exception) {
 		log_.debug(message, exception);
 	}
 
 	/**
-	 * Log an Debug message
+	 * Log a detail debug message
 	 * 
-	 * @param message, readable debug message
+	 * @param message detail debug message to output
 	 */
 	public void trace(String message) {
 		log_.trace(message);
 	}
 
 	/**
-	 * Log an Debug message
+	 * Log a detail debug message
 	 * 
-	 * @param message, readable debug message
+	 * @param message   detail debug message to output
+	 * @param exception Occurred exception
 	 */
 	public void trace(String message, Throwable exception) {
 		log_.trace(message, exception);
 	}
 
+	/**
+	 * Log out memory usage
+	 * 
+	 * @param title Title indicating log output timing
+	 */
 	public void debugMemory(String title) {
 		// System.gc();
 		Runtime runtime = Runtime.getRuntime();

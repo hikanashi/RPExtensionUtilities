@@ -10,7 +10,7 @@ public class DoxygenTypeDetailParam extends DoxygenType {
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
-        if(type.equals(TAGTYPE.PARAMITEM)) {
+        if (type.equals(TAGTYPE.PARAMITEM)) {
             return true;
         }
 

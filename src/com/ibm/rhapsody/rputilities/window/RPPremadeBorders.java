@@ -33,5 +33,4 @@ public class RPPremadeBorders {
         return BorderFactory.createTitledBorder(raisedetched, name);
     }
 
-
 }
