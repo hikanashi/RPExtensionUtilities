@@ -17,9 +17,9 @@ import com.telelogic.rhapsody.core.IRPType;
 
 public abstract class ARPBridge extends ARPObject {
     public static final String TAG_VERSION_PACKAGE = "Version";
-    protected static final String TAG_VERSION_APPLICABLE = "FirstApplicableVersion";
-    protected static final String TAG_VERSION_UNAVAILABLE = "UnavailableStartVersion";
-    protected static final String TAG_EXCLUDED_ELEMENT = "Excluded";
+    public static final String TAG_VERSION_APPLICABLE = "FirstApplicableVersion";
+    public static final String TAG_VERSION_UNAVAILABLE = "UnavailableStartVersion";
+    public static final String TAG_EXCLUDED_ELEMENT = "Excluded";
     protected static final String ELEMENT_NAME_CHANGE_PREFIX = "Changed";
     protected static final String ELEMENT_NAME_DELETE_PREFIX = "Deleted";
     protected static final String STEREOTYPE_DATATYPE = "DataType";
