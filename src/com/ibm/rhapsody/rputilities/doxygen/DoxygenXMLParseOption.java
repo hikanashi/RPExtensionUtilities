@@ -19,19 +19,19 @@ public class DoxygenXMLParseOption extends ARPObject {
     }
 
     public String getCurrentTag() {
-        int index = taglist_.size()-1;
-        if(index > 0) {
+        int index = taglist_.size() - 1;
+        if (index > 0) {
             String tag = taglist_.get(index).toString();
             return tag;
         }
-        
+
         return "";
     }
 
     public String getCurrentTagWithoutPara() {
-        for(int index = taglist_.size()-1; index > 0; index--) {
+        for (int index = taglist_.size() - 1; index > 0; index--) {
             String tag = taglist_.get(index).toString();
-            if(tag.equals("para") == true) {
+            if (tag.equals("para") == true) {
                 continue;
             }
             return tag;
@@ -41,13 +41,13 @@ public class DoxygenXMLParseOption extends ARPObject {
 
     public String getBeforeTagWithoutPara() {
         String currentTag = null;
-        for(int index = taglist_.size()-1; index > 0; index--) {
+        for (int index = taglist_.size() - 1; index > 0; index--) {
             String tag = taglist_.get(index).toString();
-            if(tag.equals("para") == true) {
+            if (tag.equals("para") == true) {
                 continue;
             }
 
-            if( currentTag == null ) {
+            if (currentTag == null) {
                 currentTag = tag;
                 continue;
             }
@@ -61,27 +61,26 @@ public class DoxygenXMLParseOption extends ARPObject {
         return taglist_.size();
     }
 
-
-    public void startElement( String tag ) {
+    public void startElement(String tag) {
         String starttag = "";
-        if( tag != null) {
+        if (tag != null) {
             starttag = tag;
         }
-        
-        trace("startElement:"+ starttag + " indent:"+ taglist_.size());
+
+        trace("startElement:" + starttag + " indent:" + taglist_.size());
         taglist_.add(new StringBuffer(starttag));
     }
 
     public void endElement(String tag) {
         String endtag = "";
-        if( tag != null) {
+        if (tag != null) {
             endtag = tag;
         }
 
-        trace("endElement:"+ endtag + " indent:"+ taglist_.size());
-        while(taglist_.size() > 0) {
-            StringBuffer deltag = taglist_.remove( taglist_.size()-1 );
-            if(endtag.equals(deltag.toString()) == true)  {
+        trace("endElement:" + endtag + " indent:" + taglist_.size());
+        while (taglist_.size() > 0) {
+            StringBuffer deltag = taglist_.remove(taglist_.size() - 1);
+            if (endtag.equals(deltag.toString()) == true) {
                 break;
             }
         }

@@ -10,7 +10,6 @@ public class DoxygenTypeRef extends DoxygenType {
         super(DoxygenTypeRef.class);
     }
 
-
     protected void createElementInternal(XMLStreamReader reader, String tag) {
         trace("createElementInternal");
 
@@ -23,7 +22,7 @@ public class DoxygenTypeRef extends DoxygenType {
 
     protected void linkObjectInternal() {
 
-        if(manager_ != null) {
+        if (manager_ != null) {
             refobj = manager_.getObject(kindref_ + "def", id_.toString());
         }
 
@@ -33,8 +32,8 @@ public class DoxygenTypeRef extends DoxygenType {
 
     protected void endThisElementInternal(String tag) {
         trace("endElementInternal");
-        
-        if(getParent().type_.length() > 0) {
+
+        if (getParent().type_.length() > 0) {
             getParent().type_.append(" " + getText());
         } else {
             getParent().type_.append(getText());
@@ -42,10 +41,9 @@ public class DoxygenTypeRef extends DoxygenType {
 
         return;
     }
-    
+
     protected void debugoutInternal(StringBuffer logbuffer) {
-        logbuffer.append(",kindref:"+ kindref_ 
-            + ",ref:" + (refobj != null ? refobj.getName() : "null"));
+        logbuffer.append(",kindref:" + kindref_
+                + ",ref:" + (refobj != null ? refobj.getName() : "null"));
     }
 }
-

@@ -8,7 +8,6 @@ import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 // import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 // import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
 import com.telelogic.rhapsody.core.IRPModelElement;
-import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPState;
 import com.telelogic.rhapsody.core.IRPFlowchart;
 

@@ -18,67 +18,65 @@ public class RPFunctionImporter extends ARPObject {
         super(RPFunctionImporter.class);
     }
 
-
     public static boolean isImportTarget(IRPModelElement rpelement) {
-        if( rpelement == null ) {
+        if (rpelement == null) {
             return false;
         }
 
-        for(IRPModelElement checkElement = rpelement;
-            checkElement != null;
-            checkElement = checkElement.getOwner())  {
+        for (IRPModelElement checkElement = rpelement; checkElement != null; checkElement = checkElement.getOwner()) {
 
-            if(!(checkElement instanceof IRPPackage)) {
+            if (!(checkElement instanceof IRPPackage)) {
                 continue;
             }
 
             IRPModelElement versiontag = checkElement.getTag(ARPBridge.TAG_VERSION_PACKAGE);
-            if(versiontag == null ) {
+            if (versiontag == null) {
                 continue;
             }
 
             return false;
         }
-        
+
         return true;
     }
 
-    public boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion) {
+    public boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager, String currentVersion) {
         boolean result = false;
 
         // debugMemory("Start Define");
-        // result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
+        // result = importModelbyType(rootPackage, manager, currentVersion,
+        // TAGTYPE.DEFINE);
         // if(result != true ) {
-        //     return result;
+        // return result;
         // }
 
         debugMemory("Start Enum");
         result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
-        if(result != true ) {
+        if (result != true) {
             return result;
         }
 
         debugMemory("Start Union");
         result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.UNION);
-        if(result != true ) {
+        if (result != true) {
             return result;
         }
 
         debugMemory("Start Struct");
         result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.STRUCT);
-        if(result != true ) {
+        if (result != true) {
             return result;
         }
 
         debugMemory("Start Typedef");
         result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
-        if(result != true ) {
+        if (result != true) {
             return result;
         }
 
         debugMemory("Start Function");
         result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
-        if(result != true ) {
+        if (result != true) {
             return result;
         }
 
@@ -87,8 +85,9 @@ public class RPFunctionImporter extends ARPObject {
         return result;
     }
 
-    protected boolean importModelbyType(IRPPackage rootPackage, DoxygenObjectManager manager,String currentVersion,TAGTYPE tagtype) {
-        if(rootPackage == null || manager == null || currentVersion == null || tagtype == null) {
+    protected boolean importModelbyType(IRPPackage rootPackage, DoxygenObjectManager manager, String currentVersion,
+            TAGTYPE tagtype) {
+        if (rootPackage == null || manager == null || currentVersion == null || tagtype == null) {
             error(String.format("importModel argument is illegal. package:%s manager:%d version:%s type:%s",
                     (rootPackage != null ? rootPackage.getName() : "null"),
                     (manager != null ? manager.size() : "-1"),
@@ -97,10 +96,10 @@ public class RPFunctionImporter extends ARPObject {
             return false;
         }
 
-        List <DoxygenType> list = null;
+        List<DoxygenType> list = null;
 
         list = manager.popList(tagtype);
-        if(list == null) {
+        if (list == null) {
             return false;
         }
 
@@ -112,26 +111,26 @@ public class RPFunctionImporter extends ARPObject {
 
         int index = 0;
         int save_count = 0;
-        for(DoxygenType obj : list) {
+        for (DoxygenType obj : list) {
             info(String.format("importModel tag:%s/%s(%s) type:%s name:%s %d/%d",
                     tagtype.getTag(),
                     tagtype.getAttrName(),
                     tagtype.getAttrValue(),
                     obj.getType(),
                     obj.getName(),
-                    index+1, list.size()));
+                    index + 1, list.size()));
 
             ARPBridge bridge = newBridgeInstance(obj, rootPackage, tagtype);
-            if(bridge == null) {
+            if (bridge == null) {
                 continue;
             }
 
             IRPModelElement element = bridge.importElement(currentVersion);
-            if(element == null) {
+            if (element == null) {
                 return false;
             }
 
-            if(++save_count > IMPORT_SAVE_CYCLE ) {
+            if (++save_count > IMPORT_SAVE_CYCLE) {
                 rootPackage.save(1);
                 save_count = 0;
             }
@@ -139,27 +138,27 @@ public class RPFunctionImporter extends ARPObject {
             index++;
         }
 
-        if(manager.isFullImport() != true) {
+        if (manager.isFullImport() != true) {
             rootPackage.save(1);
             return true;
         }
 
-        ARPBridge bridge = newBridgeInstance(null, rootPackage, tagtype);        
+        ARPBridge bridge = newBridgeInstance(null, rootPackage, tagtype);
         bridge.replaceOldElement(currentVersion);
 
         // For typedefs other than callbacks
-        if( tagtype == TAGTYPE.TYPEDEF ) {
+        if (tagtype == TAGTYPE.TYPEDEF) {
             DoxygenTypeTypedef typedef = new DoxygenTypeTypedef();
-            bridge = newBridgeInstance(typedef, rootPackage, tagtype);        
+            bridge = newBridgeInstance(typedef, rootPackage, tagtype);
             bridge.replaceOldElement(currentVersion);
         }
 
         // For other Types used in arguments
-        if( tagtype == TAGTYPE.FUNCTION ) {
-            bridge = newBridgeInstance(null, rootPackage, TAGTYPE.PARAM);        
+        if (tagtype == TAGTYPE.FUNCTION) {
+            bridge = newBridgeInstance(null, rootPackage, TAGTYPE.PARAM);
             bridge.replaceOldElement(currentVersion);
         }
-        
+
         rootPackage.save(1);
 
         return true;
@@ -168,40 +167,39 @@ public class RPFunctionImporter extends ARPObject {
     protected ARPBridge newBridgeInstance(DoxygenType doxygen, IRPPackage rootPackage, TAGTYPE tagtype) {
         ARPBridge bridge = null;
 
-        if( tagtype == TAGTYPE.FUNCTION ) {
-            bridge = new RPBridgeStateChart(doxygen,rootPackage);
+        if (tagtype == TAGTYPE.FUNCTION) {
+            bridge = new RPBridgeStateChart(doxygen, rootPackage);
             // bridge = new RPBridgeOperation(doxygen, rootPackage);
             return bridge;
         }
 
-        if( tagtype == TAGTYPE.ENUM ) {
-            bridge = new RPBridgeEnum(doxygen,rootPackage);
+        if (tagtype == TAGTYPE.ENUM) {
+            bridge = new RPBridgeEnum(doxygen, rootPackage);
             return bridge;
         }
 
-        if( tagtype == TAGTYPE.DEFINE ) {
-            bridge = new RPBridgeDefine(doxygen,rootPackage);
+        if (tagtype == TAGTYPE.DEFINE) {
+            bridge = new RPBridgeDefine(doxygen, rootPackage);
             return bridge;
         }
 
-        if( tagtype == TAGTYPE.STRUCT ) {
-            bridge = new RPBridgeStruct(doxygen,rootPackage);
+        if (tagtype == TAGTYPE.STRUCT) {
+            bridge = new RPBridgeStruct(doxygen, rootPackage);
             return bridge;
         }
 
-
-        if( tagtype == TAGTYPE.UNION ) {
-            bridge = new RPBridgeUnion(doxygen,rootPackage);
+        if (tagtype == TAGTYPE.UNION) {
+            bridge = new RPBridgeUnion(doxygen, rootPackage);
             return bridge;
         }
 
-        if( tagtype == TAGTYPE.TYPEDEF ) {
+        if (tagtype == TAGTYPE.TYPEDEF) {
             DoxygenTypeTypedef typedef = getObject(doxygen);
-            if(typedef == null) {
+            if (typedef == null) {
                 bridge = new RPBridgeEvent(doxygen, rootPackage);
             }
             // If it contains "(", it is a callback.
-            else if(typedef.isCallback() == true) {
+            else if (typedef.isCallback() == true) {
                 bridge = new RPBridgeEvent(doxygen, rootPackage);
             } else {
                 bridge = new RPBridgeTypedef(doxygen, rootPackage);
@@ -210,8 +208,8 @@ public class RPFunctionImporter extends ARPObject {
             return bridge;
         }
 
-        if( tagtype == TAGTYPE.PARAM ) {
-            bridge = new RPBridgeParamType(doxygen,rootPackage);
+        if (tagtype == TAGTYPE.PARAM) {
+            bridge = new RPBridgeParamType(doxygen, rootPackage);
             return bridge;
         }
 

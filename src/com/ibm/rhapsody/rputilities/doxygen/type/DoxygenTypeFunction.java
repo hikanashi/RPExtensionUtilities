@@ -4,7 +4,7 @@ import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
 import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 
 public class DoxygenTypeFunction extends DoxygenType {
-    protected StringBuffer returndescription_ = new StringBuffer(); 
+    protected StringBuffer returndescription_ = new StringBuffer();
 
     public DoxygenTypeFunction() {
         super(DoxygenTypeFunction.class);
@@ -15,7 +15,7 @@ public class DoxygenTypeFunction extends DoxygenType {
     }
 
     public void setReturnDescription(String description) {
-        if(description == null) {
+        if (description == null) {
             return;
         }
 
@@ -23,46 +23,46 @@ public class DoxygenTypeFunction extends DoxygenType {
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
-        if(type.equals(TAGTYPE.PARAM) == true) {
+        if (type.equals(TAGTYPE.PARAM) == true) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.DETAILPARAM) == true) {
+        if (type.equals(TAGTYPE.DETAILPARAM) == true) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.DETAILRETVAL) == true) {
+        if (type.equals(TAGTYPE.DETAILRETVAL) == true) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.DETAILRETUEN) == true) {
+        if (type.equals(TAGTYPE.DETAILRETUEN) == true) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.REF) != true) {
+        if (type.equals(TAGTYPE.REF) != true) {
             return false;
         }
 
-        if(option.getBeforeTagWithoutPara().equals("type") == true) {
+        if (option.getBeforeTagWithoutPara().equals("type") == true) {
             return true;
         }
- 
+
         debug(String.format("name:%s(%s) Type:%s is current:%s before:%s isn't type",
-                            getName(), 
-                            getId(),
-                            type.toString(),
-                            option.getCurrentTag(),
-                            option.getBeforeTagWithoutPara()));
-        
+                getName(),
+                getId(),
+                type.toString(),
+                option.getCurrentTag(),
+                option.getBeforeTagWithoutPara()));
+
         return false;
     }
- 
+
     protected void linkObjectInternal() {
         // logoutdebug(0);
         return;
     }
 
     protected void debugoutInternal(StringBuffer logbuffer) {
-        logbuffer.append(",returnDesc:"+ returndescription_.toString());
+        logbuffer.append(",returnDesc:" + returndescription_.toString());
     }
 }

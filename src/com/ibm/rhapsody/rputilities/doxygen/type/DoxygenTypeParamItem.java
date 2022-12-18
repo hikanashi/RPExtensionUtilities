@@ -18,9 +18,9 @@ public class DoxygenTypeParamItem extends DoxygenType {
 
     protected void startSubElementInternal(DoxygenXMLParseOption option) {
         String tag = new String(option.getCurrentTag());
-        if(tag.equals("parametername") == true) {
+        if (tag.equals("parametername") == true) {
             String direction = option.reader.getAttributeValue(null, "direction");
-            if(direction != null) {
+            if (direction != null) {
                 direction_ = new String(direction);
             }
         }
@@ -28,39 +28,38 @@ public class DoxygenTypeParamItem extends DoxygenType {
     }
 
     protected void charactersSubInternal(String tag, String text) {
-        if(tag.equals("parametername")) {
+        if (tag.equals("parametername")) {
             name_.setLength(0);
-            appendPlane(name_,text);
-        }
-        else if(tag.equals("parameterdescription")) {
+            appendPlane(name_, text);
+        } else if (tag.equals("parameterdescription")) {
             appendText(briefdescription_, text);
         }
     }
 
     protected void charactersChildInternal(String tag, String text) {
-        charactersSubInternal(tag,text);
+        charactersSubInternal(tag, text);
         return;
     }
 
     protected void linkObjectInternal() {
-        trace("linkObjectInternal:"+ getName());
+        trace("linkObjectInternal:" + getName());
 
         DoxygenType parent = getParent();
-        if(parent == null) {
+        if (parent == null) {
             return;
         }
 
         DoxygenType relatedtype = GetRelateParam();
-        if(relatedtype == null) {
+        if (relatedtype == null) {
             return;
         }
 
-        if(relatedtype instanceof DoxygenTypeFunction) {
+        if (relatedtype instanceof DoxygenTypeFunction) {
             DoxygenTypeFunction function = getObject(relatedtype);
             function.setReturnDescription(getName() + " " + briefdescription_.toString());
         }
 
-        if(relatedtype instanceof DoxygenTypeParam) {
+        if (relatedtype instanceof DoxygenTypeParam) {
             DoxygenTypeParam param = getObject(relatedtype);
             param.setDirection(direction_);
             param.setDescription(briefdescription_.toString());
@@ -71,37 +70,36 @@ public class DoxygenTypeParamItem extends DoxygenType {
 
     protected DoxygenType GetRelateParam() {
         DoxygenType parent = getParent();
-        if( parent == null) {
-            warn(getName() +":first parent");
+        if (parent == null) {
+            warn(getName() + ":first parent");
             return null;
         }
 
         DoxygenType pparent = parent.getParent();
-        if( pparent == null) {
-            warn(getName() +":2nd parent");
+        if (pparent == null) {
+            warn(getName() + ":2nd parent");
             return null;
         }
-        
 
-        if( parent instanceof DoxygenTypeDetailRetval) {
-            if(pparent instanceof DoxygenTypeFunction) {
+        if (parent instanceof DoxygenTypeDetailRetval) {
+            if (pparent instanceof DoxygenTypeFunction) {
                 return pparent;
             }
         }
-        
+
         List<DoxygenType> params = pparent.getChildlen(TAGTYPE.PARAM);
-        for(DoxygenType param : params) {
-            if(param.getName().equals(getName()) == true) {
+        for (DoxygenType param : params) {
+            if (param.getName().equals(getName()) == true) {
                 return getObject(param);
             }
         }
-        warn(getName() +" not found:" + pparent.getName());
+        warn(getName() + " not found:" + pparent.getName());
 
         return null;
     }
 
     protected void debugoutInternal(StringBuffer logbuffer) {
-        logbuffer.append(",direction:"+  direction_ ); 
+        logbuffer.append(",direction:" + direction_);
         return;
     }
 }

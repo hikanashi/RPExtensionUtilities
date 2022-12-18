@@ -22,7 +22,7 @@ public class RPBridgeDefine extends ARPBridge {
     }
 
     protected void initialize(DoxygenType doxygen) {
-        if( doxygen == null ) {
+        if (doxygen == null) {
             name_ = "";
             return;
         }
@@ -33,33 +33,32 @@ public class RPBridgeDefine extends ARPBridge {
     protected String getName() {
         return name_;
     }
-    
+
     protected String GetKind() {
         return kind_.getString();
     }
 
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
         List<IRPModelElement> list = new ArrayList<>(toList(rpPackage.getTypes()));
-        list.removeIf(element -> isTargetType(element) != true  );
+        list.removeIf(element -> isTargetType(element) != true);
 
         return list;
     }
 
     protected boolean isTargetType(IRPModelElement element) {
         IRPType rpType = getObject(element);
-        if( rpType == null) {
+        if (rpType == null) {
             return false;
         }
 
-        if( rpType.isKindLanguage() != 1) {
+        if (rpType.isKindLanguage() != 1) {
             return false;
         }
 
         String declaration = rpType.getDeclaration();
-        if( declaration.startsWith(DECLARATION_PREFIX) == true){
+        if (declaration.startsWith(DECLARATION_PREFIX) == true) {
             return true;
         }
-
 
         return false;
     }
@@ -69,7 +68,6 @@ public class RPBridgeDefine extends ARPBridge {
         element = rppackage.findType(getName());
         return element;
     }
-
 
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create define:" + getName() + " in package:" + modulePackage.getName());
@@ -87,17 +85,17 @@ public class RPBridgeDefine extends ARPBridge {
     public boolean isUpdate(IRPModelElement element) {
         IRPType rpType = getObject(element);
 
-        if(rpType.getIsPredefined() != 0 ) {
+        if (rpType.getIsPredefined() != 0) {
             return false;
         }
 
-        if(checkUpdate(getName(),rpType.getName()) == true) {
-            trace("define change Name "+ rpType.getName() + "->" + getName());
+        if (checkUpdate(getName(), rpType.getName()) == true) {
+            trace("define change Name " + rpType.getName() + "->" + getName());
             return true;
         }
 
-        if(checkUpdate(GetKind(),rpType.getKind()) == true ) {
-            trace(getName() + " change Kind "+ rpType.getKind() + "->" + GetKind());
+        if (checkUpdate(GetKind(), rpType.getKind()) == true) {
+            trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
             return true;
         }
 
@@ -106,38 +104,37 @@ public class RPBridgeDefine extends ARPBridge {
 
     public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
-        if(rpType.getIsPredefined() != 0 ) {
+        if (rpType.getIsPredefined() != 0) {
             return;
         }
 
         super.apply(element, modulePackage, currentVersion, isupdate);
     }
 
-
     public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
 
-        if(checkUpdate(getName(),rpType.getDisplayName()) == true) {
-            trace(getName() + " apply DisplayName "+ rpType.getDisplayName() + "->" + getName());
+        if (checkUpdate(getName(), rpType.getDisplayName()) == true) {
+            trace(getName() + " apply DisplayName " + rpType.getDisplayName() + "->" + getName());
             rpType.setDisplayName(getName());
         }
 
-        if(checkUpdate(getName(),rpType.getName()) == true) {
-            trace(getName() + " apply Name "+ rpType.getName() + "->" + getName());
+        if (checkUpdate(getName(), rpType.getName()) == true) {
+            trace(getName() + " apply Name " + rpType.getName() + "->" + getName());
             rpType.setName(getName());
         }
 
-        if(checkUpdate(GetKind(),rpType.getKind()) == true ) {
-            trace(getName() + " change Kind "+ rpType.getKind() + "->" + GetKind());
+        if (checkUpdate(GetKind(), rpType.getKind()) == true) {
+            trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
             rpType.setKind(GetKind());
         }
 
         DoxygenTypeDefilne define = getObject(doxygen_);
         String declaration = String.format("%s\t%s\t%s",
-                                DECLARATION_PREFIX,
-                                getName(),
-                                define.getInitializer());
-        
+                DECLARATION_PREFIX,
+                getName(),
+                define.getInitializer());
+
         rpType.setDeclaration(declaration);
 
         return;

@@ -1,13 +1,34 @@
 package com.ibm.rhapsody.rputilities.rpcore;
 
 public class RPLogLevel {
+    /**
+     * Turn off log output
+     */
     private static final int OFF_INT = Integer.MAX_VALUE;
+    /**
+     * Error level log output
+     */
     private static final int ERROR_INT = 40000;
+    /**
+     * Warning level log output
+     */
     private static final int WARN_INT = 30000;
+    /**
+     * Infomation level log output
+     */
     private static final int INFO_INT = 20000;
+    /**
+     * Debug level log output
+     */
     private static final int DEBUG_INT = 10000;
+    /**
+     * Detail debug level log output
+     */
     private static final int TRACE_INT = 0;
 
+    /**
+     *
+     */
     public final static RPLogLevel OFF = new RPLogLevel(ERROR_INT, "OFF");
     public final static RPLogLevel ERROR = new RPLogLevel(OFF_INT, "ERR");
     public final static RPLogLevel WARN = new RPLogLevel(WARN_INT, "WRN");

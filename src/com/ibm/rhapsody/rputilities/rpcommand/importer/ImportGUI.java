@@ -27,7 +27,6 @@ public class ImportGUI extends ARPObject {
     private JButton buttonPath_;
     private JButton buttonImport_;
 
-
     public ImportGUI(RPDoxygenXML command) {
         super(ImportGUI.class);
         command_ = command;
@@ -38,10 +37,11 @@ public class ImportGUI extends ARPObject {
     }
 
     public void setVisible(boolean value) {
-        if(value == true ) {
+        if (value == true) {
             IRPPackage rppackage = command_.getElement();
-            if(RPFunctionImporter.isImportTarget(rppackage) != true) {
-                JOptionPane.showMessageDialog(mainFrame_, "Please select the one package that will be the base point for the import");
+            if (RPFunctionImporter.isImportTarget(rppackage) != true) {
+                JOptionPane.showMessageDialog(mainFrame_,
+                        "Please select the one package that will be the base point for the import");
                 return;
             }
 
@@ -68,20 +68,21 @@ public class ImportGUI extends ARPObject {
     }
 
     private void setUIEnable(boolean enable) {
-        if(buttonImport_ != null) {
+        if (buttonImport_ != null) {
             buttonImport_.setEnabled(enable);
         }
 
-        if(buttonPath_ != null) {
+        if (buttonPath_ != null) {
             buttonPath_.setEnabled(enable);
         }
 
-        if(textImportPath_ != null) {
+        if (textImportPath_ != null) {
             textImportPath_.setEnabled(enable);
         }
 
-        if(textVersion_ != null) {
-            textVersion_.setEnabled(enable);;
+        if (textVersion_ != null) {
+            textVersion_.setEnabled(enable);
+            ;
         }
 
     }
@@ -93,13 +94,13 @@ public class ImportGUI extends ARPObject {
         String doxygenPath = textImportPath_.getText();
         String currentVersion = textVersion_.getText();
 
-        if(doxygenPath.isEmpty() ) {
+        if (doxygenPath.isEmpty()) {
             setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Please select import doxygen xml path");
             return;
         }
 
-        if(currentVersion.isEmpty() ) {
+        if (currentVersion.isEmpty()) {
             setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Please input version");
             return;
@@ -112,13 +113,14 @@ public class ImportGUI extends ARPObject {
             command_.saveProperties();
 
             DoxygenXMLParser xmlparser = new DoxygenXMLParser();
-            DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);;
-            if( manager == null) {
+            DoxygenObjectManager manager = xmlparser.Parse(doxygenPath);
+            ;
+            if (manager == null) {
                 setUIEnable(true);
-                JOptionPane.showMessageDialog(mainFrame_, "Import Error(Parse) Path:"+ doxygenPath);
+                JOptionPane.showMessageDialog(mainFrame_, "Import Error(Parse) Path:" + doxygenPath);
                 return;
             }
-            
+
             IRPPackage rppackage = command_.getElement();
             RPFunctionImporter importer = new RPFunctionImporter();
             result = importer.importModel(rppackage, manager, currentVersion);
@@ -129,7 +131,7 @@ public class ImportGUI extends ARPObject {
         info("Import Fisnish result:" + (result == true ? "Success" : "Fail"));
         setUIEnable(true);
 
-        if(result == true) {
+        if (result == true) {
             mainFrame_.setVisible(false);
             setUIEnable(true);
             JOptionPane.showMessageDialog(mainFrame_, "Import complete");
@@ -143,10 +145,10 @@ public class ImportGUI extends ARPObject {
 
     synchronized private void selectImportPath() {
         setUIEnable(false);
-        
+
         FileSelector file = new FileSelector(textImportPath_.getText());
         String path = file.GetOpenDirectoryDialog();
-        if( path != null) {
+        if (path != null) {
             textImportPath_.setText(path);
         }
 
@@ -166,12 +168,12 @@ public class ImportGUI extends ARPObject {
         });
         mainPanel.add(buttonPath_);
         textImportPath_ = new JTextField();
-        if(defaultPath_ != null) {
+        if (defaultPath_ != null) {
             textImportPath_.setText(defaultPath_);
         }
         mainPanel.add(textImportPath_);
 
-        // input version 
+        // input version
         JLabel labelVersion = new JLabel("Input Import Version:");
         labelVersion.setHorizontalAlignment(JLabel.TRAILING);
         mainPanel.add(labelVersion);
@@ -181,13 +183,13 @@ public class ImportGUI extends ARPObject {
             versionFormat.setPlaceholderCharacter('_');
             textVersion_ = new JFormattedTextField(versionFormat);
             textVersion_.setColumns(9);
-            if(defaultVersion_ != null) {
+            if (defaultVersion_ != null) {
                 textVersion_.setText(defaultVersion_);
             } else {
                 textVersion_.setText("v00.00.00");
             }
 
-            mainPanel.add(textVersion_);   
+            mainPanel.add(textVersion_);
         } catch (Exception e) {
             error("MaskFormatter error:", e);
         }

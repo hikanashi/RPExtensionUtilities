@@ -10,27 +10,27 @@ public class DoxygenTypeStruct extends DoxygenType {
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
-        if(type.equals(TAGTYPE.VARIABLE)) {
+        if (type.equals(TAGTYPE.VARIABLE)) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.ENUM)) {
+        if (type.equals(TAGTYPE.ENUM)) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.TYPEDEF)) {
+        if (type.equals(TAGTYPE.TYPEDEF)) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.DETAILPARAM) == true) {
+        if (type.equals(TAGTYPE.DETAILPARAM) == true) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.DETAILRETVAL) == true) {
+        if (type.equals(TAGTYPE.DETAILRETVAL) == true) {
             return true;
         }
 
-        if(type.equals(TAGTYPE.DETAILRETUEN) == true) {
+        if (type.equals(TAGTYPE.DETAILRETUEN) == true) {
             return true;
         }
 
