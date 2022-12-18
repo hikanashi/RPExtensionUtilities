@@ -10,6 +10,7 @@ import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.*;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
+import com.telelogic.rhapsody.core.IRPUnit;
 
 public class RPFunctionImporter extends ARPObject {
     protected static final int IMPORT_SAVE_CYCLE = 20;
@@ -18,8 +19,16 @@ public class RPFunctionImporter extends ARPObject {
         super(RPFunctionImporter.class);
     }
 
-    public static boolean isImportTarget(IRPModelElement rpelement) {
+    public static boolean isImportTarget(IRPUnit rpelement) {
         if (rpelement == null) {
+            return false;
+        }
+
+        if(rpelement.isReadOnly() == 1) {
+            return false;
+        }
+
+        if(rpelement.isReferenceUnit() == 1) {
             return false;
         }
 
@@ -40,44 +49,56 @@ public class RPFunctionImporter extends ARPObject {
         return true;
     }
 
-    public boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager, String currentVersion) {
+    public boolean importModel(IRPPackage rootPackage, DoxygenObjectManager manager, ImportOption option) {
         boolean result = false;
+        String currentVersion = option.importVersion;
 
-        // debugMemory("Start Define");
-        // result = importModelbyType(rootPackage, manager, currentVersion,
-        // TAGTYPE.DEFINE);
-        // if(result != true ) {
-        // return result;
-        // }
-
-        debugMemory("Start Enum");
-        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
-        if (result != true) {
-            return result;
+        if (option.importDefine == true) {
+            debugMemory("Start Define");
+            result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.DEFINE);
+            if (result != true) {
+                return result;
+            }
         }
 
-        debugMemory("Start Union");
-        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.UNION);
-        if (result != true) {
-            return result;
+        if (option.importEnum == true) {
+            debugMemory("Start Enum");
+            result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.ENUM);
+            if (result != true) {
+                return result;
+            }
         }
 
-        debugMemory("Start Struct");
-        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.STRUCT);
-        if (result != true) {
-            return result;
+        if (option.importUnion == true) {
+            debugMemory("Start Union");
+            result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.UNION);
+            if (result != true) {
+                return result;
+            }
         }
 
-        debugMemory("Start Typedef");
-        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
-        if (result != true) {
-            return result;
+        if (option.importStruct == true) {
+            debugMemory("Start Struct");
+            result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.STRUCT);
+            if (result != true) {
+                return result;
+            }
         }
 
-        debugMemory("Start Function");
-        result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
-        if (result != true) {
-            return result;
+        if (option.importTypedef == true) {
+            debugMemory("Start Typedef");
+            result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.TYPEDEF);
+            if (result != true) {
+                return result;
+            }
+        }
+
+        if (option.importFunction == true) {
+            debugMemory("Start Function");
+            result = importModelbyType(rootPackage, manager, currentVersion, TAGTYPE.FUNCTION);
+            if (result != true) {
+                return result;
+            }
         }
 
         debugMemory("importModel Finish");
