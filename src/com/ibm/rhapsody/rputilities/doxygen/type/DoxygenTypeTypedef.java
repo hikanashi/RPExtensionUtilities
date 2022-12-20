@@ -91,7 +91,10 @@ public class DoxygenTypeTypedef extends DoxygenType {
             for (int oneindex = 0; oneindex < one_arg.length; oneindex++) {
                 String argelement = one_arg[oneindex].trim();
                 if (one_arg.length - 1 <= oneindex) {
-                    if (argelement.charAt(0) == '*') {
+                    if( argelement.length() <= 0) {
+
+                    }
+                    else if (argelement.charAt(0) == '*') {
                         if (argelement.length() > 1) {
                             param.name_.append(argelement.substring(1));
                         }
@@ -104,9 +107,11 @@ public class DoxygenTypeTypedef extends DoxygenType {
                     } else {
                         param.type_.append(" " + argelement);
                     }
-
-                    if (one_arg[oneindex + 1].charAt(0) == '*') {
-                        param.type_.append(" *");
+                    
+                    if(one_arg[oneindex + 1].length() > 0) {
+                        if (one_arg[oneindex + 1].charAt(0) == '*') {
+                            param.type_.append(" *");
+                        }    
                     }
                 }
             }
