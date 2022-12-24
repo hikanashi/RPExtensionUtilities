@@ -3,9 +3,9 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
 import com.telelogic.rhapsody.core.IRPAttribute;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
@@ -89,10 +89,10 @@ public class RPBridgeStruct extends ARPBridge {
             return true;
         }
 
-        if (checkUpdate(GetKind(), rpType.getKind()) == true) {
-            trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
-            return true;
-        }
+        // if (checkUpdate(GetKind(), rpType.getKind()) == true) {
+        //     trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
+        //     return true;
+        // }
 
         return false;
     }

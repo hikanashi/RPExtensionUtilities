@@ -3,10 +3,10 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeParam;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeTypedef;
 import com.telelogic.rhapsody.core.IRPArgument;
 import com.telelogic.rhapsody.core.IRPEvent;
 import com.telelogic.rhapsody.core.IRPModelElement;

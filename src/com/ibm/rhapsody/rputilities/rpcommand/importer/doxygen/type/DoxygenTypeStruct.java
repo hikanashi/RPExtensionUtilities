@@ -1,12 +1,12 @@
-package com.ibm.rhapsody.rputilities.doxygen.type;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
 
-public class DoxygenTypeUnion extends DoxygenType {
+public class DoxygenTypeStruct extends DoxygenType {
 
-    public DoxygenTypeUnion() {
-        super(DoxygenTypeUnion.class);
+    public DoxygenTypeStruct() {
+        super(DoxygenTypeStruct.class);
     }
 
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
@@ -19,10 +19,6 @@ public class DoxygenTypeUnion extends DoxygenType {
         }
 
         if (type.equals(TAGTYPE.TYPEDEF)) {
-            return true;
-        }
-
-        if (type.equals(TAGTYPE.DEFINE)) {
             return true;
         }
 

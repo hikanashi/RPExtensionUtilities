@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFile;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeGroup;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeFile;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeGroup;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;

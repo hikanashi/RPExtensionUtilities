@@ -2,7 +2,7 @@
 
 Count the actions in the activity diagram included in the package.
 
-## Configure RPExtensionUtilities.hep
+# Configure RPExtensionUtilities.hep
 
 Add the following to RPExtensionUtilities.hep.  
 Modify the 1 in each item to match the number of plug-ins/helpers described in the file.  
@@ -18,7 +18,7 @@ isVisible1=1
 DLLServerCompatible1=1
 ```
 
-## Rhapsody operations
+# Rhapsody operations
 
 1. Select the package of IBM Rhapsody explorer.
 2. Right-click to display menu.

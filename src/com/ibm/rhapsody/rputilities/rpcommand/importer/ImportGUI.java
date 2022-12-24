@@ -1,8 +1,8 @@
 package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParser;
 import com.ibm.rhapsody.rputilities.rpcommand.RPDoxygenXML;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenObjectManager;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenXMLParser;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.window.AlwaysOnTopMenuBar;
 import com.ibm.rhapsody.rputilities.window.FileSelector;
@@ -101,6 +101,11 @@ public class ImportGUI extends ARPObject {
         if (checkFunction_ != null) {
             checkFunction_.setEnabled(enable);
         }
+
+        if (mainFrame_ != null) {
+            mainFrame_.setAlwaysOnTop(enable);
+        }
+
     }
 
     synchronized private void ImportDoxygen() {

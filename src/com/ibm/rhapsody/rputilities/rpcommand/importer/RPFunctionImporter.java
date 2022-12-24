@@ -2,18 +2,19 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer;
 
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeTypedef;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.bridge.*;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenObjectManager;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeTypedef;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPUnit;
 
 public class RPFunctionImporter extends ARPObject {
-    protected static final int IMPORT_SAVE_CYCLE = 20;
+    protected static final int IMPORT_SAVE_CYCLE = 50;
+    // protected static final int IMPORT_INTERVAL = 200;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);
@@ -152,6 +153,10 @@ public class RPFunctionImporter extends ARPObject {
             }
 
             if (++save_count > IMPORT_SAVE_CYCLE) {
+                // try {
+                //     Thread.sleep(IMPORT_INTERVAL);
+                // } catch (InterruptedException e) {
+                // }
                 rootPackage.save(1);
                 save_count = 0;
             }

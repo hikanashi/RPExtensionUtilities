@@ -1,4 +1,4 @@
-package com.ibm.rhapsody.rputilities.doxygen.type;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
 import javax.xml.stream.XMLStreamReader;
 
