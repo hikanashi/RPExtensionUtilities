@@ -12,32 +12,29 @@ The RPExtensionUtilities directory of the package contains the following files.
 - RPExtensionUtilities.hep
 
 
-For example, in Windows 10, the profile directory of IBM Rhapsody is located under `C:\Program Files\IBM\Rhapsody\9.0.1\Share\Profiles`
+For example, in Windows 10, the profile directory of IBM Rhapsody is located under
+ `C:\Program Files\IBM\Rhapsody\9.0.1\Share\Profiles`
+
+## Inclusion in the project
+
+Please follow the steps below to add a profile.
 
 
-## Count Action of Actiby
-Count the actions in the activity diagram included in the package.
+`File(F)` -> `Add profiles to the model` -> select `RPExtensionUtilities.sbsx`
 
-### Configure RPExtensionUtilities.hep
+Adding a profile enables the plug-in.
 
-Set `RPActivityCount/[SwimlaneName]` to the name of the swimlane whose actions you want to count in the activity diagram.
-The following is an example of counting the swimlane name "XXX".
+## Documentation of individual features
 
-```
-#REM: Count Activity for packages
-name3=RPActivityCount/XXX
-isPluginCommand3=1
-command3=RPExtensionUtilities
-applicableTo3=Package
-isVisible3=1
-DLLServerCompatible3=1
-```
+See under doc directory.
 
-### Rhapsody operations
+[RPCountActivity](doc/RPCountActivity.md)  
+[RPImageOutActivity](doc/RPImageOutActivity.md)  
+[RPDoxygenXML](doc/RPDoxygenXML.md)  
 
-1. Select the package of IBM Rhapsody explorer.
-2. Right-click to display menu.
-3. Select `RPActivityCount/[SwimlaneName]` specified in the hep file.
+## Debug Configuration
+
+[DebugConfiguration](doc/DebugConfiguration.md)  
 
 ## Contributing
 
