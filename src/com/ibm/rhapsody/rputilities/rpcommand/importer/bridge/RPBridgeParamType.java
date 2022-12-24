@@ -2,8 +2,8 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
@@ -206,10 +206,10 @@ public class RPBridgeParamType extends ARPBridge {
             return true;
         }
 
-        if (checkUpdate(GetKind(), rpType.getKind()) == true) {
-            trace(full_type_ + " change Kind " + rpType.getKind() + "->" + GetKind());
-            return true;
-        }
+        // if (checkUpdate(GetKind(), rpType.getKind()) == true) {
+        //     trace(full_type_ + " change Kind " + rpType.getKind() + "->" + GetKind());
+        //     return true;
+        // }
 
         return false;
     }

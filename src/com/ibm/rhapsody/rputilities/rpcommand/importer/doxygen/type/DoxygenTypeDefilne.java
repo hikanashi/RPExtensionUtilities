@@ -1,10 +1,10 @@
-package com.ibm.rhapsody.rputilities.doxygen.type;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
-public class DoxygenTypeEnumValue extends DoxygenType {
+public class DoxygenTypeDefilne extends DoxygenType {
     protected StringBuffer initializer_ = new StringBuffer();
 
-    public DoxygenTypeEnumValue() {
-        super(DoxygenTypeEnumValue.class);
+    public DoxygenTypeDefilne() {
+        super(DoxygenTypeDefilne.class);
     }
 
     public String getInitializer() {

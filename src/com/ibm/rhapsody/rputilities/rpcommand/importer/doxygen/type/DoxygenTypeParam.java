@@ -1,7 +1,7 @@
-package com.ibm.rhapsody.rputilities.doxygen.type;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
 
 public class DoxygenTypeParam extends DoxygenType {
     protected String direction_ = "";

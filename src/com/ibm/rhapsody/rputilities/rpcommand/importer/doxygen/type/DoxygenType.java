@@ -1,11 +1,11 @@
-package com.ibm.rhapsody.rputilities.doxygen.type;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenObjectManager;
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenObjectManager;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 
 public abstract class DoxygenType extends ARPObject {

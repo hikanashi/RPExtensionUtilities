@@ -1,7 +1,8 @@
-package com.ibm.rhapsody.rputilities.doxygen;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen;
 
 import java.lang.reflect.Constructor;
-import com.ibm.rhapsody.rputilities.doxygen.type.*;
+
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.*;
 
 public enum TAGTYPE {
     DEFINE("memberdef", KEYTYPE.KEY_ATTR_KIND, "define", false, DoxygenTypeDefilne.class),

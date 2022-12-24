@@ -3,10 +3,10 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeFunction;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeParam;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeFunction;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeParam;
 import com.telelogic.rhapsody.core.IRPFlowchart;
 import com.telelogic.rhapsody.core.IRPGraphElement;
 import com.telelogic.rhapsody.core.IRPModelElement;
@@ -89,20 +89,33 @@ public class RPBridgeStateChart extends ARPBridge {
             return true;
         }
 
-        for (int index = 0; index < params.size(); index++) {
-            IRPPin rpPin = pins.get(index);
-            DoxygenType param = params.get(index);
-
-            if (isUpdateActivityPin(name_, rpPin, param) == true) {
+        for (DoxygenType value : params) {
+            DoxygenTypeParam param = getObject(value);
+            String argmentName = param.getName();
+            int find_index = findPin(pins, argmentName);
+            
+            // pin is already exist
+            if (find_index >= 0) {
+                IRPPin rpPin = pins.remove(find_index);
+                if (isUpdateActivityPin(name_, rpPin, param) == true) {
+                    return true;
+                }
+            } else {
                 return true;
             }
+
         }
 
-        IRPPin rpReturnPin = pins.get(params.size());
-        if (isUpdateReturnPin(name_, rpReturnPin, doxygen_) == true) {
+        int return_index = findPin(pins, PIN_RETURN_NAME);
+        if (return_index < 0) {
             return true;
+        } else {
+            IRPPin rpReturnPin = pins.remove(return_index);
+            if (isUpdateReturnPin(name_, rpReturnPin, doxygen_) == true) {
+                return true;
+            }    
         }
-
+        
         return false;
     }
 

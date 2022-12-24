@@ -1,7 +1,7 @@
-package com.ibm.rhapsody.rputilities.doxygen.type;
+package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
-import com.ibm.rhapsody.rputilities.doxygen.DoxygenXMLParseOption;
-import com.ibm.rhapsody.rputilities.doxygen.TAGTYPE;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenXMLParseOption;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.TAGTYPE;
 
 public class DoxygenTypeTypedef extends DoxygenType {
     protected StringBuffer argsstring_ = new StringBuffer();

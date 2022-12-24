@@ -3,9 +3,9 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer.bridge;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenType;
-import com.ibm.rhapsody.rputilities.doxygen.type.DoxygenTypeDefilne;
 import com.ibm.rhapsody.rputilities.rpcommand.importer.RPTYPE_KIND;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenType;
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type.DoxygenTypeDefilne;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPType;
@@ -94,10 +94,10 @@ public class RPBridgeDefine extends ARPBridge {
             return true;
         }
 
-        if (checkUpdate(GetKind(), rpType.getKind()) == true) {
-            trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
-            return true;
-        }
+        // if (checkUpdate(GetKind(), rpType.getKind()) == true) {
+        //     trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
+        //     return true;
+        // }
 
         return false;
     }
@@ -115,17 +115,17 @@ public class RPBridgeDefine extends ARPBridge {
         IRPType rpType = getObject(element);
 
         if (checkUpdate(getName(), rpType.getDisplayName()) == true) {
-            trace(getName() + " apply DisplayName " + rpType.getDisplayName() + "->" + getName());
+            debug(getName() + " apply DisplayName " + rpType.getDisplayName() + "->" + getName());
             rpType.setDisplayName(getName());
         }
 
         if (checkUpdate(getName(), rpType.getName()) == true) {
-            trace(getName() + " apply Name " + rpType.getName() + "->" + getName());
+            debug(getName() + " apply Name " + rpType.getName() + "->" + getName());
             rpType.setName(getName());
         }
 
         if (checkUpdate(GetKind(), rpType.getKind()) == true) {
-            trace(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
+            debug(getName() + " change Kind " + rpType.getKind() + "->" + GetKind());
             rpType.setKind(GetKind());
         }
 
