@@ -2,7 +2,22 @@
 
 RPExtensionUtilities is a Java plugin framework for IBM Rhapsody.
 
-## Installation
+# Installation
+
+### Installing the Java Environment
+
+1. Download JDK 17 or higher at https://projects.eclipse.org/projects/adoptium
+2. Install the downloaded JDK
+3. Change JavaLocation in Rhapsody.ini.  
+Storage location of Rhapsody.ini  
+C:\ProgramData\IBM\Rhapsody\9.0.1x64\rhapsody.ini  
+* Before modification of Rhapsody.ini:  
+JavaLocation=C:\Program Files\IBM\Rhapsody\9.0.1\jdk\jre    
+* After changing Rhapsody.ini (in case of JDK 17.0.5.8-hotspot):  
+ JavaLocation=C:\Program Files\Eclipse Adoptium\jdk-17.0.5.8-hotspot
+
+
+### Installing Plug-in
 
 Copy the RPExtensionUtilities directory of Package under the profile directory of IBM Rhapsody.
 
@@ -17,9 +32,7 @@ For example, in Windows 10, the profile directory of IBM Rhapsody is located und
 
 ## Inclusion in the project
 
-Please follow the steps below to add a profile.
-
-
+Please follow the steps below to add a profile.  
 `File(F)` -> `Add profiles to the model` -> select `RPExtensionUtilities.sbsx`
 
 Adding a profile enables the plug-in.
