@@ -13,8 +13,7 @@ import com.telelogic.rhapsody.core.IRPPackage;
 import com.telelogic.rhapsody.core.IRPUnit;
 
 public class RPFunctionImporter extends ARPObject {
-    protected static final int IMPORT_SAVE_CYCLE = 50;
-    // protected static final int IMPORT_INTERVAL = 200;
+    // protected static final int IMPORT_SAVE_CYCLE = 50;
 
     public RPFunctionImporter() {
         super(RPFunctionImporter.class);
@@ -132,7 +131,7 @@ public class RPFunctionImporter extends ARPObject {
                 list.size()));
 
         int index = 0;
-        int save_count = 0;
+        // int save_count = 0;
         for (DoxygenType obj : list) {
             info(String.format("importModel tag:%s/%s(%s) type:%s name:%s %d/%d",
                     tagtype.getTag(),
@@ -152,14 +151,10 @@ public class RPFunctionImporter extends ARPObject {
                 return false;
             }
 
-            if (++save_count > IMPORT_SAVE_CYCLE) {
-                // try {
-                //     Thread.sleep(IMPORT_INTERVAL);
-                // } catch (InterruptedException e) {
-                // }
-                rootPackage.save(1);
-                save_count = 0;
-            }
+            // if (++save_count > IMPORT_SAVE_CYCLE) {
+            //     rootPackage.save(1);
+            //     save_count = 0;
+            // }
 
             index++;
         }

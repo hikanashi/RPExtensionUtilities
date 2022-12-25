@@ -7,21 +7,23 @@ import java.util.Set;
 
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
+import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPModelElement;
 
 public abstract class IRPUtilityCommmand extends ARPObject {
-
+    protected IRPApplication rpApplication_ = null;
     protected IRPModelElement element_ = null;
     protected Properties settings_ = new Properties();
 
     /**
      * Constructor of Rhapsody utility command class
      * 
-     * @param element Elements selected when right-clicked
+     * @param rpApplication Elements selected when right-clicked
      */
-    protected IRPUtilityCommmand(Class<?> clazz, IRPModelElement element) {
+    protected IRPUtilityCommmand(Class<?> clazz, IRPApplication rpApplication) {
         super(clazz);
-        element_ = element;
+        rpApplication_ = rpApplication;
+        element_ = rpApplication_.getSelectedElement();;
         loadProperties();
     }
 
@@ -44,6 +46,10 @@ public abstract class IRPUtilityCommmand extends ARPObject {
     public <T> T getElement() {
         return getObject(element_);
     }
+
+    protected IRPApplication getApplication() {
+		return rpApplication_;
+	}
 
     protected String getPropertiyFileName() {
         String filename = clazz_.getSimpleName() + ".properties";

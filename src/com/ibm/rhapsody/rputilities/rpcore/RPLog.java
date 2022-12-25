@@ -1,14 +1,17 @@
 package com.ibm.rhapsody.rputilities.rpcore;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.telelogic.rhapsody.core.IRPApplication;
 
 public class RPLog {
 	protected static IRPApplication rhpApplication_ = null;
 	protected static String title_ = "unknown";
 	protected static RPLogLevel level_ = RPLogLevel.INFO;
-	protected static String logfilename_ = null;
 
 	protected Class<?> clazz_ = null;
+	protected Logger logger_ = null;
 
 	/**
 	 * @param title
@@ -17,13 +20,6 @@ public class RPLog {
 	synchronized public static void Initialize(String title, IRPApplication rpyApplication) {
 		rhpApplication_ = rpyApplication;
 		title_ = title;
-
-		logfilename_ = "rputilities" + RPFileSystem.CreateDateTimeString(null) + ".log";
-		rhpApplication_.setLog(logfilename_);
-
-		// System.setProperty(
-		// "java.util.logging.SimpleFormatter.format",
-		// "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s %2$s %5$s%6$s%n");
 	}
 
 	/**
@@ -32,10 +28,6 @@ public class RPLog {
 	synchronized public static void Finalize() {
 		rhpApplication_ = null;
 		title_ = null;
-		if (logfilename_ != null) {
-			RPFileSystem system = new RPFileSystem();
-			system.Delete(logfilename_);
-		}
 	}
 
 	synchronized public static IRPApplication getApplication() {
@@ -56,6 +48,7 @@ public class RPLog {
 	 */
 	public RPLog(Class<?> clazz) {
 		clazz_ = clazz;
+		logger_ = LogManager.getLogger(clazz_);
 	}
 
 	/**
@@ -64,6 +57,7 @@ public class RPLog {
 	 * @param message readable info message
 	 */
 	public void error(String message) {
+		logger_.error(message);
 		loginternal(RPLogLevel.ERROR, message);
 	}
 
@@ -74,6 +68,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void error(String message, Throwable exception) {
+		logger_.error(message,exception);
 		loginternal(RPLogLevel.ERROR, message, exception);
 	}
 
@@ -83,6 +78,7 @@ public class RPLog {
 	 * @param message readable info message
 	 */
 	public void warn(String message) {
+		logger_.warn(message);
 		loginternal(RPLogLevel.WARN, message);
 	}
 
@@ -93,6 +89,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void warn(String message, Throwable exception) {
+		logger_.warn(message, exception);
 		loginternal(RPLogLevel.WARN, message, exception);
 	}
 
@@ -102,6 +99,7 @@ public class RPLog {
 	 * @param message readable info message
 	 */
 	public void info(String message) {
+		logger_.info(message);
 		loginternal(RPLogLevel.INFO, message);
 	}
 
@@ -112,6 +110,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void info(String message, Throwable exception) {
+		logger_.info(message, exception);
 		loginternal(RPLogLevel.INFO, message, exception);
 	}
 
@@ -122,6 +121,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void debug(String message) {
+		logger_.debug(message);
 		loginternal(RPLogLevel.DEBUG, message);
 	}
 
@@ -132,7 +132,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void debug(String message, Throwable exception) {
-		// logger_.debug(message, exception);
+		logger_.debug(message, exception);
 		loginternal(RPLogLevel.DEBUG, message, exception);
 	}
 
@@ -143,6 +143,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void trace(String message) {
+		logger_.trace(message);
 		loginternal(RPLogLevel.TRACE, message);
 	}
 
@@ -153,6 +154,7 @@ public class RPLog {
 	 * @param exception Occurred exception
 	 */
 	public void trace(String message, Throwable exception) {
+		logger_.trace(message, exception);
 		loginternal(RPLogLevel.TRACE, message, exception);
 	}
 
@@ -163,7 +165,6 @@ public class RPLog {
 	 */
 	private void loginternal(RPLogLevel level, String message, Throwable exception) {
 		loginternal(level, message);
-
 		logexception(level, exception);
 	}
 

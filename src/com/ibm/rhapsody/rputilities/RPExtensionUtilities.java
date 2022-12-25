@@ -57,8 +57,9 @@ public class RPExtensionUtilities extends RPUserPlugin {
 	 */
 	public void OnMenuItemSelect(String menuItem) {
 		// show the selected element name
-		IRPModelElement element = rpApplication_.getSelectedElement();
-		RPCommandRunner.RunCommand(menuItem, element);
+
+		RPCommandRunner commandRunnter = new RPCommandRunner();
+		commandRunnter.RunCommand(menuItem, rpApplication_);
 	}
 
 	/*

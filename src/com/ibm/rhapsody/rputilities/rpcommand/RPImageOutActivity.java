@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 import com.ibm.rhapsody.rputilities.rpcore.RPFileSystem;
+import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPCollection;
 import com.telelogic.rhapsody.core.IRPFlowchart;
 import com.telelogic.rhapsody.core.IRPModelElement;
@@ -24,7 +25,7 @@ public class RPImageOutActivity extends IRPUtilityCommmand {
      * 
      * @param element Elements selected when right-clicked
      */
-    public RPImageOutActivity(IRPModelElement element) {
+    public RPImageOutActivity(IRPApplication element) {
         super(RPImageOutActivity.class, element);
     }
 

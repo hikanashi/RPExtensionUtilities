@@ -9,6 +9,7 @@ import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
 // import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import com.telelogic.rhapsody.core.IRPState;
+import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPFlowchart;
 
 public class RPDoxygenXML extends IRPUtilityCommmand {
@@ -22,7 +23,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
      * 
      * @param element Elements selected when right-clicked
      */
-    public RPDoxygenXML(IRPModelElement element) {
+    public RPDoxygenXML(IRPApplication element) {
         super(RPDoxygenXML.class, element);
         mainGUI_ = new ImportGUI(this);
     }

@@ -2,7 +2,15 @@
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
+        "package/**/lib/*.jar",
         "lib/**/*.jar",
         "c:\\Program Files\\IBM\\Rhapsody\\9.0.1\\Share\\JavaAPI\\rhapsody.jar"
+    ],
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-1.8",
+            "path": "C:\\Program Files\\IBM\\Rhapsody\\9.0.1\\jdk",
+            "default": true,
+        },
     ],
 }
