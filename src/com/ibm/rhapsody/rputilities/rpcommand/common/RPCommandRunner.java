@@ -4,11 +4,11 @@ import com.ibm.rhapsody.rputilities.rpcommand.IRPUtilityCommmand;
 import com.ibm.rhapsody.rputilities.rpcore.ARPObject;
 import com.ibm.rhapsody.rputilities.rpcore.RPLog;
 import com.ibm.rhapsody.rputilities.rpcore.RPLogLevel;
+import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPModelElement;
 import java.lang.reflect.Constructor;
 
 public class RPCommandRunner extends ARPObject {
-    protected static RPLog slog_ = new RPLog(RPCommandRunner.class);
 
     public RPCommandRunner() {
         super(RPCommandRunner.class);
@@ -22,8 +22,28 @@ public class RPCommandRunner extends ARPObject {
      * @param element     element selected when right-clicked (null when multiple
      *                    selections are made)
      */
-    public static void RunCommand(String utilCommand, IRPModelElement element) {
+    public void RunCommand(String utilCommand, IRPApplication application) {
 
+        String versionString = System.getProperty("java.version");
+        String version[] = versionString.split("\\.");
+
+        if( version.length < 1) {
+            error("Unable to use plugin due to incorrect version. version:" + versionString);
+            return;
+        }
+
+        int majorVersion = Integer.parseInt(version[0]);
+        if(majorVersion < 17) {
+            error("Non-supported version:" + versionString + ". Use JDK 17 or higher.");
+            error("Download JDK at https://projects.eclipse.org/projects/adoptium");
+            error("After installing JDK, please change JavaLocation in Rhapsody.ini.");
+            error("Storage location of Rhapsody.ini C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64\\rhapsody.ini");
+            error("Before modification of Rhapsody.ini:JavaLocation=C:\\Program Files\\IBM\\Rhapsody\\9.0.1\\jdk\\jre");
+            error("After changing Rhapsody.ini (in case of JDK 17.0.5.8-hotspot): JavaLocation=C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.5.8-hotspot\\");
+            return;
+        }
+
+        IRPModelElement element = application.getSelectedElement();
         String selElemName = new String();
         if (element != null) {
             selElemName = element.getName();
@@ -31,20 +51,20 @@ public class RPCommandRunner extends ARPObject {
             selElemName = "No selected element";
         }
 
-        slog_.debug("OnMenuItemSelect " + utilCommand + " Selected element name is: " + selElemName);
+        debug("OnMenuItemSelect " + utilCommand + " Selected element name is: " + selElemName);
 
         try {
             String[] commandargs = utilCommand.split("\\\\");
 
             setLogLevel(commandargs);
 
-            boolean result = invokeCommand(commandargs, element);
+            boolean result = invokeCommand(commandargs, application);
             if (result != true) {
-                slog_.error("CommandError Menu:" + utilCommand + " Select Item:" + selElemName);
+                error("CommandError Menu:" + utilCommand + " Select Item:" + selElemName);
             }
 
         } catch (Exception e) {
-            slog_.error("CommandError Menu:" + utilCommand + " Select Item:" + selElemName, e);
+            error("CommandError Menu:" + utilCommand + " Select Item:" + selElemName, e);
         }
 
     }
@@ -77,33 +97,33 @@ public class RPCommandRunner extends ARPObject {
      * method.
      * 
      * @param commandargs command array
-     * @param element     element selected at right-clicked (null for multiple
+     * @param application     element selected at right-clicked (null for multiple
      *                    selections)
      * @return result of command running (true:success false:failure)
      */
-    public static boolean invokeCommand(String[] commandargs, IRPModelElement element) {
+    public boolean invokeCommand(String[] commandargs, IRPApplication application) {
         if (commandargs.length < 1) {
-            slog_.error("name is invaild. Please check .hep file");
+            error("name is invaild. Please check .hep file");
             return false;
         }
 
         String className = IRPUtilityCommmand.class.getPackage().getName() + "." + commandargs[0];
-        slog_.debug("className:" + className + " commandargs:" + commandargs.length);
+        debug("className:" + className + " commandargs:" + commandargs.length);
 
         try {
             Class<?> commandClass = Class.forName(className);
-            Constructor<?> constructor = commandClass.getDeclaredConstructor(IRPModelElement.class);
-            IRPUtilityCommmand rpcommnad = (IRPUtilityCommmand) constructor.newInstance(element);
-            slog_.debug("Create Command:" + className);
+            Constructor<?> constructor = commandClass.getDeclaredConstructor(IRPApplication.class);
+            IRPUtilityCommmand rpcommnad = (IRPUtilityCommmand) constructor.newInstance(application);
+            debug("Create Command:" + className);
 
             if (rpcommnad == null) {
-                slog_.error("className:" + className + " is newInstance fail");
+                error("className:" + className + " is newInstance fail");
                 return false;
             }
 
             return rpcommnad.command(commandargs);
         } catch (Exception e) {
-            slog_.error("CommandError:" + className, e);
+            error("CommandError:" + className, e);
             return false;
         }
     }

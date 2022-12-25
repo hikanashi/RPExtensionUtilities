@@ -4,7 +4,7 @@ numberOfElements=6
 #REM: Definition of the plug-in
 name1=RPExtensionUtilities
 JavaMainClass1=com.ibm.rhapsody.rputilities.RPExtensionUtilities
-JavaClassPath1=.\RPExtensionUtilities.jar
+JavaClassPath1=.\RPExtensionUtilities.jar;.\lib\log4j-api-2.19.0.jar;.\lib\log4j-core-2.19.0.jar
 
 isPlugin1=1
 isVisible1=0

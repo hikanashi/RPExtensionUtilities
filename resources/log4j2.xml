@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>	
+<Configuration status="off">
+	<!-- Properties can use the value of name as a variable -->.
+	<Properties>
+		<Property name="logformat">%d{yyyy/MM/dd HH:mm:ss.SSS} [%t] %-6p %c{100} %m%n</Property>
+		<!-- Log format 
+			%d is the date and time. {} specifies date/time format
+			%t is the thread name
+			%-6p is the log level name, left-justified to 6 characters. If it is "debug," a space is added after the name.
+				However, if %-3p is used, the name is not deleted and "debug" is output. If %6 and - are taken, the name is right-justified.
+			If %c{x} is %c{2}, for example, when the logger name is org.apache.commons.Foo, commons.Foo is output.
+			%m is the log message
+			%n is a new line
+		-->
+		<Property name="logfile">./rputiliies.log</Property>
+		<Property name="logfile-archive">>./rputiliies_%d{yyyy-MM-dd}-%i.log</Property>
+	</Properties>
+	
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout>
+				<pattern>${logformat}</pattern>
+			</PatternLayout>
+		</Console>
+
+		<RollingFile name="rolling" append="true" fileName="${logfile}" filePattern="${logfile-archive}">
+			<PatternLayout>
+				<pattern>${logformat}</pattern>
+			</PatternLayout>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="50 MB"/>
+			</Policies>
+			<DefaultRolloverStrategy max="10"/>
+		</RollingFile>
+	</Appenders>
+	
+	<Loggers>
+		<Root level="debug">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="rolling" />
+		</Root>t
+	</Loggers>
+</Configuration>

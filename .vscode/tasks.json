@@ -18,11 +18,16 @@
 			"command": "jar",
 			"args": [
 				"-cvf",
-				"../package/RPExtensionUtilities/${workspaceFolderBasename}.jar",
+				"package/RPExtensionUtilities/${workspaceFolderBasename}.jar",
+				"-C",
+				"bin",
 				"com",
+				"-C",
+				"resources",
+				"log4j2.xml",
 			],
 			"options": {
-				"cwd": "${workspaceFolder}/bin"
+				"cwd": "${workspaceFolder}"
 			},
 			"group": {
 				"kind": "build",

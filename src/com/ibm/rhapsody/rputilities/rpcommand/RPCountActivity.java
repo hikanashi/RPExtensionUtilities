@@ -2,6 +2,7 @@ package com.ibm.rhapsody.rputilities.rpcommand;
 
 import com.ibm.rhapsody.rputilities.rpcommand.activitycount.ActiounCounter;
 import com.ibm.rhapsody.rputilities.rpcore.RPActivityFacade;
+import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPConnector;
 import com.telelogic.rhapsody.core.IRPFlowchart;
 import com.telelogic.rhapsody.core.IRPModelElement;
@@ -21,7 +22,7 @@ public class RPCountActivity extends IRPUtilityCommmand {
      * 
      * @param element Elements selected when right-clicking
      */
-    public RPCountActivity(IRPModelElement element) {
+    public RPCountActivity(IRPApplication element) {
         super(RPCountActivity.class, element);
     }
 
