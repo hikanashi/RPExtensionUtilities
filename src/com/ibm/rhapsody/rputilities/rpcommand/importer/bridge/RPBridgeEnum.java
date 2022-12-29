@@ -38,6 +38,7 @@ public class RPBridgeEnum extends ARPBridge {
         return kind_.getString();
     }
 
+    @Override
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
         List<IRPModelElement> list = new ArrayList<>(toList(rpPackage.getTypes()));
         list.removeIf(element -> isTargetType(element) != true);
@@ -58,12 +59,14 @@ public class RPBridgeEnum extends ARPBridge {
         return false;
     }
 
+    @Override
     public IRPModelElement findElementByType(IRPPackage rppackage) {
         IRPModelElement element = null;
         element = rppackage.findType(getName());
         return element;
     }
 
+    @Override
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create " + kind_.getString() + ":" + getName() + " in package:" + modulePackage.getName());
         IRPType rpType = null;
@@ -78,6 +81,7 @@ public class RPBridgeEnum extends ARPBridge {
         return rpType;
     }
 
+    @Override
     public boolean isUpdate(IRPModelElement element) {
         IRPType rpType = getObject(element);
 
@@ -98,6 +102,7 @@ public class RPBridgeEnum extends ARPBridge {
         return false;
     }
 
+    @Override
     public void apply(IRPModelElement element, IRPPackage modulePackage, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
         if (rpType.getIsPredefined() != 0) {
@@ -107,6 +112,7 @@ public class RPBridgeEnum extends ARPBridge {
         super.apply(element, modulePackage, currentVersion, isupdate);
     }
 
+    @Override
     public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPType rpType = getObject(element);
 
@@ -137,7 +143,7 @@ public class RPBridgeEnum extends ARPBridge {
 
         return;
     }
-
+    
     protected void applyEnumValue(IRPType rpType, DoxygenType value, String currentVersion) {
         
         try {

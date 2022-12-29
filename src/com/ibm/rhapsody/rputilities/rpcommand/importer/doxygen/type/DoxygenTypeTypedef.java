@@ -26,6 +26,7 @@ public class DoxygenTypeTypedef extends DoxygenType {
         }
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if (type.equals(TAGTYPE.PARAM) == true) {
             return true;
@@ -54,6 +55,7 @@ public class DoxygenTypeTypedef extends DoxygenType {
         return false;
     }
 
+    @Override
     protected void charactersSubInternal(String tag, String text) {
         trace("charactersSubInternal");
 
@@ -64,6 +66,7 @@ public class DoxygenTypeTypedef extends DoxygenType {
         return;
     }
 
+    @Override
     protected void endThisElementInternal(String tag) {
         if (argsstring_.length() < 1) {
             return;

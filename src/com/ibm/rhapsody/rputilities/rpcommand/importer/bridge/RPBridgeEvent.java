@@ -29,16 +29,19 @@ public class RPBridgeEvent extends ARPBridge {
         name_ = convertAvailableName(doxygen.getName());
     }
 
+    @Override
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
         List<IRPModelElement> list = toList(rpPackage.getEvents());
         return list;
     }
 
+    @Override
     protected IRPModelElement findElementByType(IRPPackage rpPackage) {
         IRPModelElement rpEvent = rpPackage.findEvent(name_);
         return rpEvent;
     }
 
+    @Override
     protected IRPModelElement createElementByType(IRPPackage modulePackage) {
         // If it contains "(", it is a callback.
         DoxygenTypeTypedef typedef = getObject(doxygen_);
@@ -58,6 +61,7 @@ public class RPBridgeEvent extends ARPBridge {
         return rpEvent;
     }
 
+    @Override
     protected boolean isUpdate(IRPModelElement element) {
         IRPEvent rpevent = getObject(element);
 
@@ -113,6 +117,7 @@ public class RPBridgeEvent extends ARPBridge {
         return false;
     }
 
+    @Override
     protected void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPEvent rpevent = getObject(element);
 

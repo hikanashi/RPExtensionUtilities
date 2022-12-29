@@ -11,6 +11,7 @@ public class DoxygenTypeEnumValue extends DoxygenType {
         return initializer_.toString();
     }
 
+    @Override
     protected void charactersSubInternal(String tag, String text) {
         trace("charactersInternal");
 

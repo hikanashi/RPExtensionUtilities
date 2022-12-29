@@ -30,6 +30,7 @@ public class DoxygenTypeParam extends DoxygenType {
         appendText(briefdescription_, description);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if (type.equals(TAGTYPE.REF) != true) {
             return false;
@@ -42,6 +43,7 @@ public class DoxygenTypeParam extends DoxygenType {
         return false;
     }
 
+    @Override
     protected void charactersSubInternal(String tag, String text) {
 
         if (tag.equals("declname")) {

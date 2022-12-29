@@ -9,6 +9,7 @@ public class DoxygenTypeGroup extends DoxygenType {
         super(DoxygenTypeGroup.class);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         return true;
     }

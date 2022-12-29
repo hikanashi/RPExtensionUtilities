@@ -22,6 +22,7 @@ public class DoxygenTypeFunction extends DoxygenType {
         appendText(returndescription_, description);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if (type.equals(TAGTYPE.PARAM) == true) {
             return true;
@@ -57,11 +58,13 @@ public class DoxygenTypeFunction extends DoxygenType {
         return false;
     }
 
+    @Override
     protected void linkObjectInternal() {
         // logoutdebug(0);
         return;
     }
 
+    @Override
     protected void debugoutInternal(StringBuffer logbuffer) {
         logbuffer.append(",returnDesc:" + returndescription_.toString());
     }

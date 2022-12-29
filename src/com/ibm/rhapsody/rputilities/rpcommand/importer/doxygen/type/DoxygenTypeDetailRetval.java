@@ -9,6 +9,7 @@ public class DoxygenTypeDetailRetval extends DoxygenType {
         super(DoxygenTypeDetailRetval.class);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if (type.equals(TAGTYPE.PARAMITEM)) {
             return true;
@@ -17,6 +18,7 @@ public class DoxygenTypeDetailRetval extends DoxygenType {
         return false;
     }
 
+    @Override
     protected void linkObjectInternal() {
         trace("linkObjectInternal:" + getName());
 
