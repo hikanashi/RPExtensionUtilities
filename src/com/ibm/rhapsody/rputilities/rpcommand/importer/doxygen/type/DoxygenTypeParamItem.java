@@ -16,6 +16,7 @@ public class DoxygenTypeParamItem extends DoxygenType {
         return direction_;
     }
 
+    @Override
     protected void startSubElementInternal(DoxygenXMLParseOption option) {
         String tag = new String(option.getCurrentTag());
         if (tag.equals("parametername") == true) {
@@ -27,6 +28,7 @@ public class DoxygenTypeParamItem extends DoxygenType {
         return;
     }
 
+    @Override
     protected void charactersSubInternal(String tag, String text) {
         if (tag.equals("parametername")) {
             name_.setLength(0);
@@ -36,11 +38,13 @@ public class DoxygenTypeParamItem extends DoxygenType {
         }
     }
 
+    @Override
     protected void charactersChildInternal(String tag, String text) {
         charactersSubInternal(tag, text);
         return;
     }
 
+    @Override
     protected void linkObjectInternal() {
         trace("linkObjectInternal:" + getName());
 
@@ -98,6 +102,7 @@ public class DoxygenTypeParamItem extends DoxygenType {
         return null;
     }
 
+    @Override
     protected void debugoutInternal(StringBuffer logbuffer) {
         logbuffer.append(",direction:" + direction_);
         return;

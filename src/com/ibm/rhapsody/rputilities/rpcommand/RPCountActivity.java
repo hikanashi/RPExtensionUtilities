@@ -32,6 +32,7 @@ public class RPCountActivity extends IRPUtilityCommmand {
      * @see
      * com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
+    @Override
     public boolean command(String[] argment) {
         IRPModelElement element = getElement();
         if (element == null) {

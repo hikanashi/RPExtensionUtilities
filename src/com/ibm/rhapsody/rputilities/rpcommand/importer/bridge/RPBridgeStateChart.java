@@ -37,18 +37,21 @@ public class RPBridgeStateChart extends ARPBridge {
         name_ = convertAvailableName(doxygen_.getName());
     }
 
+    @Override
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
         List<IRPModelElement> list = new ArrayList<>(toList(rpPackage.getAllNestedElements()));
         list.removeIf(element -> !(element instanceof IRPFlowchart));
         return list;
     }
 
+    @Override
     public IRPModelElement findElementByType(IRPPackage rppackage) {
         trace("find ActivityDiagram key:" + name_ + " package:" + rppackage.getName());
         IRPModelElement rpelement = findNestedElementRecursive(rppackage, name_, "ActivityDiagram");
         return rpelement;
     }
 
+    @Override
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         IRPFlowchart rpFlowchart = null;
 
@@ -72,6 +75,7 @@ public class RPBridgeStateChart extends ARPBridge {
         return rpFlowchart;
     }
 
+    @Override
     public boolean isUpdate(IRPModelElement element) {
         IRPFlowchart rpActivity = getObject(element);
 

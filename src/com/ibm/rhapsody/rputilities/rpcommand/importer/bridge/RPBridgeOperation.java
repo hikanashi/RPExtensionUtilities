@@ -28,16 +28,19 @@ public class RPBridgeOperation extends ARPBridge {
         name_ = convertAvailableName(doxygen.getName());
     }
 
+    @Override
     protected List<IRPModelElement> getElementsByType(IRPPackage rpPackage) {
         List<IRPModelElement> list = toList(rpPackage.getGlobalFunctions());
         return list;
     }
 
+    @Override
     public IRPModelElement findElementByType(IRPPackage rppackage) {
         IRPModelElement rpOperation = rppackage.findGlobalFunction(name_);
         return rpOperation;
     }
 
+    @Override
     public IRPModelElement createElementByType(IRPPackage modulePackage) {
         debug("create Operation:" + name_ + " in package:" + modulePackage.getName());
 
@@ -51,6 +54,7 @@ public class RPBridgeOperation extends ARPBridge {
         return rpOperation;
     }
 
+    @Override
     public boolean isUpdate(IRPModelElement element) {
         IRPOperation rpOperation = getObject(element);
 
@@ -106,6 +110,7 @@ public class RPBridgeOperation extends ARPBridge {
         return false;
     }
 
+    @Override
     public void applyByType(IRPModelElement element, String currentVersion, boolean isupdate) {
         IRPOperation rpOperation = getObject(element);
 

@@ -26,6 +26,7 @@ public class RPCommandRunner extends ARPObject {
 
         String versionString = System.getProperty("java.version");
         String version[] = versionString.split("\\.");
+        debug("Java Version:" + versionString);
 
         if( version.length < 1) {
             error("Unable to use plugin due to incorrect version. version:" + versionString);
@@ -33,8 +34,8 @@ public class RPCommandRunner extends ARPObject {
         }
 
         int majorVersion = Integer.parseInt(version[0]);
-        if(majorVersion < 17) {
-            error("Non-supported version:" + versionString + ". Use JDK 17 or higher.");
+        if(majorVersion != 17) {
+            error("Non-supported version:" + versionString + ". Use JDK 17.");
             error("Download JDK at https://projects.eclipse.org/projects/adoptium");
             error("After installing JDK, please change JavaLocation in Rhapsody.ini.");
             error("Storage location of Rhapsody.ini C:\\ProgramData\\IBM\\Rhapsody\\9.0.1x64\\rhapsody.ini");

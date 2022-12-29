@@ -35,6 +35,7 @@ public class RPImageOutActivity extends IRPUtilityCommmand {
      * @see
      * com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
+    @Override
     public boolean command(String[] argment) {
         boolean result = false;
         IRPModelElement element = getElement();

@@ -2,6 +2,8 @@ package com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.type;
 
 import javax.xml.stream.XMLStreamReader;
 
+import com.ibm.rhapsody.rputilities.rpcommand.importer.doxygen.DoxygenXMLParseOption;
+
 public class DoxygenTypeRef extends DoxygenType {
     protected String kindref_ = "null";
     protected DoxygenType refobj = null;
@@ -10,16 +12,18 @@ public class DoxygenTypeRef extends DoxygenType {
         super(DoxygenTypeRef.class);
     }
 
-    protected void createElementInternal(XMLStreamReader reader, String tag) {
+    @Override
+    protected void createElementInternal(DoxygenXMLParseOption option) {
         trace("createElementInternal");
 
         id_.setLength(0);
-        id_.append(reader.getAttributeValue(null, "refid"));
-        kindref_ = new String(reader.getAttributeValue(null, "kindref"));
+        id_.append(option.reader.getAttributeValue(null, "refid"));
+        kindref_ = new String(option.reader.getAttributeValue(null, "kindref"));
 
         return;
     }
 
+    @Override
     protected void linkObjectInternal() {
 
         if (manager_ != null) {
@@ -30,6 +34,7 @@ public class DoxygenTypeRef extends DoxygenType {
         return;
     }
 
+    @Override
     protected void endThisElementInternal(String tag) {
         trace("endElementInternal");
 
@@ -42,6 +47,7 @@ public class DoxygenTypeRef extends DoxygenType {
         return;
     }
 
+    @Override
     protected void debugoutInternal(StringBuffer logbuffer) {
         logbuffer.append(",kindref:" + kindref_
                 + ",ref:" + (refobj != null ? refobj.getName() : "null"));

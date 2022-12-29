@@ -9,6 +9,7 @@ public class DoxygenTypeFile extends DoxygenType {
         super(DoxygenTypeFile.class);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         return true;
     }

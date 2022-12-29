@@ -6,7 +6,7 @@ RPExtensionUtilities is a Java plugin framework for IBM Rhapsody.
 
 ### Installing the Java Environment
 
-1. Download JDK 17 or higher at https://projects.eclipse.org/projects/adoptium
+1. Download JDK 17 at https://projects.eclipse.org/projects/adoptium
 2. Install the downloaded JDK
 3. Change JavaLocation in Rhapsody.ini.  
 Storage location of Rhapsody.ini  

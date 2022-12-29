@@ -9,6 +9,7 @@ public class DoxygenTypeUnion extends DoxygenType {
         super(DoxygenTypeUnion.class);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if (type.equals(TAGTYPE.VARIABLE)) {
             return true;

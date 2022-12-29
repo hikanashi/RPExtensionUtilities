@@ -34,6 +34,7 @@ public class RPDoxygenXML extends IRPUtilityCommmand {
      * @see
      * com.ibm.rhapsody.rputilities.IRPUtilityCommmand#command(java.lang.String[])
      */
+    @Override
     public boolean command(String[] argment) {
         // RPLog.setLevel(RPLogLevel.DEBUG);
 

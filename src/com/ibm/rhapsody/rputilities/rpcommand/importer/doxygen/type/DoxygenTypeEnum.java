@@ -9,6 +9,7 @@ public class DoxygenTypeEnum extends DoxygenType {
         super(DoxygenTypeEnum.class);
     }
 
+    @Override
     public boolean isCreateChildlen(TAGTYPE type, DoxygenXMLParseOption option) {
         if (type.equals(TAGTYPE.ENUMVAL)) {
             return true;
